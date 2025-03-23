@@ -109,7 +109,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
       layer.on({
         click: () => {
           setSelectedFeature(feature);
-          onFeatureSelect(feature);
+          onFeatureSelect(feature.properties.track_id);
         },
       });
     };
