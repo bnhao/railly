@@ -92,16 +92,18 @@ const RailwayMap = ({ onFeatureSelect }) => {
   };
 
   // Function to style the railway lines
-  const railwayStyle = (feature) => {
-    return {
-      color:
-        selectedFeature && selectedFeature.properties["@id"] === feature.properties["@id"]
-          ? "#ed9e1f"
-          : "#2b35f0",
-      weight: 3,
-      opacity: 0.8,
-    };
-  };
+const getCapacityColor = (tripCount) => {
+  return tripCount >= 100 ? "#ff0000" :  // High (red)
+         tripCount >= 50  ? "#ff7300" :  // Medium-high (orange)
+         tripCount >= 20  ? "#ffdd00" :  // Medium (yellow)
+                             "#0080ff"; // Low (blue)
+};
+
+const railwayStyle = (feature) => ({
+  color: getCapacityColor(feature.properties.trip_count || 0),
+  weight: 3,
+  opacity: 0.8,
+});
 
   // Function to handle feature click
   const onEachFeature = useMemo(() => {

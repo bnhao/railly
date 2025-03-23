@@ -1,64 +1,55 @@
 const fs = require("fs");
-const path = require("path");
 const csv = require("csv-parser");
 
-const GTFS_FOLDER = "./viarail"; // Path to your GTFS files
-const OUTPUT_FILE = "./track_capacity.json"; // Save output in Next.js public folder
-const CAPACITY_REFERENCE = 80; // 80 trains per track per day = 100% capacity
+// Load GTFS files
+const shapesFile = "../data/viarail/shapes.txt";
+const tripsFile = "../data/viarail/trips.txt";
 
-// Load a CSV file into an array of objects
-const loadCSV = (filename) =>
-  new Promise((resolve, reject) => {
-    const results = [];
-    fs.createReadStream(path.join(GTFS_FOLDER, filename))
+// Data storage
+const shapes = {};
+const trackUsage = {};
+
+// Read shapes.txt (convert to GeoJSON)
+fs.createReadStream(shapesFile)
+  .pipe(csv())
+  .on("data", (row) => {
+    const { shape_id, shape_pt_lat, shape_pt_lon, shape_pt_sequence } = row;
+
+    if (!shapes[shape_id]) {
+      shapes[shape_id] = { type: "Feature", properties: { shape_id }, geometry: { type: "LineString", coordinates: [] } };
+    }
+
+    shapes[shape_id].geometry.coordinates.push([
+      parseFloat(shape_pt_lon),
+      parseFloat(shape_pt_lat),
+    ]);
+  })
+  .on("end", () => {
+    console.log("✅ Shapes processed");
+
+    // Read trips.txt (count trips per shape_id)
+    fs.createReadStream(tripsFile)
       .pipe(csv())
-      .on("data", (data) => results.push(data))
-      .on("end", () => resolve(results))
-      .on("error", reject);
+      .on("data", (row) => {
+        const shape_id = row.shape_id;
+        trackUsage[shape_id] = (trackUsage[shape_id] || 0) + 1;
+      })
+      .on("end", () => {
+        console.log("✅ Trips counted");
+
+        // Merge trip counts into GeoJSON
+        Object.keys(shapes).forEach((shape_id) => {
+          shapes[shape_id].properties.trip_count = trackUsage[shape_id] || 0;
+        });
+
+        // Convert to GeoJSON
+        const geojson = {
+          type: "FeatureCollection",
+          features: Object.values(shapes),
+        };
+
+        // Save to file
+        fs.writeFileSync("tracks_with_capacity.geojson", JSON.stringify(geojson, null, 2));
+        console.log("✅ GeoJSON saved as tracks_with_capacity.geojson");
+      });
   });
-
-async function processGTFS() {
-  try {
-    console.log("📂 Loading GTFS data...");
-    const stopTimes = await loadCSV("stop_times.txt");
-    const trips = await loadCSV("trips.txt");
-    const routes = await loadCSV("routes.txt");
-
-    console.log("🚆 Counting train frequencies...");
-
-    const trackUsage = {}; // Store train count per track segment
-
-    // Map trip_id -> route_id
-    const tripRouteMap = {};
-    trips.forEach((trip) => {
-      tripRouteMap[trip.trip_id] = trip.route_id;
-    });
-
-    // Count trips per track segment
-    stopTimes.forEach((entry) => {
-      const { trip_id, stop_id } = entry;
-      const route_id = tripRouteMap[trip_id] || "unknown";
-
-      // Define a track segment key (simple example: stop_id)
-      const segmentKey = `${route_id}_${stop_id}`;
-
-      trackUsage[segmentKey] = (trackUsage[segmentKey] || 0) + 1;
-    });
-
-    // Normalize to 100% capacity
-    const trackCapacity = Object.entries(trackUsage).map(([segment, count]) => ({
-      track_id: segment,
-      train_count: count,
-      capacity: Math.min((count / CAPACITY_REFERENCE) * 100, 100), // Cap at 100%
-    }));
-
-    // Save output
-    fs.writeFileSync(OUTPUT_FILE, JSON.stringify(trackCapacity, null, 2));
-    console.log(`✅ Track capacity data saved to ${OUTPUT_FILE}`);
-  } catch (error) {
-    console.error("❌ Error processing GTFS data:", error);
-  }
-}
-
-// Run the script
-processGTFS();

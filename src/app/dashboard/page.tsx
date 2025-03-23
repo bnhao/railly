@@ -233,9 +233,7 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md bg-[#393A3E] hover:cursor-pointer"
-            >
+            <div className="lg:col-span-1 lg:row-span-1 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer">
               <RailwayMap onFeatureSelect={setSelectedFeature} />
             </div>
           </div>
