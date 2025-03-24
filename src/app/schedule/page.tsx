@@ -107,10 +107,19 @@ export default function Schedule() {
   }, []);
 
   const calculateMidpoint = (coordinates: [number, number][]) => {
+    console.log("Calculating midpoint for coordinates:", coordinates);
     if (!coordinates || coordinates.length === 0) return null;
+    console.error("No valid coordinates provided");
 
+    if (coordinates.length === 1) {
+      console.log("Only one coordinate, returning:", coordinates[0]);
+      return coordinates[0];
+    }
+    if (coordinates.length === 2) {
+      console.log("Exactly two coordinates provided, returning both:", coordinates);
+      return coordinates; // Return both coordinates instead of calculating a midpoint
+    }
     const numCoordinates = coordinates.length;
-
     if (numCoordinates % 2 === 1) {
       // Odd number of coordinates: return the middle coordinate
       return coordinates[Math.floor(numCoordinates / 2)];
@@ -137,10 +146,11 @@ export default function Schedule() {
   ) => {
     const due_date = `${endDate}T${endTime}:00`;
     console.log("Selected Track ID:", trackId);
-    console.log("Available Track IDs:", Object.keys(trackCoordinates));
+    // console.log("Available Track IDs:", Object.keys(trackCoordinates));
 
     if (!trackCoordinates || Object.keys(trackCoordinates).length === 0) {
-      console.error("Track data not loaded yet");
+      console.log("All Track IDs in trackCoordinates:", Object.keys(trackCoordinates));
+      console.error("No track coordinates found");
       return;
     }
 
