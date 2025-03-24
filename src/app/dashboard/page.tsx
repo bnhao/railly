@@ -187,8 +187,7 @@ export default function Dashboard() {
               <Line data={trackCapacityData} options={chartOptions} />
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
-              onClick={() => router.push("/schedule")}
+              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer "
             >
               <h3 className="text-center text-lg font-bold">Schedules</h3>{" "}
               <table className="border-collapse border border-gray-800 w-full">
@@ -196,18 +195,18 @@ export default function Dashboard() {
                   <tr>
                     <th>Order #</th>
                     <th>Track</th>
-                    <th>Date</th>
+                    <th>Priority</th>
                     <th>Assigned To</th>
                     <th>Progress</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-center">
                   {tasks.map((task) => (
                     <tr key={task.id}>
                       <td>{task.id}</td>
                       <td>{task.track_id}</td>
-                      <td>{task.due_date}</td>
-                      <td>{task.title}</td>
+                      <td>{task.priority}</td>
+                      <td>{task.assigned_to}</td>
                       <td>{task.status}</td>
                       <td>
                         <button
