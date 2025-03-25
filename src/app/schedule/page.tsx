@@ -44,6 +44,7 @@ export default function Schedule() {
   const [viewMode, setViewMode] = useState("calendar"); // Default view mode
   const eventsService = useState(() => createEventsServicePlugin())[0];
 
+
   useEffect(() => {
     const fetchTasks = async () => {
       const fetchedTasks = await getTasks();

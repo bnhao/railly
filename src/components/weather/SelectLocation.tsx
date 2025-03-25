@@ -1,16 +1,14 @@
-
-import { ChangeEvent, JSX } from "react";
-import { forecastType, locationType } from "@/app/types";
+import { ChangeEvent, JSX, useEffect, useState } from "react";
+import { forecastType } from "@/app/types";
 import { getWindDirection } from "@/app/helpers";
 import { Chart as ChartJs, defaults, CategoryScale } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
-import WeatherMap, { meteoMaps } from "@/components/weather/meteo-maps";
-
+import WeatherMap from "@/components/weather/meteo-maps";
+import { Task } from "@/app/schedule/page";
 
 ChartJs.register(CategoryScale);
 
 type Props = {
-    track: string;
     forecastData: { [key: string]: forecastType | null };
     handleTrackChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     predictWeatherData: { [key: string]: forecastType | null };
@@ -19,15 +17,38 @@ type Props = {
 const SelectLocation = ({
     handleTrackChange,
     forecastData,
-    track,
     predictWeatherData,
 }: Props): JSX.Element => {
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [track, setTrack] = useState<string>("");
+
+    // Fetch Tasks
+    const fetchTasks = async () => {
+        const tasks = await fetch("/api/tasks").then((res) => res.json());
+        return tasks;
+    };
+
+    useEffect(() => {
+        const fetchAndSetTasks = async () => {
+            const tasks = await fetchTasks();
+            setTasks(tasks);
+        };
+        fetchAndSetTasks();
+    }, []);
+
+    // Handle track selection
+    const handleTrackChangeInternal = (e: ChangeEvent<HTMLSelectElement>) => {
+        const selectedTrackId = e.target.value;
+        setTrack(selectedTrackId);
+        handleTrackChange(e);  // Pass up to parent (if needed)
+    };
+
     const selectedForecast = track ? forecastData[track] : null;
 
     return (
         <div className="bg-black text-white min-h-screen">
             <div className="grid grid-cols-12 gap-6">
-                {/* // Current forecast per track */}
+                {/* Current forecast per track */}
                 <div className="col-span-4 space-y-4">
                     <div className="bg-emerald-950 p-4 rounded">
                         <h2 className="text-lg font-semibold">
@@ -35,26 +56,18 @@ const SelectLocation = ({
                         </h2>
                     </div>
 
-                    {[
-                        "Vancouver",
-                        "Banff",
-                        "Edmonton",
-                        "Jasper",
-                        "Canmore",
-                        "Red Deer",
-                    ].map((trackName, i) => {
-                        const forecast = forecastData[trackName];
+                    {tasks.map((task, i) => {
+                        const forecast = forecastData[task.track_id];
                         return (
                             <div key={i} className="bg-gray-800 p-4 rounded-[10px]">
-                                <h3 className="font-bold">{`Track ${i + 1} - ${trackName} (${forecast?.list[0].weather.main ?? "-"
-                                    })`}</h3>
+                                <h3 className="font-bold">
+                                    {`Track ${i + 1} - ${task.track_id} (${forecast?.list[0].weather.main ?? "-"})`}
+                                </h3>
                                 <p>
                                     Wind Speed: {forecast?.list?.[0]?.wind?.speed ?? "-"} km/h
                                 </p>
                                 <p>Temperature: {forecast?.list?.[0]?.main?.temp ?? "-"}°C</p>
-                                <p>
-                                    Feels Like: {forecast?.list?.[0]?.main?.feels_like ?? "-"}°C
-                                </p>
+                                <p>Feels Like: {forecast?.list?.[0]?.main?.feels_like ?? "-"}°C</p>
                                 <p>Humidity: {forecast?.list?.[0]?.main?.humidity ?? "-"}%</p>
                             </div>
                         );
@@ -70,19 +83,12 @@ const SelectLocation = ({
                             id="track"
                             className="bg-gray-800 text-white border p-0.5 rounded cursor-pointer hover:bg-gray-700 transition"
                             value={track}
-                            onChange={handleTrackChange}
+                            onChange={handleTrackChangeInternal}
                         >
                             <option value="">Select a Track</option>
-                            {[
-                                "Vancouver",
-                                "Banff",
-                                "Edmonton",
-                                "Jasper",
-                                "Canmore",
-                                "Red Deer",
-                            ].map((trackName, i) => (
-                                <option key={i} value={trackName}>
-                                    {`Track ${i + 1} - ${trackName}`}
+                            {tasks.map((task) => (
+                                <option key={task.track_id} value={task.track_id}>
+                                    {`Track ${task.track_id}`}
                                 </option>
                             ))}
                         </select>
@@ -101,6 +107,7 @@ const SelectLocation = ({
                                     )}`
                                     : "No data"}
                             </div>
+
                             {/* Wind Speed */}
                             <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded mt-6">
                                 Wind Speed for Selected Track
@@ -108,20 +115,18 @@ const SelectLocation = ({
                             <div className="bg-gray-800 rounded-[10px] mt-4 p-3 flex items-center justify-center">
                                 <Line
                                     data={{
-                                        labels:
-                                            predictWeatherData[track]?.list.map(
-                                                (entry) => entry.timestamp.split(" ")[1]
-                                            ) || [],
+                                        labels: predictWeatherData[track]?.list.map(
+                                            (entry) => entry.timestamp.split(" ")[1]
+                                        ) || [],
                                         datasets: [
                                             {
                                                 label: "Wind Speed",
-                                                data:
-                                                    predictWeatherData[track]?.list.map(
-                                                        (entry) => entry.wind.speed
-                                                    ) || [],
+                                                data: predictWeatherData[track]?.list.map(
+                                                    (entry) => entry.wind.speed
+                                                ) || [],
                                                 borderColor: "rgba(75, 192, 192, 1)",
                                                 backgroundColor: "rgba(75, 192, 192, 0.2)",
-                                                borderWidth: 2, // Thickness of the line
+                                                borderWidth: 2,
                                                 pointBackgroundColor: "rgba(75, 192, 192, 1)",
                                                 pointBorderColor: "#fff",
                                                 pointRadius: 5,
@@ -132,19 +137,10 @@ const SelectLocation = ({
                                         ],
                                     }}
                                     options={{
-                                        maintainAspectRatio: false, // Allow independent width & height control
+                                        maintainAspectRatio: false,
                                         scales: {
-                                            x: {
-                                                ticks: {
-                                                    color: "white", // make the label text white
-                                                },
-                                            },
-                                            y: {
-                                                ticks: {
-                                                    color: "white",
-                                                },
-                                                beginAtZero: true,
-                                            },
+                                            x: { ticks: { color: "white" } },
+                                            y: { ticks: { color: "white" }, beginAtZero: true },
                                         },
                                     }}
                                 />
@@ -152,60 +148,47 @@ const SelectLocation = ({
                         </div>
 
                         {/* Weather Map */}
-                        <div className="col-span-6">
-                            <WeatherMap track={track} />
-                        </div>
+                        {/* <div className="col-span-6">
+                            <WeatherMap trackId={track} />
+                        </div> */}
 
                         {/* Temperature */}
                         <div className="col-span-12">
                             <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded">
                                 Temperature for Selected Track
                             </h2>
-                            <div className=" overflow-x-auto bg-gray-800 rounded-[10px] mt-4  p-4 ">
-                                <div className="">
-                                    <Line
-                                        data={{
-                                            labels:
-                                                predictWeatherData[track]?.list.map(
-                                                    (entry) => entry.timestamp.split(" ")[1]
+                            <div className="overflow-x-auto bg-gray-800 rounded-[10px] mt-4 p-4">
+                                <Line
+                                    data={{
+                                        labels: predictWeatherData[track]?.list.map(
+                                            (entry) => entry.timestamp.split(" ")[1]
+                                        ) || [],
+                                        datasets: [
+                                            {
+                                                label: "Temperature",
+                                                data: predictWeatherData[track]?.list.map(
+                                                    (entry) => entry.temperature.current
                                                 ) || [],
-                                            datasets: [
-                                                {
-                                                    label: "Temperature",
-                                                    data:
-                                                        predictWeatherData[track]?.list.map(
-                                                            (entry) => entry.temperature.current
-                                                        ) || [],
-                                                    borderColor: "rgba(75, 192, 192, 1)",
-                                                    backgroundColor: "rgba(75, 192, 192, 0.2)",
-                                                    borderWidth: 2, // Thickness of the line
-                                                    pointBackgroundColor: "rgba(75, 192, 192, 1)",
-                                                    pointBorderColor: "#fff",
-                                                    pointRadius: 5,
-                                                    pointHoverRadius: 7,
-                                                    fill: true,
-                                                    tension: 0.4,
-                                                },
-                                            ],
-                                        }}
-                                        options={{
-                                            maintainAspectRatio: false, // Allow independent width & height control
-                                            scales: {
-                                                x: {
-                                                    ticks: {
-                                                        color: "white", // make the label text white
-                                                    },
-                                                },
-                                                y: {
-                                                    ticks: {
-                                                        color: "white",
-                                                    },
-                                                    beginAtZero: true,
-                                                },
+                                                borderColor: "rgba(75, 192, 192, 1)",
+                                                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                                                borderWidth: 2,
+                                                pointBackgroundColor: "rgba(75, 192, 192, 1)",
+                                                pointBorderColor: "#fff",
+                                                pointRadius: 5,
+                                                pointHoverRadius: 7,
+                                                fill: true,
+                                                tension: 0.4,
                                             },
-                                        }}
-                                    />
-                                </div>
+                                        ],
+                                    }}
+                                    options={{
+                                        maintainAspectRatio: false,
+                                        scales: {
+                                            x: { ticks: { color: "white" } },
+                                            y: { ticks: { color: "white" }, beginAtZero: true },
+                                        },
+                                    }}
+                                />
                             </div>
                         </div>
                     </div>
