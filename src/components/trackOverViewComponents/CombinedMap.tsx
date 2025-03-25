@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet.gridlayer.googlemutant";
 import { trackCoordinates } from "@/data/trackLocations";
 
 interface CombinedMapProps {
@@ -10,8 +9,10 @@ interface CombinedMapProps {
 }
 
 const CombinedMap: React.FC<CombinedMapProps> = ({ selectedTrack }) => {
+  const mapRef = useRef<L.Map | null>(null);
+
   useEffect(() => {
-    // Ensure this code only runs in the 
+    // Ensure this code only runs in the
     if (typeof window === "undefined") return;
 
     // Dynamically import the Google Mutant plugin
@@ -29,28 +30,22 @@ const CombinedMap: React.FC<CombinedMapProps> = ({ selectedTrack }) => {
       googleLayer.addTo(mapRef.current);
 
       // Add railway WMS layer
-      L.tileLayer.wms("https://maps.geogratis.gc.ca/wms/railway_en?", {
-        layers: "railway.track",
-        format: "image/png",
-        transparent: true,
-        attribution:
-          "Map data © <a href='https://open.canada.ca/'>Government of Canada</a>",
-      }).addTo(mapRef.current);
+      L.tileLayer
+        .wms("https://maps.geogratis.gc.ca/wms/railway_en?", {
+          layers: "railway.track",
+          format: "image/png",
+          transparent: true,
+          attribution:
+            "Map data © <a href='https://open.canada.ca/'>Government of Canada</a>",
+        })
+        .addTo(mapRef.current);
     });
-    googleLayer.addTo(map);
 
-    // Add railway WMS layer
-    L.tileLayer.wms("https://maps.geogratis.gc.ca/wms/railway_en?", {
-      layers: "railway.track",
-      format: "image/png",
-      transparent: true,
-      attribution:
-        "Map data © <a href='https://open.canada.ca/'>Government of Canada</a>",
-    }).addTo(map);
-
+    // Cleanup on unmount
     return () => {
-      if (map) {
-        map.remove();
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
       }
     };
   }, [selectedTrack]);

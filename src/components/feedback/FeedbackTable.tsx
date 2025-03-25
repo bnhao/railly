@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { FeedbackData } from "@/data/feedbackData";
+import { FeedbackData } from "@/app/types/feedback";
 
 interface FeedbackTableProps {
   feedbackList: FeedbackData[];
@@ -28,15 +28,20 @@ const FeedbackTable: React.FC<FeedbackTableProps> = ({
         <tbody>
           {feedbackList.length > 0 ? (
             feedbackList.map((feedback) => (
-              <tr key={feedback.id} className="border-b border-gray-700">
-                <td className="p-2">{feedback.name}</td>
-                <td className="p-2">{feedback.date}</td>
-                <td className="p-2">{feedback.likes}</td>
-                <td className="p-2">{feedback.improvements}</td>
+              <tr
+                key={feedback.feedback_id}
+                className="border-b border-gray-700"
+              >
+                <td className="p-2">{feedback.created_by}</td>
+                <td className="p-2">
+                  {new Date(feedback.created_at).toLocaleDateString()}
+                </td>
+                <td className="p-2">{feedback.description}</td>
+                <td className="p-2">{feedback.suggestion}</td>
                 <td className="p-2 flex flex-col gap-2">
                   <button
                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                    onClick={() => onDelete(feedback.id)}
+                    onClick={() => onDelete(feedback.feedback_id)}
                   >
                     Delete
                   </button>

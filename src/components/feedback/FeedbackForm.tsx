@@ -1,10 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { FeedbackData } from "@/data/feedbackData";
+import React, { useEffect, useState } from "react";
+import { FeedbackData } from "@/app/types/feedback";
+
 
 interface FeedbackFormProps {
   initialData?: FeedbackData | null;
-  onSubmit: (data: FeedbackData) => void;
+  onSubmit: (data: {
+    created_by: string;
+    description: string;
+    suggestion: string;
+  }) => void;
   onCancel: () => void;
 }
 
@@ -13,39 +18,28 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const [name, setName] = useState(initialData?.name || "");
-  const [date, setDate] = useState(
-    initialData?.date || new Date().toLocaleDateString()
+  const [created_by, setCreatedBy] = useState(initialData?.created_by || "");
+  const [description, setDescription] = useState(
+    initialData?.description || ""
   );
-  const [likes, setLikes] = useState(initialData?.likes || "");
-  const [improvements, setImprovements] = useState(
-    initialData?.improvements || ""
-  );
+  const [suggestion, setSuggestion] = useState(initialData?.suggestion || "");
 
   useEffect(() => {
     if (initialData) {
-      setName(initialData.name);
-      setDate(initialData.date);
-      setLikes(initialData.likes);
-      setImprovements(initialData.improvements);
+      setCreatedBy(initialData.created_by);
+      setDescription(initialData.description);
+      setSuggestion(initialData.suggestion);
     }
   }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !likes || !improvements) return;
+    if (!created_by || !description || !suggestion) return;
 
-    onSubmit({
-      id: initialData?.id || Date.now(),
-      name,
-      date,
-      likes,
-      improvements,
-    });
-
-    setName("");
-    setLikes("");
-    setImprovements("");
+    onSubmit({ created_by, description, suggestion });
+    setCreatedBy("");
+    setDescription("");
+    setSuggestion("");
   };
 
   return (
@@ -59,8 +53,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
           <input
             type="text"
             className="w-full p-2 bg-[#393A3E] text-white rounded-md border-none"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={created_by}
+            onChange={(e) => setCreatedBy(e.target.value)}
             required
           />
         </div>
@@ -71,8 +65,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
           <textarea
             className="w-full p-2 bg-[#393A3E] text-white rounded-md border-none"
             rows={3}
-            value={likes}
-            onChange={(e) => setLikes(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             required
           />
         </div>
@@ -81,8 +75,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
           <textarea
             className="w-full p-2 bg-[#393A3E] text-white rounded-md border-none"
             rows={3}
-            value={improvements}
-            onChange={(e) => setImprovements(e.target.value)}
+            value={suggestion}
+            onChange={(e) => setSuggestion(e.target.value)}
             required
           />
         </div>
