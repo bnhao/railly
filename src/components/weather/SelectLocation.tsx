@@ -1,43 +1,33 @@
 import { ChangeEvent, JSX, useEffect, useState } from "react";
 import { forecastType } from "@/app/types";
-import { getWindDirection } from "@/app/helpers";
 import { Chart as ChartJs, defaults, CategoryScale } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
 import { Task } from "@/app/schedule/page";
 
 ChartJs.register(CategoryScale);
 
+const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY; // Replace with your actual key
+
 type Props = {
-    forecastData: { [key: string]: forecastType | null };
     handleTrackChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-    predictWeatherData: { [key: string]: forecastType | null };
     track: string;
 };
 
-const SelectLocation = ({
-    handleTrackChange,
-    forecastData,
-    predictWeatherData,
-    track,
-}: Props): JSX.Element => {
+const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [forecastData, setForecastData] = useState<{ [key: string]: forecastType | null }>({});
     const [mapUrl, setMapUrl] = useState<string>("");
 
-    // Fetch Tasks
-    const fetchTasks = async () => {
-        const tasks = await fetch("/api/tasks").then((res) => res.json());
-        return tasks;
-    };
-
+    // Fetch tasks
     useEffect(() => {
-        const fetchAndSetTasks = async () => {
-            const tasks = await fetchTasks();
+        const fetchTasks = async () => {
+            const tasks = await fetch("/api/tasks").then((res) => res.json());
             setTasks(tasks);
         };
-        fetchAndSetTasks();
+        fetchTasks();
     }, []);
 
-    // Parse coordinates from the selected task
+    // Parse coordinates from task
     const parseCoordinates = (coordinates: string): [number, number] | null => {
         try {
             const cleaned = coordinates.replace(/{{|}}/g, "").replace(/\\/g, "").replace(/"/g, "");
@@ -49,7 +39,21 @@ const SelectLocation = ({
         }
     };
 
-    // Update Meteoblue map URL when the selected track changes
+    // Fetch weather data
+    const fetchWeather = async (lat: number, lon: number) => {
+        try {
+            const res = await fetch(
+                `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
+            );
+            const data = await res.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching weather data:", error);
+            return null;
+        }
+    };
+
+    // Update Meteoblue map and fetch weather when track changes
     useEffect(() => {
         const selectedTask = tasks.find((task) => task.track_id === track);
         if (selectedTask?.coordinates) {
@@ -59,11 +63,19 @@ const SelectLocation = ({
                 setMapUrl(
                     `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
                 );
+
+                // Fetch weather data
+                fetchWeather(lat, lon).then((data) => {
+                    setForecastData((prev) => ({
+                        ...prev,
+                        [track]: data, // Store weather data by track ID
+                    }));
+                });
             }
         }
     }, [track, tasks]);
 
-    const selectedForecast = track ? forecastData[track] : null;
+    const selectedForecast = forecastData[track];
 
     return (
         <div className="bg-black text-white min-h-screen">
@@ -71,9 +83,7 @@ const SelectLocation = ({
                 {/* Current forecast per track */}
                 <div className="col-span-4 space-y-4">
                     <div className="bg-emerald-950 p-4 rounded">
-                        <h2 className="text-lg font-semibold">
-                            Current Forecast Per Track
-                        </h2>
+                        <h2 className="text-lg font-semibold">Current Forecast Per Track</h2>
                     </div>
 
                     {tasks.map((task, i) => {
@@ -81,11 +91,9 @@ const SelectLocation = ({
                         return (
                             <div key={i} className="bg-gray-800 p-4 rounded-[10px]">
                                 <h3 className="font-bold">
-                                    {`Track ${i + 1} - ${task.track_id} (${forecast?.list[0].weather.main ?? "-"})`}
+                                    {`Track ${i + 1} - ${task.track_id} (${forecast?.list?.[0]?.weather?.[0]?.main ?? "-"})`}
                                 </h3>
-                                <p>
-                                    Wind Speed: {forecast?.list?.[0]?.wind?.speed ?? "-"} km/h
-                                </p>
+                                <p>Wind Speed: {forecast?.list?.[0]?.wind?.speed ?? "-"} km/h</p>
                                 <p>Temperature: {forecast?.list?.[0]?.main?.temp ?? "-"}°C</p>
                                 <p>Feels Like: {forecast?.list?.[0]?.main?.feels_like ?? "-"}°C</p>
                                 <p>Humidity: {forecast?.list?.[0]?.main?.humidity ?? "-"}%</p>
@@ -142,7 +150,7 @@ const SelectLocation = ({
                             </div>
                         </div>
 
-                        {/* Temperature */}
+                        {/* Temperature Chart */}
                         <div className="col-span-12">
                             <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded">
                                 Temperature for Selected Track
@@ -150,14 +158,17 @@ const SelectLocation = ({
                             <div className="overflow-x-auto bg-gray-800 rounded-[10px] mt-4 p-4">
                                 <Line
                                     data={{
-                                        labels: predictWeatherData[track]?.list.map(
-                                            (entry) => entry.timestamp.split(" ")[1]
+                                        labels: selectedForecast?.list.map((entry) =>
+                                            new Date(entry.dt * 1000).toLocaleTimeString([], {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })
                                         ) || [],
                                         datasets: [
                                             {
                                                 label: "Temperature",
-                                                data: predictWeatherData[track]?.list.map(
-                                                    (entry) => entry.temperature.current
+                                                data: selectedForecast?.list.map(
+                                                    (entry) => entry.main.temp
                                                 ) || [],
                                                 borderColor: "rgba(75, 192, 192, 1)",
                                                 backgroundColor: "rgba(75, 192, 192, 0.2)",
