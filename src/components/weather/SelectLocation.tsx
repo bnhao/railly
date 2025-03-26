@@ -53,27 +53,52 @@ const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
         }
     };
 
-    // Update Meteoblue map and fetch weather when track changes
-    useEffect(() => {
-        const selectedTask = tasks.find((task) => task.track_id === track);
-        if (selectedTask?.coordinates) {
-            const coordinates = parseCoordinates(selectedTask.coordinates);
-            if (coordinates) {
-                const [lat, lon] = coordinates;
-                setMapUrl(
-                    `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
-                );
+    // // Update Meteoblue map and fetch weather when track changes
+    // useEffect(() => {
+    //     const selectedTask = tasks.find((task) => task.track_id === track);
+    //     if (selectedTask?.coordinates) {
+    //         const coordinates = parseCoordinates(selectedTask.coordinates);
+    //         if (coordinates) {
+    //             const [lat, lon] = coordinates;
+    //             setMapUrl(
+    //                 `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
+    //             );
 
-                // Fetch weather data
-                fetchWeather(lat, lon).then((data) => {
-                    setForecastData((prev) => ({
-                        ...prev,
-                        [track]: data, // Store weather data by track ID
-                    }));
-                });
+    //             // Fetch weather data
+    //             fetchWeather(lat, lon).then((data) => {
+    //                 setForecastData((prev) => ({
+    //                     ...prev,
+    //                     [track]: data, // Store weather data by track ID
+    //                 }));
+    //             });
+    //         }
+    //     }
+    // }, [track, tasks]);
+    useEffect(() => {
+        const fetchAllForecasts = async () => {
+            if (tasks.length > 0) {
+                const updatedForecastData: { [key: string]: forecastType | null } = {};
+
+                for (const task of tasks) {
+                    if (task.coordinates) {
+                        const coordinates = parseCoordinates(task.coordinates);
+                        if (coordinates) {
+                            const [lat, lon] = coordinates;
+                            setMapUrl(
+                                `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
+                            );
+                            const data = await fetchWeather(lat, lon);
+                            updatedForecastData[task.track_id] = data;
+                        }
+                    }
+                }
+
+                setForecastData(updatedForecastData);
             }
-        }
-    }, [track, tasks]);
+        };
+
+        fetchAllForecasts();
+    }, [tasks]);
 
     const selectedForecast = forecastData[track];
 
