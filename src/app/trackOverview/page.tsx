@@ -1,7 +1,6 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Nav from "@/components/navbar";
-// import CombinedMap from "@/components/trackOverViewComponents/CombinedMap";
 import RailwayMap from "@/components/railwayMap";
 import TrackMaintenanceChart from "@/components/trackOverViewComponents/TrackMaintenanceChart";
 import TrackDetailsTable from "@/components/trackOverViewComponents/TrackDetailsTable";
@@ -12,22 +11,38 @@ import {
   trackMaintenanceData,
   trackCapacityData,
 } from "@/data/trackData";
-import { trackCoordinates } from "@/data/trackLocations";
-import {
-  CHART_LABELS,
-  CHART_BACKGROUND_COLORS,
-  CHART_OPTIONS,
-} from "@/data/chartConfig"; // ✅ Import constants
+import { CHART_LABELS, CHART_BACKGROUND_COLORS, CHART_OPTIONS } from "@/data/chartConfig";
 import { Task } from "../schedule/page";
 
 export default function TrackOverview() {
   const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedTrack, setSelectedTrack] = useState<string>("Track 1");
+  const [selectedTrack, setSelectedTrack] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [favoriteTracks, setFavoriteTracks] = useState<string[]>([]);
   const [selectedFeature, setSelectedFeature] = useState<{ properties: Record<string, any> } | null>(null);
-
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedTrackDetails, setSelectedTrackDetails] = useState<Task | null>(null);
+
+  // Fetch Tasks
+  const fetchTasks = async () => {
+    const tasks = await fetch("/api/tasks").then((res) => res.json());
+    return tasks;
+  };
+
+  useEffect(() => {
+    const fetchAndSetTasks = async () => {
+      const tasks = await fetchTasks();
+      setTasks(tasks);
+    };
+    fetchAndSetTasks();
+  }, []);
+
+  // Handle track selection
+  const handleTrackSelection = (trackId: string) => {
+    setSelectedTrack(trackId);
+    const trackDetails = tasks.find((task) => task.track_id === trackId);
+    setSelectedTrackDetails(trackDetails || null);
+  };
 
   // Handle toggling favorites
   const toggleFavorite = () => {
@@ -38,43 +53,20 @@ export default function TrackOverview() {
     );
   };
 
-  // Check if selected track is in favorites
   const isFavorite = favoriteTracks.includes(selectedTrack);
-
-  // Handle favorite track selection
-  // const handleFavoriteSelect = (track: string) => {
-  //   setSelectedTrack(track);
-  //   setSearchTerm(""); // Clear the search bar
-  // };
 
   // Prepare maintenance history data for the selected track
   const selectedMaintenanceData = trackMaintenanceData[selectedTrack];
   const maintenanceHistoryData = {
-    labels: CHART_LABELS, // ✅ Use chart labels from config
+    labels: CHART_LABELS,
     datasets: [
       {
         label: `${selectedTrack} Maintenance Count`,
         data: selectedMaintenanceData,
-        backgroundColor: CHART_BACKGROUND_COLORS, // ✅ Use colors from config
+        backgroundColor: CHART_BACKGROUND_COLORS,
       },
     ],
   };
-
-  //Fetch Tasks
-  const fetchTasks = async () => {
-    const tasks = await fetch("/api/tasks").then((res) => res.json());
-    return tasks;
-  };
-
-  useEffect(() => {
-      const fetchAndSetTasks = async () => {
-        const tasks = await fetchTasks();
-        setTasks(tasks);
-      };
-      fetchAndSetTasks();
-    }, []);
-    
-
 
   return (
     <div className="flex">
@@ -84,7 +76,7 @@ export default function TrackOverview() {
           <div className="mb-4 mt-7">
             <SearchBar
               tracks={Object.keys(trackDetails)}
-              onTrackSelect={(track) => setSelectedTrack(track)}
+              onTrackSelect={(track) => handleTrackSelection(track)}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
             />
@@ -92,10 +84,7 @@ export default function TrackOverview() {
 
           <div className="mb-4 flex gap-4 items-center">
             <div>
-              <label
-                htmlFor="date"
-                className="block mb-1 text-darkgrey font-medium"
-              >
+              <label htmlFor="date" className="block mb-1 text-darkgrey font-medium">
                 Select Date:
               </label>
               <input
@@ -109,18 +98,16 @@ export default function TrackOverview() {
           </div>
 
           <div className="mt-1">
-            <label
-              htmlFor="favorites"
-              className="block mb-1 text-darkgrey font-medium"
-            >
+            <label htmlFor="favorites" className="block mb-1 text-darkgrey font-medium">
               Current Tracks:
             </label>
             <select
               id="favorites"
               className="p-2 border rounded-md text-black"
               value={selectedTrack}
-              onChange={(e) => setSelectedTrack(e.target.value)}
+              onChange={(e) => handleTrackSelection(e.target.value)}
             >
+              <option value="">Select a Track</option>
               {tasks.map((task) => (
                 <option key={task.track_id} value={task.track_id}>
                   {task.track_id}
@@ -132,10 +119,7 @@ export default function TrackOverview() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 space-y-6">
-            <TrackMaintenanceChart
-              data={maintenanceHistoryData}
-              options={CHART_OPTIONS}
-            />
+            <TrackMaintenanceChart data={maintenanceHistoryData} options={CHART_OPTIONS} />
             {selectedFeature ? (
               <TrackDetailsTable
                 details={selectedFeature.properties}
@@ -153,12 +137,24 @@ export default function TrackOverview() {
             <div className="h-[400px] rounded-md bg-gray-200 overflow-hidden">
               <RailwayMap onFeatureSelect={setSelectedFeature} />
             </div>
-            <TrackCapacityChart
-              data={trackCapacityData}
-              options={CHART_OPTIONS}
-            />
+            <TrackCapacityChart data={trackCapacityData} options={CHART_OPTIONS} />
           </div>
         </div>
+
+        {/* Selected Track Details */}
+        {selectedTrackDetails && (
+          <div className="mt-8 p-4 bg-gray-800 rounded-md text-white">
+            <h2 className="text-lg font-semibold">Selected Track Details</h2>
+            <p><strong>Track ID:</strong> {selectedTrackDetails.track_id}</p>
+            <p><strong>Status:</strong> {selectedTrackDetails.status}</p>
+            <p><strong>Title:</strong> {selectedTrackDetails.title}</p>
+            <p><strong>Description:</strong> {selectedTrackDetails.description}</p>
+            <p><strong>Start Date:</strong> {selectedTrackDetails.start_date}</p>
+            <p><strong>End Date:</strong> {selectedTrackDetails.end_date}</p>
+            <p><strong>Assigned To:</strong> {selectedTrackDetails.assigned_to}</p>
+            <p><strong>Priority:</strong> {selectedTrackDetails.priority}</p>
+          </div>
+        )}
       </div>
     </div>
   );
