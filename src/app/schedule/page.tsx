@@ -217,7 +217,30 @@ export default function Schedule() {
       console.error("Error adding task:", error);
     }
     console.log("Request data being sent:", JSON.stringify(newTask, null, 2));
+
+    try{
+      const response = await fetch("/api/history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add task to history");
+      }
+
+      const createdTask = await response.json();
+
+      setTasks((prevTasks) => [...prevTasks, createdTask]);
+
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
   };
+
 
   const handleDeleteTask = async (taskId: number) => {
     try {
@@ -313,7 +336,9 @@ export default function Schedule() {
                     <th className="border border-gray-800">Title</th>
                     <th className="border border-gray-800">Description</th>
                     <th className="border border-gray-800">Start Date</th>
+                    <th className="border border-gray-800">Start Time</th>
                     <th className="border border-gray-800">End Date</th>
+                    <th className="border border-gray-800">End Time</th>
                     <th className="border border-gray-800">Assigned To</th>
                     <th className="border border-gray-800">Priority</th>
                     <th className="border border-gray-800">Midpoint Coordinates</th>
@@ -328,7 +353,9 @@ export default function Schedule() {
                       <td className="border border-gray-300">{task.title}</td>
                       <td className="border border-gray-300">{task.description}</td>
                       <td className="border border-gray-300">{task.start_date}</td>
+                      <td className="border border-gray-300">{task.start_time}</td>
                       <td className="border border-gray-300">{task.end_date}</td>
+                      <td className="border border-gray-300">{task.end_time}</td>
                       <td className="border border-gray-300">{task.assigned_to}</td>
                       <td className="border border-gray-300">{task.priority}</td>
                       <td>{task.coordinates ? JSON.stringify(task.coordinates) : "N/A"}</td>

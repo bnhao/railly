@@ -22,6 +22,7 @@ export default function TrackOverview() {
   const [selectedFeature, setSelectedFeature] = useState<{ properties: Record<string, any> } | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTrackDetails, setSelectedTrackDetails] = useState<Task | null>(null);
+  const [trackHistory, setTrackHistory] = useState<number[]>([]);
 
   // Fetch Tasks
   const fetchTasks = async () => {
@@ -42,6 +43,10 @@ export default function TrackOverview() {
     setSelectedTrack(trackId);
     const trackDetails = tasks.find((task) => task.track_id === trackId);
     setSelectedTrackDetails(trackDetails || null);
+
+    // Update track history based on the selected track
+    const historyData = trackMaintenanceData[trackId] || [];
+    setTrackHistory(historyData);
   };
 
   // Handle toggling favorites
@@ -56,13 +61,12 @@ export default function TrackOverview() {
   const isFavorite = favoriteTracks.includes(selectedTrack);
 
   // Prepare maintenance history data for the selected track
-  const selectedMaintenanceData = trackMaintenanceData[selectedTrack];
   const maintenanceHistoryData = {
     labels: CHART_LABELS,
     datasets: [
       {
         label: `${selectedTrack} Maintenance Count`,
-        data: selectedMaintenanceData,
+        data: trackHistory,
         backgroundColor: CHART_BACKGROUND_COLORS,
       },
     ],
