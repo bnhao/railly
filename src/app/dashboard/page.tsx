@@ -30,7 +30,6 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedFeatture, setSelectedFeature] = useState(null);
   const { forecastData } = useForecast();
-  const router = useRouter();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 

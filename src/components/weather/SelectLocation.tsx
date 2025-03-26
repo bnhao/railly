@@ -3,7 +3,6 @@ import { forecastType } from "@/app/types";
 import { getWindDirection } from "@/app/helpers";
 import { Chart as ChartJs, defaults, CategoryScale } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
-import WeatherMap from "@/components/weather/meteo-maps";
 import { Task } from "@/app/schedule/page";
 
 ChartJs.register(CategoryScale);
@@ -12,15 +11,17 @@ type Props = {
     forecastData: { [key: string]: forecastType | null };
     handleTrackChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     predictWeatherData: { [key: string]: forecastType | null };
+    track: string;
 };
 
 const SelectLocation = ({
     handleTrackChange,
     forecastData,
     predictWeatherData,
+    track,
 }: Props): JSX.Element => {
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [track, setTrack] = useState<string>("");
+    const [mapUrl, setMapUrl] = useState<string>("");
 
     // Fetch Tasks
     const fetchTasks = async () => {
@@ -36,12 +37,31 @@ const SelectLocation = ({
         fetchAndSetTasks();
     }, []);
 
-    // Handle track selection
-    const handleTrackChangeInternal = (e: ChangeEvent<HTMLSelectElement>) => {
-        const selectedTrackId = e.target.value;
-        setTrack(selectedTrackId);
-        handleTrackChange(e);  // Pass up to parent (if needed)
+    // Parse coordinates from the selected task
+    const parseCoordinates = (coordinates: string): [number, number] | null => {
+        try {
+            const cleaned = coordinates.replace(/{{|}}/g, "").replace(/\\/g, "").replace(/"/g, "");
+            const [lon, lat] = cleaned.split(",");
+            return [parseFloat(lat.trim()), parseFloat(lon.trim())];
+        } catch (error) {
+            console.error("Error parsing coordinates:", error);
+            return null;
+        }
     };
+
+    // Update Meteoblue map URL when the selected track changes
+    useEffect(() => {
+        const selectedTask = tasks.find((task) => task.track_id === track);
+        if (selectedTask?.coordinates) {
+            const coordinates = parseCoordinates(selectedTask.coordinates);
+            if (coordinates) {
+                const [lat, lon] = coordinates;
+                setMapUrl(
+                    `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
+                );
+            }
+        }
+    }, [track, tasks]);
 
     const selectedForecast = track ? forecastData[track] : null;
 
@@ -83,7 +103,7 @@ const SelectLocation = ({
                             id="track"
                             className="bg-gray-800 text-white border p-0.5 rounded cursor-pointer hover:bg-gray-700 transition"
                             value={track}
-                            onChange={handleTrackChangeInternal}
+                            onChange={handleTrackChange}
                         >
                             <option value="">Select a Track</option>
                             {tasks.map((task) => (
@@ -95,62 +115,32 @@ const SelectLocation = ({
                     </div>
 
                     <div className="grid grid-cols-12 gap-6">
-                        {/* Wind Direction */}
-                        <div className="col-span-6">
+                        {/* Weather Map */}
+                        <div className="col-span-12">
                             <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded">
-                                Wind Direction for Selected Track
+                                Meteoblue Weather Map for Selected Track
                             </h2>
-                            <div className="font-bold text-5xl h-40 bg-gray-800 rounded-[10px] mt-4 flex items-center justify-center">
-                                {selectedForecast?.list?.[0]?.wind?.deg !== undefined
-                                    ? `${getWindDirection(
-                                        Math.round(selectedForecast.list[0].wind.deg)
-                                    )}`
-                                    : "No data"}
-                            </div>
-
-                            {/* Wind Speed */}
-                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded mt-6">
-                                Wind Speed for Selected Track
-                            </h2>
-                            <div className="bg-gray-800 rounded-[10px] mt-4 p-3 flex items-center justify-center">
-                                <Line
-                                    data={{
-                                        labels: predictWeatherData[track]?.list.map(
-                                            (entry) => entry.timestamp.split(" ")[1]
-                                        ) || [],
-                                        datasets: [
-                                            {
-                                                label: "Wind Speed",
-                                                data: predictWeatherData[track]?.list.map(
-                                                    (entry) => entry.wind.speed
-                                                ) || [],
-                                                borderColor: "rgba(75, 192, 192, 1)",
-                                                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                                                borderWidth: 2,
-                                                pointBackgroundColor: "rgba(75, 192, 192, 1)",
-                                                pointBorderColor: "#fff",
-                                                pointRadius: 5,
-                                                pointHoverRadius: 7,
-                                                fill: true,
-                                                tension: 0.4,
-                                            },
-                                        ],
-                                    }}
-                                    options={{
-                                        maintainAspectRatio: false,
-                                        scales: {
-                                            x: { ticks: { color: "white" } },
-                                            y: { ticks: { color: "white" }, beginAtZero: true },
-                                        },
-                                    }}
-                                />
+                            <div className="mt-4">
+                                {mapUrl ? (
+                                    <iframe
+                                        src={mapUrl}
+                                        frameBorder="0"
+                                        scrolling="no"
+                                        sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+                                        style={{
+                                            width: "100%",
+                                            height: "420px",
+                                            borderRadius: "10px",
+                                        }}
+                                        title="Meteoblue Weather Map"
+                                    ></iframe>
+                                ) : (
+                                    <p className="text-gray-500 text-center">
+                                        No map available for the selected track.
+                                    </p>
+                                )}
                             </div>
                         </div>
-
-                        {/* Weather Map */}
-                        {/* <div className="col-span-6">
-                            <WeatherMap trackId={track} />
-                        </div> */}
 
                         {/* Temperature */}
                         <div className="col-span-12">

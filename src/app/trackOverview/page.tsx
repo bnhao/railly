@@ -25,7 +25,7 @@ export default function TrackOverview() {
   const [selectedTrack, setSelectedTrack] = useState<string>("Track 1");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [favoriteTracks, setFavoriteTracks] = useState<string[]>([]);
-  const [selectedFeature, setSelectedFeature] = useState(null);
+  const [selectedFeature, setSelectedFeature] = useState<{ properties: Record<string, any> } | null>(null);
 
   const [tasks, setTasks] = useState<Task[]>([]);
 
