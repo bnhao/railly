@@ -22,7 +22,7 @@ export default function TrackOverview() {
   const [selectedFeature, setSelectedFeature] = useState<{ properties: Record<string, any> } | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTrackDetails, setSelectedTrackDetails] = useState<Task | null>(null);
-  const [trackHistory, setTrackHistory] = useState<number[]>([]);
+  const [trackHistory, setTrackHistory] = useState<{ label: string; value: number; }[]>([]);
 
   // Fetch Tasks
   const fetchTasks = async () => {
@@ -41,13 +41,51 @@ export default function TrackOverview() {
   // Handle track selection
   const handleTrackSelection = (trackId: string) => {
     setSelectedTrack(trackId);
+  
     const trackDetails = tasks.find((task) => task.track_id === trackId);
     setSelectedTrackDetails(trackDetails || null);
-
-    // Update track history based on the selected track
-    const historyData = trackMaintenanceData[trackId] || [];
-    setTrackHistory(historyData);
+  
+    // Fetch history from API
+    fetch(`/api/history?track_id=${trackId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Raw History Data:", data); // Debugging output
+  
+        // Filter only relevant track data (ensure correct counting)
+        const filteredData = data.filter((entry) => entry.track_id === trackId);
+  
+        // Create a mapping of months to the count of maintenance occurrences
+        const historyByMonth: Record<string, number> = {};
+  
+        filteredData.forEach((entry) => {
+          const date = new Date(entry.start_date);
+          const monthLabel = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; // Format YYYY-MM
+          
+          // Increment occurrence count
+          historyByMonth[monthLabel] = (historyByMonth[monthLabel] || 0) + 1;
+        });
+  
+        // Convert grouped data into chart format with month names
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const formattedData = Object.entries(historyByMonth)
+          .map(([month, count]) => {
+            const [year, monthNumber] = month.split("-");
+            const monthName = monthNames[parseInt(monthNumber, 10) - 1]; // Convert numeric month to name
+            return {
+              label: `${monthName} ${year}`, // Format as "Feb 2025"
+              value: count, // Number of maintenance tasks in that month
+              sortKey: `${year}-${monthNumber}`, // Add a sortable key
+            };
+          })
+          .sort((a, b) => a.sortKey.localeCompare(b.sortKey)); // Sort by the sortable key
+  
+        console.log("Formatted and Sorted Track History:", formattedData); // Debugging output
+        setTrackHistory(formattedData);
+      })
+      .catch((err) => console.error("Error fetching track history:", err));
   };
+  
+  
 
   // Handle toggling favorites
   const toggleFavorite = () => {
@@ -62,15 +100,18 @@ export default function TrackOverview() {
 
   // Prepare maintenance history data for the selected track
   const maintenanceHistoryData = {
-    labels: CHART_LABELS,
+    labels: trackHistory.map((entry) => entry.label), // Months (e.g., "Feb 2025", "Mar 2025")
     datasets: [
       {
-        label: `${selectedTrack} Maintenance Count`,
-        data: trackHistory,
+        label: `Maintenance History for ${selectedTrack}`,
+        data: trackHistory.map((entry) => entry.value), // Number of occurrences
         backgroundColor: CHART_BACKGROUND_COLORS,
       },
     ],
   };
+  
+
+  
 
   return (
     <div className="flex">
@@ -112,14 +153,15 @@ export default function TrackOverview() {
               onChange={(e) => handleTrackSelection(e.target.value)}
             >
               <option value="">Select a Track</option>
-              {tasks.map((task) => (
-                <option key={task.track_id} value={task.track_id}>
+              {tasks.map((task, index) => (
+                <option key={`${task.track_id}-${index}`} value={task.track_id}>
                   {task.track_id}
                 </option>
               ))}
             </select>
           </div>
         </div>
+        
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 space-y-6">
@@ -148,7 +190,7 @@ export default function TrackOverview() {
         {/* Selected Track Details */}
         {selectedTrackDetails && (
           <div className="mt-8 p-4 bg-gray-800 rounded-md text-white">
-            <h2 className="text-lg font-semibold">Selected Track Details</h2>
+            <h2 className="text-lg font-semibold">Selected Working Track Details</h2>
             <p><strong>Track ID:</strong> {selectedTrackDetails.track_id}</p>
             <p><strong>Status:</strong> {selectedTrackDetails.status}</p>
             <p><strong>Title:</strong> {selectedTrackDetails.title}</p>

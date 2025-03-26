@@ -43,6 +43,7 @@
     "react-icon": "^1.0.0",
     "react-icons": "^5.4.0",
     "react-leaflet": "^5.0.0",
+    "react-leaflet-cluster": "^2.1.0",
     "react-leaflet-markercluster": "^5.0.0-rc.0",
     "simplify-geojson": "^1.0.5"
   },

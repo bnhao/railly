@@ -232,9 +232,6 @@ export default function Schedule() {
       }
 
       const createdTask = await response.json();
-
-      setTasks((prevTasks) => [...prevTasks, createdTask]);
-
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error adding task:", error);
