@@ -8,7 +8,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo, memo } from "react";
 import "leaflet/dist/leaflet.css";
-import MarkerClusterGroup from "react-leaflet-cluster";
 
 // Dynamic imports for Leaflet components
 const MapContainer = dynamic(
@@ -26,6 +25,10 @@ const GeoJSON = dynamic(
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
+const MarkerClusterGroup = dynamic(
+  () => import("react-leaflet-cluster"),
+  { ssr: false }
+);
 
 // Ensure Leaflet is only loaded on the client side
 const isClient = typeof window !== "undefined";
