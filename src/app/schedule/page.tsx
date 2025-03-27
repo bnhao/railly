@@ -272,7 +272,7 @@ export default function Schedule() {
       createViewMonthGrid(),
       createViewMonthAgenda(),
     ],
-    defaultView: "week",
+    defaultView: "calendar",
     events,
     plugins: [eventsService],
     callbacks: {
@@ -286,6 +286,10 @@ export default function Schedule() {
       },
     },
   });
+  // pharse coordinates to string
+  const formatCoordinates = (coordinates: [number, number][]) => {
+    return coordinates.map((coord) => `${coord[0]},${coord[1]}`).join(";");
+  };
 
   if (loading) {
     return (
