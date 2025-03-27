@@ -50,7 +50,6 @@ export async function PUT(
   return NextResponse.json(updatedFeedback, { status: 200 });
 }
 
-// Delete a feedback entry
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string | number } }
@@ -63,4 +62,3 @@ export async function DELETE(
 
   return new Response(null, { status: 200 });
 }
-s;

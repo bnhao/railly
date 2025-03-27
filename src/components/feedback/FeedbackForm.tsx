@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { FeedbackData } from "@/app/types/feedback";
 
-
 interface FeedbackFormProps {
   initialData?: FeedbackData | null;
   onSubmit: (data: {
+    feedback_id?: number;
     created_by: string;
     description: string;
     suggestion: string;
@@ -36,7 +36,13 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
     e.preventDefault();
     if (!created_by || !description || !suggestion) return;
 
-    onSubmit({ created_by, description, suggestion });
+    onSubmit({
+      feedback_id: initialData?.feedback_id,
+      created_by,
+      description,
+      suggestion,
+    });
+
     setCreatedBy("");
     setDescription("");
     setSuggestion("");
