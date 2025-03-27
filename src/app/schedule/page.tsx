@@ -321,7 +321,6 @@ export default function Schedule() {
   } else {
     return (
       <div className="flex">
-        <Nav />
 
         {/* Modal for adding a task */}
         <Modal
