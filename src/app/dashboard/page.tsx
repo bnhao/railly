@@ -112,8 +112,8 @@ export default function Dashboard() {
     // <ProtectedRoute allowedRoles={["admin", "user"]}>
     <div className="flex">
       <Nav />
-      <div className="px-4 bg-background text-foreground w-full h-screen flex flex-col">
-        <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-4 h-full">
+      <div className="px-5 bg-background text-foreground w-full h-screen flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-5 h-full">
           <div
             className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer items-center justify-center overflow-hidden"
             onClick={() => router.push("/weather")}
@@ -173,9 +173,7 @@ export default function Dashboard() {
               </tbody>
             </table>
           </div>
-          <div className="lg:col-span-1 lg:row-span-1 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer">
-            <RailwayMap onFeatureSelect={setSelectedFeature} />
-          </div>
+          <RailwayMap onFeatureSelect={setSelectedFeature} />
         </div>
       </div>
       <AIchatbot />

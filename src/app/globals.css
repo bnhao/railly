@@ -169,7 +169,8 @@ body {
 .scrollbar-custom::-webkit-scrollbar-button {
   display: none; /* Remove arrows */
 }
-.leaflet-popup-content h3 {
+
+/* .leaflet-popup-content h3 {
   margin: 0 0 10px;
   font-size: 16px;
 }
@@ -177,3 +178,6 @@ body {
 .leaflet-popup-content p {
   margin: 5px 0;
 }
+
+.leaflet-container {
+} */
