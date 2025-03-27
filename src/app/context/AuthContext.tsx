@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const token = await auth.currentUser.getIdToken(true);
             return token;
         } catch (tokenError) {
+            console.error("Error fetching auth token:", tokenError);
             return null;
         }
     };
@@ -109,7 +110,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setRole(null);
             setPermissions([]);
         } catch (error) {
-            // Optionally handle logout error
+            console.error("Error logging out:", error);
         }
     };
 
