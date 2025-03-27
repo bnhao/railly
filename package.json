@@ -45,6 +45,7 @@
     "react-leaflet": "^5.0.0",
     "react-leaflet-cluster": "^2.1.0",
     "react-leaflet-markercluster": "^5.0.0-rc.0",
+    "react-toastify": "^11.0.5",
     "simplify-geojson": "^1.0.5"
   },
   "devDependencies": {

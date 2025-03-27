@@ -1,20 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, firestore } from "@/app/_utils/firebase";
-import type { User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { auth } from "@/app/_utils/firebase";
 import { FcEnteringHeavenAlive } from "react-icons/fc";
-import { BsArrowLeftShort } from "react-icons/bs";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { RiDashboardFill, RiLogoutCircleRLine } from "react-icons/ri";
 import { LuTrainTrack } from "react-icons/lu";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import { GrUserAdmin } from "react-icons/gr";
-import { IoIosHelpCircleOutline } from "react-icons/io";
 import { MdOutlineManageAccounts, MdOutlineFeedback } from "react-icons/md";
 import { usePathname } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function Nav() {
   const router = useRouter();
@@ -47,16 +44,15 @@ export default function Nav() {
       path: "/schedule",
     },
     { title: "Admin", id: 5, icon: <GrUserAdmin />, path: "/admin" },
-    { title: "Help", id: 6, icon: <IoIosHelpCircleOutline />, path: "/help" },
     {
       title: "Manage User",
-      id: 7,
+      id: 6,
       icon: <MdOutlineManageAccounts />,
       path: "/manageusers",
     },
     {
       title: "Feedback",
-      id: 8,
+      id: 7,
       icon: <MdOutlineFeedback />,
       path: "/feedback",
     },
@@ -67,6 +63,9 @@ export default function Nav() {
       await signOut(auth);
       router.push("/logIn");
     } catch (error) {
+      toast.error("Log out failed!", {
+        position: "top-center",
+      });
       console.error("Log out failed: ", error);
     }
   };
