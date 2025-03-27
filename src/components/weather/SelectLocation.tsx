@@ -111,7 +111,7 @@ const SelectLocation = ({ handleTrackChange, track, predictWeatherData }: Props)
     const selectedForecast = forecastData[track];
 
     return (
-        <div className="bg-black text-white min-h-screen">
+        <div className="bg-black text-white min-h-screen mt-zero p-3">
             <div className="grid grid-cols-12 gap-6">
                 {/* Current forecast per track */}
                 <div className="col-span-4 space-y-4">
@@ -167,7 +167,7 @@ const SelectLocation = ({ handleTrackChange, track, predictWeatherData }: Props)
                     <div className="grid grid-cols-12 gap-6">
                         {/* Wind Direction for Selected Track */}
                         <div className="col-span-6">
-                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded-2xl ">
+                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded ">
                                 Wind Direction for Selected Track
                             </h2>
                             <div className="font-bold text-5xl h-40 bg-gray-800 rounded-[10px] mt-4 flex items-center justify-center">
@@ -175,7 +175,7 @@ const SelectLocation = ({ handleTrackChange, track, predictWeatherData }: Props)
                                     ? `${getWindDirection(Math.round(selectedForecast.list[0].wind.deg))}`
                                     : 'No data'}
                             </div>
-                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded-2xl mt-4">
+                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded mt-4">
                                 Wind Speed for Selected Track
                             </h2>
                             <div className="h-[200px] bg-gray-800 rounded-[10px] p-3 mt-4 flex items-center justify-center">
