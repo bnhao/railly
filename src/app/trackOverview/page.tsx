@@ -8,6 +8,7 @@ import SearchBar from "@/components/trackOverViewComponents/SearchBar";
 import { trackDetails } from "@/data/trackData";
 import { CHART_BACKGROUND_COLORS, CHART_OPTIONS } from "@/data/chartConfig";
 import { Task } from "../schedule/page";
+import AIchatbot from "@/components/AIchatbot";
 
 export default function TrackOverview() {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -239,6 +240,7 @@ export default function TrackOverview() {
           </div>
         </div>
       </div>
+      <AIchatbot />
     </div>
   );
 }

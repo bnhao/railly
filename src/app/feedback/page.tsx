@@ -5,6 +5,7 @@ import FeedbackForm from "@/components/feedback/FeedbackForm";
 import { FeedbackData, initialFeedbackData } from "@/data/feedbackData";
 import { PlusCircle } from "lucide-react";
 import Nav from "@/components/navbar";
+import AIchatbot from "@/components/AIchatbot";
 
 export default function FeedbackPage() {
   const [feedbackList, setFeedbackList] =
@@ -100,6 +101,7 @@ export default function FeedbackPage() {
           </div>
         )}
       </div>
+      <AIchatbot />
     </div>
   );
 }

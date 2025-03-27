@@ -4,14 +4,14 @@ import React, { useState, FormEvent } from "react";
 import { useEffect } from "react";
 import Nav from "@/components/navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AIchatbot from "@/components/AIchatbot";
 
 /**
- * 
- * Sources used: 
- * https://webdev2-git-dv-dereksaits-projects.vercel.app/week-12/api-implementation 
- * https://github.com/warsylewicz/webdev2/blob/main/pages/week-12/api-implementation.mdx 
+ *
+ * Sources used:
+ * https://webdev2-git-dv-dereksaits-projects.vercel.app/week-12/api-implementation
+ * https://github.com/warsylewicz/webdev2/blob/main/pages/week-12/api-implementation.mdx
  */
-
 
 type User = {
   id: number;
@@ -143,100 +143,100 @@ export default function page() {
               </div>
             </div>
 
-          <table className="border-collapse border border-gray-800 w-full">
-            <thead>
-              <tr className="">
-                <th className="border border-gray-800 p-2">Name</th>
-                <th className="border border-gray-800 p-2">ID</th>
-                <th className="border border-gray-800 p-2">Email</th>
-                <th className="border border-gray-800 p-2">Role</th>
-                <th className="border border-gray-800 p-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-600">
-                  <td className="border border-gray-700 p-2 text-center">
-                    {user.name}
-                  </td>
-                  <td className="border border-gray-700 p-2 text-center">
-                    {user.id}
-                  </td>
-                  <td className="border border-gray-700 p-2 text-center">
-                    {user.email}
-                  </td>
-                  <td className="border border-gray-700 p-2 text-center">
-                    {user.role}
-                  </td>
-                  <td className="border border-gray-700 p-2 text-center space-x-2">
-                    <button
-                      onClick={() => handleEditUser(user)}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                    >
-                      Modify
-                    </button>
-                    <button
-                      onClick={() => deleteUser(user.id)}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                    >
-                      Delete
-                    </button>
-                  </td>
+            <table className="border-collapse border border-gray-800 w-full">
+              <thead>
+                <tr className="">
+                  <th className="border border-gray-800 p-2">Name</th>
+                  <th className="border border-gray-800 p-2">ID</th>
+                  <th className="border border-gray-800 p-2">Email</th>
+                  <th className="border border-gray-800 p-2">Role</th>
+                  <th className="border border-gray-800 p-2">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {isAddingUser && (
-            <div>
-              <h2>Add User</h2>
-              <form onSubmit={addUser}>
-                <input
-                  type="text"
-                  required
-                  className="border border-gray-800 text-black"
-                  placeholder="Name"
-                  value={newUser.name}
-                  onChange={(e) =>
-                    setNewUser({ ...newUser, name: e.target.value })
-                  }
-                />
-                <input
-                  type="email"
-                  required
-                  className="border border-gray-800 text-black"
-                  placeholder="Email"
-                  value={newUser.email}
-                  onChange={(e) =>
-                    setNewUser({ ...newUser, email: e.target.value })
-                  }
-                />
-                <select
-                  required
-                  className="border border-gray-800 text-black"
-                  value={newUser.role}
-                  onChange={(e) =>
-                    setNewUser({ ...newUser, role: e.target.value })
-                  }
-                >
-                  <option value="">Select Role</option>
-                  <option value="admin">Admin</option>
-                  <option value="user">User</option>
-                </select>
-                <button
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                  type="submit"
-                >
-                  Add User
-                </button>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </button>
-              </form>
-            </div>
-          )}
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-600">
+                    <td className="border border-gray-700 p-2 text-center">
+                      {user.name}
+                    </td>
+                    <td className="border border-gray-700 p-2 text-center">
+                      {user.id}
+                    </td>
+                    <td className="border border-gray-700 p-2 text-center">
+                      {user.email}
+                    </td>
+                    <td className="border border-gray-700 p-2 text-center">
+                      {user.role}
+                    </td>
+                    <td className="border border-gray-700 p-2 text-center space-x-2">
+                      <button
+                        onClick={() => handleEditUser(user)}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                      >
+                        Modify
+                      </button>
+                      <button
+                        onClick={() => deleteUser(user.id)}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {isAddingUser && (
+              <div>
+                <h2>Add User</h2>
+                <form onSubmit={addUser}>
+                  <input
+                    type="text"
+                    required
+                    className="border border-gray-800 text-black"
+                    placeholder="Name"
+                    value={newUser.name}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, name: e.target.value })
+                    }
+                  />
+                  <input
+                    type="email"
+                    required
+                    className="border border-gray-800 text-black"
+                    placeholder="Email"
+                    value={newUser.email}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, email: e.target.value })
+                    }
+                  />
+                  <select
+                    required
+                    className="border border-gray-800 text-black"
+                    value={newUser.role}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, role: e.target.value })
+                    }
+                  >
+                    <option value="">Select Role</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                  </select>
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                    type="submit"
+                  >
+                    Add User
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            )}
 
             {isEditingUser && selectedUser && (
               <div>
@@ -259,7 +259,10 @@ export default function page() {
                     placeholder="Email"
                     value={selectedUser.email}
                     onChange={(e) =>
-                      setSelectedUser({ ...selectedUser, email: e.target.value })
+                      setSelectedUser({
+                        ...selectedUser,
+                        email: e.target.value,
+                      })
                     }
                   />
                   <select
@@ -290,6 +293,7 @@ export default function page() {
             )}
           </div>
         </div>
+        <AIchatbot />
       </ProtectedRoute>
     );
   }
