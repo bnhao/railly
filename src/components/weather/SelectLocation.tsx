@@ -15,6 +15,12 @@ type Props = {
     predictWeatherData: { [key: string]: any };
 };
 
+const getWindDirection = (degree: number): string => {
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const index = Math.round(degree / 45) % 8;
+    return directions[index];
+};
+
 const SelectLocation = ({ handleTrackChange, track, predictWeatherData }: Props): JSX.Element => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [forecastData, setForecastData] = useState<{ [key: string]: forecastType | null }>({});
@@ -159,12 +165,20 @@ const SelectLocation = ({ handleTrackChange, track, predictWeatherData }: Props)
                     </div>
                     
                     <div className="grid grid-cols-12 gap-6">
-                        {/* Wind Speed for Selected Track */}
+                        {/* Wind Direction for Selected Track */}
                         <div className="col-span-6">
-                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded-2xl">
+                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded-2xl ">
+                                Wind Direction for Selected Track
+                            </h2>
+                            <div className="font-bold text-5xl h-40 bg-gray-800 rounded-[10px] mt-4 flex items-center justify-center">
+                                {selectedForecast?.list?.[0]?.wind?.deg !== undefined
+                                    ? `${getWindDirection(Math.round(selectedForecast.list[0].wind.deg))}`
+                                    : 'No data'}
+                            </div>
+                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded-2xl mt-4">
                                 Wind Speed for Selected Track
                             </h2>
-                            <div className="h-[420px] bg-gray-800 rounded-[10px] mt-4 flex items-center justify-center">
+                            <div className="h-[200px] bg-gray-800 rounded-[10px] p-3 mt-4 flex items-center justify-center">
                                 {selectedForecast ? (
                                     <Line
                                         data={{
