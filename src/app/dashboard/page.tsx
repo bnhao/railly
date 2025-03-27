@@ -1,15 +1,19 @@
 "use client";
 import { Loader } from "@googlemaps/js-api-loader";
 import React, { useEffect, useRef, useState } from "react";
-import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import Nav from "@/components/navbar";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import useForecast from "../hooks/useForecast";
 import { useRouter } from "next/navigation";
+import TrackCapacityChart from "@/components/trackOverViewComponents/TrackCapacityChart";
+import { CHART_OPTIONS } from "@/data/chartConfig";
+import { trackCapacityData } from "@/data/trackData";
+import AIchatbot from "@/components/AIchatbot";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import WeatherWidget from "@/components/weather/WeatherWidget";
+import RailwayMap from "@/components/railwayMap";
 
 
 export default function Dashboard() {
@@ -27,8 +31,8 @@ export default function Dashboard() {
   };
 
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedFeatture, setSelectedFeature] = useState(null);
   const { forecastData } = useForecast();
-  const router = useRouter();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -98,10 +102,6 @@ export default function Dashboard() {
   };
 
   // Dynamically import the CombinedMap component
-  const CombinedMap = dynamic(
-    () => import("@/components/trackOverViewComponents/CombinedMap"),
-    { ssr: false }
-  );
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -111,61 +111,6 @@ export default function Dashboard() {
     };
     fetchTasks();
   }, []);
-
-  // Mock data for track capacity (Line Chart)
-  const trackCapacityData = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
-    datasets: [
-      {
-        label: "Track 1",
-        data: [200, 220, 210, 250, 240, 230, 260, 300, 320, 350, 370, 400],
-        borderColor: "rgba(255, 99, 132, 1)",
-        fill: false,
-      },
-      {
-        label: "Track 2",
-        data: [170, 190, 220, 230, 250, 240, 250, 260, 270, 320, 330, 370],
-        borderColor: "rgba(54, 162, 235, 1)",
-        fill: false,
-      },
-      {
-        label: "Track 3",
-        data: [130, 170, 180, 200, 210, 180, 190, 220, 270, 300, 320, 340],
-        borderColor: "rgba(255, 206, 86, 1)",
-        fill: false,
-      },
-      {
-        label: "Track 4",
-        data: [150, 150, 160, 180, 190, 200, 220, 230, 250, 270, 290, 310],
-        borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
-      },
-      {
-        label: "Track 5",
-        data: [150, 145, 150, 160, 170, 190, 210, 230, 240, 260, 280, 300],
-        borderColor: "rgba(153, 102, 255, 1)",
-        fill: false,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-  };
 
   const forecast = forecastData["Banff"];
 
@@ -179,18 +124,26 @@ export default function Dashboard() {
               className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer items-center justify-center overflow-hidden"
               onClick={() => router.push("/weather")}
             >
+              <h3 className="text-center text-lg font-bold">
+                Weather Overview
+              </h3>
+              <h3>Banff</h3>
+              <p>Wind: {forecast?.list[0].wind.speed ?? "-"} km/h</p>
+              <p>Temperature: {forecast?.list[0].main.temp ?? "-"}°C</p>
+              <p>Humidity: {forecast?.list[0].main.humidity ?? "-"}%</p>
               <WeatherWidget />
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] hover:cursor-pointer"
+              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md pb-12 pt-2 pr-2 pl-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
               onClick={() => router.push("/trackOverview")}
             >
-              <h3 className="text-center text-lg font-bold">Track Capacity</h3>
-              <Line data={trackCapacityData} options={chartOptions} />
+              <TrackCapacityChart
+                data={trackCapacityData}
+                options={CHART_OPTIONS}
+              />
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
-              onClick={() => router.push("/schedule")}
+              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer "
             >
               <h3 className="text-center text-lg font-bold">Schedules</h3>{" "}
               <table className="border-collapse border border-gray-800 w-full">
@@ -198,18 +151,18 @@ export default function Dashboard() {
                   <tr>
                     <th>Order #</th>
                     <th>Track</th>
-                    <th>Date</th>
+                    <th>Priority</th>
                     <th>Assigned To</th>
                     <th>Progress</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-center">
                   {tasks.map((task) => (
                     <tr key={task.id}>
                       <td>{task.id}</td>
                       <td>{task.track_id}</td>
-                      <td>{task.due_date}</td>
-                      <td>{task.title}</td>
+                      <td>{task.priority}</td>
+                      <td>{task.assigned_to}</td>
                       <td>{task.status}</td>
                       <td>
                         <button
@@ -235,14 +188,13 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md bg-[#393A3E] hover:cursor-pointer"
-              onClick={() => router.push("/trackOverview")}
-            >
-              <CombinedMap selectedTrack="defaultTrack" />
+            <div className="lg:col-span-1 lg:row-span-1 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer">
+              <RailwayMap onFeatureSelect={setSelectedFeature} />
+
             </div>
           </div>
         </div>
+        <AIchatbot />
       </div>
     // </ProtectedRoute>
   );
