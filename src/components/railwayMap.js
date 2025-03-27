@@ -8,6 +8,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo, memo } from "react";
 import "leaflet/dist/leaflet.css";
+import { useRouter } from "next/navigation";
 
 // Dynamic imports for Leaflet components
 const MapContainer = dynamic(
@@ -50,6 +51,8 @@ const RailwayMap = ({ onFeatureSelect }) => {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     console.log("RailwayMap mounted.");
@@ -145,7 +148,13 @@ const RailwayMap = ({ onFeatureSelect }) => {
 
   // Render the map and popups
   return (
-    <div>
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => {
+        router.push("/trackOverview");
+      }}
+    >
       {isLoading && <div className="loading-spinner">Loading...</div>}
       {error && <div className="error-message">{error}</div>}
       <MapContainer
@@ -188,6 +197,11 @@ const RailwayMap = ({ onFeatureSelect }) => {
           </Popup>
         )}
       </MapContainer>
+      {isHovered && (
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+          Interactive railway map for monitoring routes.
+        </div>
+      )}
     </div>
   );
 };

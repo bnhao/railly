@@ -28,9 +28,16 @@ export default function Dashboard() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedFeatture, setSelectedFeature] = useState(null);
+  const [hoveredContainer, setHoveredContainer] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+  const descriptions: Record<string, string> = {
+    weather: "View the latest weather updates for railway operations.",
+    capacity: "Track capacity overview and congestion levels.",
+    schedules: "Manage and view the railway schedules and priorities.",
+  };
 
   // Initialize Google Maps
   useEffect(() => {
@@ -117,19 +124,37 @@ export default function Dashboard() {
           <div
             className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer items-center justify-center overflow-hidden"
             onClick={() => router.push("/weather")}
+            onMouseEnter={() => setHoveredContainer("weather")}
+            onMouseLeave={() => setHoveredContainer(null)}
           >
             <WeatherWidget />
+            {hoveredContainer === "weather" && (
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+                {descriptions.weather}
+              </div>
+            )}
           </div>
           <div
             className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md pb-12 pt-2 pr-2 pl-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
             onClick={() => router.push("/trackOverview")}
+            onMouseEnter={() => setHoveredContainer("capacity")}
+            onMouseLeave={() => setHoveredContainer(null)}
           >
             <TrackCapacityChart
               data={trackCapacityData}
               options={CHART_OPTIONS}
             />
+            {hoveredContainer === "capacity" && (
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+                {descriptions.capacity}
+              </div>
+            )}
           </div>
-          <div className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer ">
+          <div
+            className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
+            onMouseEnter={() => setHoveredContainer("schedules")}
+            onMouseLeave={() => setHoveredContainer(null)}
+          >
             <h3 className="text-center text-lg font-bold">Schedules</h3>{" "}
             <table className="border-collapse border border-gray-800 w-full">
               <thead>
@@ -172,6 +197,11 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+            {hoveredContainer === "schedules" && (
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+                {descriptions.schedules}
+              </div>
+            )}
           </div>
           <RailwayMap onFeatureSelect={setSelectedFeature} />
         </div>
