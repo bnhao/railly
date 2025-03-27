@@ -82,31 +82,6 @@ export default function Schedule() {
       return [];
     }
   };
-  useEffect(() => {
-    const fetchGeoJSON = async () => {
-      try {
-        const response = await fetch("/Alberta.geojson");
-        if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
-
-        const albertaGeoJSON = await response.json();
-
-        const coordinatesMap = albertaGeoJSON.features.reduce(
-          (acc: any, feature: any) => {
-            const trackId = feature.properties["@id"];
-            acc[trackId] = feature.geometry.coordinates;
-            return acc;
-          },
-          {}
-        );
-
-        setTrackCoordinates(coordinatesMap);
-      } catch (error) {
-        console.error("Error fetching GeoJSON:", error);
-      }
-    };
-
-    fetchGeoJSON();
-  }, []);
 
   useEffect(() => {
     const fetchGeoJSON = async () => {
