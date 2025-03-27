@@ -108,22 +108,6 @@ export default function Schedule() {
     fetchGeoJSON();
   }, []);
 
-  const calculateMidpoint = (coordinates: [number, number][]) => {
-    if (!coordinates || coordinates.length === 0) return null;
-
-    const numCoordinates = coordinates.length;
-
-    if (numCoordinates % 2 === 1) {
-      // Odd number of coordinates: return the middle coordinate
-      return coordinates[Math.floor(numCoordinates / 2)];
-    } else {
-      // Even number of coordinates: average the two middle coordinates
-      const mid1 = coordinates[numCoordinates / 2 - 1];
-      const mid2 = coordinates[numCoordinates / 2];
-      return [(mid1[0] + mid2[0]) / 2, (mid1[1] + mid2[1]) / 2];
-    }
-  };
-
   useEffect(() => {
     const fetchGeoJSON = async () => {
       try {
@@ -339,73 +323,6 @@ export default function Schedule() {
       <div className="flex">
         <Nav />
 
-        <div className="flex flex-col px-6 w-full">
-          <div className="text-white">
-            {/* Schedule-X Calendar */}
-            <div className="sx-react-calendar-wrapper w-full">
-              <ScheduleXCalendar calendarApp={calendar} />
-            </div>
-          </div>
-          {/* Task Table */}
-          <div className="mt-6">
-            <div className="flex justify-between">
-              <h1 className="text-2xl font-bold mb-4 text-white">
-                Scheduled Tasks
-              </h1>
-              <button
-                className="bg-blue-600 w-32 h-10 rounded-full cursor-pointer hover:bg-blue-500"
-                onClick={() => setIsModalOpen(true)}
-              >
-                Schedule
-              </button>
-            </div>
-            <table className="border-collapse border border-gray-800 w-full ">
-              <thead>
-                <tr>
-                  <th className="border border-gray-800">Order ID</th>
-                  <th className="border border-gray-800">Track ID</th>
-                  <th className="border border-gray-800">Status</th>
-                  <th className="border border-gray-800">Title</th>
-                  <th className="border border-gray-800">Description</th>
-                  <th className="border border-gray-800">Start Date</th>
-                  <th className="border border-gray-800">End Date</th>
-                  <th className="border border-gray-800">Assigned To</th>
-                  <th className="border border-gray-800">Priority</th>
-                  <th className="border border-gray-800">
-                    Midpoint Coordinates
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasks.map((task) => (
-                  <tr key={task.id}>
-                    <td className="border border-gray-300">#{task.id}</td>
-                    <td className="border border-gray-300">#{task.track_id}</td>
-                    <td className="border border-gray-300">{task.status}</td>
-                    <td className="border border-gray-300">{task.title}</td>
-                    <td className="border border-gray-300">
-                      {task.description}
-                    </td>
-                    <td className="border border-gray-300">
-                      {task.start_date}
-                    </td>
-                    <td className="border border-gray-300">{task.end_date}</td>
-                    <td className="border border-gray-300">
-                      {task.assigned_to}
-                    </td>
-                    <td className="border border-gray-300">{task.priority}</td>
-                    <td>
-                      {task.coordinates
-                        ? JSON.stringify(task.coordinates)
-                        : "N/A"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         {/* Modal for adding a task */}
         <Modal
           isOpen={isModalOpen}
@@ -435,14 +352,12 @@ export default function Schedule() {
 
           {/* Conditional Rendering for Calendar or Table View */}
           {viewMode === "calendar" ? (
-            <div className="sx-react-calendar-wrapper w-full h-[600px] mt-4">
+            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
               <ScheduleXCalendar calendarApp={calendar} />
             </div>
           ) : (
-            <div className="mt-8">
-              <h1 className="text-2xl font-bold mb-4 text-white">
-                Scheduled Tasks
-              </h1>
+            <div className="mt-8 w-full h-full flex-grow">
+              <h1 className="text-2xl font-bold mb-4 text-white">Scheduled Tasks</h1>
               <table className="border-collapse border border-gray-800 w-full">
                 <thead>
                   <tr>
