@@ -1,6 +1,6 @@
 /**
  * Sources used: chatGPT-o4
- * Prompted used: How do I intergrate leaflet with nextjs and get track details on the map.
+ * Prompted used: How do I integrate Leaflet with Next.js and get track details on the map.
  */
 
 "use client";
@@ -8,8 +8,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo, memo } from "react";
 import "leaflet/dist/leaflet.css";
-import MarkerClusterGroup from "react-leaflet-markercluster";
-// Dynamic imports
+
+// Dynamic imports for Leaflet components
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
@@ -25,11 +25,16 @@ const GeoJSON = dynamic(
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
+const MarkerClusterGroup = dynamic(
+  () => import("react-leaflet-cluster"),
+  { ssr: false }
+);
 
-// Initialize Leaflet
-let L;
-if (typeof window !== "undefined") {
-  L = require("leaflet");
+// Ensure Leaflet is only loaded on the client side
+const isClient = typeof window !== "undefined";
+const L = isClient ? require("leaflet") : null;
+
+if (L) {
   delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl: "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=",
@@ -37,7 +42,8 @@ if (typeof window !== "undefined") {
     shadowUrl: "",
   });
 }
-// Define the default position
+
+// Default map center (Alberta)
 const DEFAULT_POSITION = [51.0447, -114.0719];
 
 const RailwayMap = ({ onFeatureSelect }) => {
@@ -104,24 +110,18 @@ const RailwayMap = ({ onFeatureSelect }) => {
   };
 
   // Function to handle feature click
-  const onEachFeature = useMemo(() => {
-    return (feature, layer) => {
-      layer.on({
-        click: () => {
-          setSelectedFeature(feature);
-          onFeatureSelect(feature);
-        },
-      });
-    };
-  }, [onFeatureSelect]);
+  const onEachFeature = (feature, layer) => {
+    layer.on({
+      click: () => {
+        setSelectedFeature(feature);
+        onFeatureSelect(feature);
+      },
+    });
+  };
 
-  // Render the map
+  // Memoized GeoJSON layer
   const geoJsonLayer = useMemo(() => {
-    if (
-      !railwayData ||
-      !railwayData.features ||
-      railwayData.features.length === 0
-    ) {
+    if (!railwayData || !railwayData.features || railwayData.features.length === 0) {
       return null;
     }
     return (
@@ -131,14 +131,14 @@ const RailwayMap = ({ onFeatureSelect }) => {
     );
   }, [railwayData, selectedFeature]);
 
-  // Render the map component as well as popup
+  // Render the map and popups
   return (
     <div>
       {isLoading && <div className="loading-spinner">Loading...</div>}
       {error && <div className="error-message">{error}</div>}
       <MapContainer
         center={DEFAULT_POSITION}
-        zoom={13}
+        zoom={10}
         zoomControl={false}
         preferCanvas={true}
         updateWhenIdle={true}
@@ -152,20 +152,15 @@ const RailwayMap = ({ onFeatureSelect }) => {
         />
         {geoJsonLayer}
         {selectedFeature && selectedFeature.geometry && (
-          <Popup
-            position={getMidpoint(selectedFeature.geometry)}
-            onClose={() => setSelectedFeature(null)}
-          >
+          <Popup position={getMidpoint(selectedFeature.geometry)} onClose={() => setSelectedFeature(null)}>
             <div>
               <h3>Railway Details</h3>
               <ul>
-                {Object.entries(selectedFeature.properties).map(
-                  ([key, value]) => (
-                    <li key={key}>
-                      <strong>{key}:</strong> {value}
-                    </li>
-                  )
-                )}
+                {Object.entries(selectedFeature.properties).map(([key, value]) => (
+                  <li key={key}>
+                    <strong>{key}:</strong> {value}
+                  </li>
+                ))}
               </ul>
             </div>
           </Popup>
@@ -174,4 +169,5 @@ const RailwayMap = ({ onFeatureSelect }) => {
     </div>
   );
 };
+
 export default memo(RailwayMap);

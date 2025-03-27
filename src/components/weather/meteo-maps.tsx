@@ -1,53 +1,66 @@
-type WeathermapProps = {
-    track: string
-}
+"use client";
+import { useEffect, useState } from "react";
 
-export const meteoMaps = [
-    {
-        "city": "Vancouver",
-        "link": "https://www.meteoblue.com/en/weather/maps/widget/vancouver_canada_6173331?windAnimation=1&gust=1&satellite=1&cloudsAndPrecipitation=1&temperature=1&sunshine=1&extremeForecastIndex=1&geoloc=fixed&tempunit=C&windunit=km%252Fh&lengthunit=metric&zoom=5&autowidth=auto"
-    },
-    {
-        "city": "Banff",
-        "link": "https://www.meteoblue.com/en/weather/maps/widget/banff_canada_5892532?windAnimation=1&gust=1&satellite=1&cloudsAndPrecipitation=1&temperature=1&sunshine=1&extremeForecastIndex=1&geoloc=fixed&tempunit=C&windunit=km%252Fh&lengthunit=metric&zoom=5&autowidth=auto"
-    },
-    {
-        "city": "Edmonton",
-        "link": "https://www.meteoblue.com/en/weather/maps/widget/edmonton_canada_5946768?windAnimation=1&gust=1&satellite=1&cloudsAndPrecipitation=1&temperature=1&sunshine=1&extremeForecastIndex=1&geoloc=fixed&tempunit=C&windunit=km%252Fh&lengthunit=metric&zoom=5&autowidth=auto"
-    },
-    {
-        "city": "Jasper",
-        "link": "https://www.meteoblue.com/en/weather/maps/widget/jasper_canada_6354954?windAnimation=1&gust=1&satellite=1&cloudsAndPrecipitation=1&temperature=1&sunshine=1&extremeForecastIndex=1&geoloc=fixed&tempunit=C&windunit=km%252Fh&lengthunit=metric&zoom=5&autowidth=auto"
-    },
-    {
-        "city": "Canmore",
-        "link": "https://www.meteoblue.com/en/weather/maps/widget/canmore_canada_5914894?windAnimation=1&gust=1&satellite=1&cloudsAndPrecipitation=1&temperature=1&sunshine=1&extremeForecastIndex=1&geoloc=fixed&tempunit=C&windunit=km%252Fh&lengthunit=metric&zoom=5&autowidth=auto"
-    },
-    {
-        "city": "Red Deer",
-        "link": "https://www.meteoblue.com/en/weather/maps/widget/red-deer_canada_6118158?windAnimation=1&gust=1&satellite=1&cloudsAndPrecipitation=1&temperature=1&sunshine=1&extremeForecastIndex=1&geoloc=fixed&tempunit=C&windunit=km%252Fh&lengthunit=metric&zoom=5&autowidth=auto"
-    }
-];
+type WeathermapProps = {
+    track: string; // The selected track ID
+};
+
+export type Task = {
+    id: number;
+    title: string;
+    description: string;
+    status: string;
+    assigned_to: number;
+    created_by: string;
+    due_date: string;
+    priority: string;
+    start_date: string;
+    start_time: string;
+    end_date: string;
+    end_time: string;
+    track_id: string; // Track ID to match
+    coordinates: [number, number][]; // Coordinates for the track
+};
 
 export default function WeatherMap({ track }: WeathermapProps) {
-    const selectedMap = meteoMaps.find((map) => map.city === track)?.link;
+    const [tasks, setTasks] = useState<Task[]>([]);
+
+    // Fetch tasks from the backend
+    const fetchTasks = async () => {
+        const tasks = await fetch("/api/tasks").then((res) => res.json());
+        return tasks;
+    };
+
+    useEffect(() => {
+        const fetchAndSetTasks = async () => {
+            const tasks = await fetchTasks();
+            setTasks(tasks);
+        };
+        fetchAndSetTasks();
+    }, []);
+
+    // Find the task that matches the selected track ID
+    const selectedTask = tasks.find((task) => task.track_id === track);
 
     return (
         <div className="col-span-6 h-full">
             <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded">
-                Map View for Selected Track
+                Meteoblue Weather Map for Selected Track
             </h2>
             <div className="mt-4">
-                {selectedMap ? (
+                {selectedTask?.coordinates && selectedTask.coordinates.length > 0 ? (
                     <iframe
-                        src={selectedMap}
+                        src={`https://www.meteoblue.com/en/weather/maps/widget?lat=${selectedTask.coordinates[0][0]}&lon=${selectedTask.coordinates[0][1]}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`}
                         frameBorder="0"
                         scrolling="no"
                         sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
                         style={{ width: "100%", height: "420px", borderRadius: "10px" }}
+                        title="Meteoblue Weather Map"
                     ></iframe>
                 ) : (
-                    <p className="text-gray-500 text-center">No map available for the selected track.</p>
+                    <p className="text-gray-500 text-center">
+                        No map available for the selected track.
+                    </p>
                 )}
             </div>
         </div>

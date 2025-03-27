@@ -38,14 +38,11 @@ export default function Schedule() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [trackCoordinates, setTrackCoordinates] = useState<{
-    [key: string]: [number, number][];
-  }>({});
-
   const [trackCoordinates, setTrackCoordinates] = useState<{ [key: string]: [number, number][] }>({});
   const [viewMode, setViewMode] = useState("calendar"); // Default view mode
 
   const eventsService = useState(() => createEventsServicePlugin())[0];
+
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -135,7 +132,7 @@ export default function Schedule() {
 
         const albertaGeoJSON = await response.json();
 
-        const coordinatesMap = albertaGeoJSON.features.reduce((acc, feature) => {
+        const coordinatesMap = albertaGeoJSON.features.reduce((acc: any, feature: any) => {
           const trackId = feature.properties["@id"];
           acc[trackId] = feature.geometry.coordinates;
           return acc;
@@ -151,10 +148,19 @@ export default function Schedule() {
   }, []);
 
   const calculateMidpoint = (coordinates: [number, number][]) => {
+    console.log("Calculating midpoint for coordinates:", coordinates);
     if (!coordinates || coordinates.length === 0) return null;
+    console.error("No valid coordinates provided");
 
+    if (coordinates.length === 1) {
+      console.log("Only one coordinate, returning:", coordinates[0]);
+      return coordinates[0];
+    }
+    if (coordinates.length === 2) {
+      console.log("Exactly two coordinates provided, returning both:", coordinates);
+      return coordinates; // Return both coordinates instead of calculating a midpoint
+    }
     const numCoordinates = coordinates.length;
-
     if (numCoordinates % 2 === 1) {
       // Odd number of coordinates: return the middle coordinate
       return coordinates[Math.floor(numCoordinates / 2)];
@@ -181,10 +187,11 @@ export default function Schedule() {
   ) => {
     const due_date = `${endDate}T${endTime}:00`;
     console.log("Selected Track ID:", trackId);
-    console.log("Available Track IDs:", Object.keys(trackCoordinates));
+    // console.log("Available Track IDs:", Object.keys(trackCoordinates));
 
     if (!trackCoordinates || Object.keys(trackCoordinates).length === 0) {
-      console.error("Track data not loaded yet");
+      console.log("All Track IDs in trackCoordinates:", Object.keys(trackCoordinates));
+      console.error("No track coordinates found");
       return;
     }
 
@@ -250,7 +257,27 @@ export default function Schedule() {
       console.error("Error adding task:", error);
     }
     console.log("Request data being sent:", JSON.stringify(newTask, null, 2));
+
+    try{
+      const response = await fetch("/api/history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add task to history");
+      }
+
+      const createdTask = await response.json();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
   };
+
 
   const handleDeleteTask = async (taskId: number) => {
     try {
@@ -425,7 +452,9 @@ export default function Schedule() {
                     <th className="border border-gray-800">Title</th>
                     <th className="border border-gray-800">Description</th>
                     <th className="border border-gray-800">Start Date</th>
+                    <th className="border border-gray-800">Start Time</th>
                     <th className="border border-gray-800">End Date</th>
+                    <th className="border border-gray-800">End Time</th>
                     <th className="border border-gray-800">Assigned To</th>
                     <th className="border border-gray-800">Priority</th>
                     <th className="border border-gray-800">Midpoint Coordinates</th>
@@ -440,7 +469,9 @@ export default function Schedule() {
                       <td className="border border-gray-300">{task.title}</td>
                       <td className="border border-gray-300">{task.description}</td>
                       <td className="border border-gray-300">{task.start_date}</td>
+                      <td className="border border-gray-300">{task.start_time}</td>
                       <td className="border border-gray-300">{task.end_date}</td>
+                      <td className="border border-gray-300">{task.end_time}</td>
                       <td className="border border-gray-300">{task.assigned_to}</td>
                       <td className="border border-gray-300">{task.priority}</td>
                       <td>{task.coordinates ? JSON.stringify(task.coordinates) : "N/A"}</td>

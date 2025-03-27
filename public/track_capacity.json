@@ -1,0 +1,2572 @@
+[
+  {
+    "track_id": "119-341_119",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_34",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_322",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_6",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_70",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_114",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_7",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_11",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_93",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_14",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_280",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-341_341",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-618_618",
+    "train_count": 8,
+    "capacity": 10
+  },
+  {
+    "track_id": "119-618_601",
+    "train_count": 8,
+    "capacity": 10
+  },
+  {
+    "track_id": "119-618_78",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "119-618_93",
+    "train_count": 8,
+    "capacity": 10
+  },
+  {
+    "track_id": "119-618_323",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "119-618_282",
+    "train_count": 7,
+    "capacity": 8.75
+  },
+  {
+    "track_id": "119-618_162",
+    "train_count": 8,
+    "capacity": 10
+  },
+  {
+    "track_id": "119-618_600",
+    "train_count": 8,
+    "capacity": 10
+  },
+  {
+    "track_id": "119-618_436",
+    "train_count": 8,
+    "capacity": 10
+  },
+  {
+    "track_id": "119-618_119",
+    "train_count": 8,
+    "capacity": 10
+  },
+  {
+    "track_id": "617-628_617",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_344",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_332",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_226",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_343",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_631",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_630",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_492",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_629",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "617-628_628",
+    "train_count": 5,
+    "capacity": 6.25
+  },
+  {
+    "track_id": "621-116_621",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_220",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_2",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_184",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_192",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_312",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_199",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_329",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_248",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_287",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_639",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_218",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_638",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_15",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_315",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_265",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_128",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_266",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_164",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_420",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_230",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_409",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_205",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_429",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_395",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_360",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_324",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_410",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_376",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_391",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_127",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_637",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_214",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_636",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_293",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "621-116_116",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-444_444",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_453",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_439",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_404",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_52",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_177",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_51",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_247",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_161",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_245",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_47",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_121",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_48",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_250",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_45",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_183",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_217",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_399",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_134",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_255",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_39",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_166",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_319",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_46",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_33",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_94",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_37",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_27",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_209",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_26",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_350",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_28",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_437",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_38",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_126",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_132",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_459",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_82",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_130",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_43",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_457",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_633",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_634",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-444_226",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_226",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_634",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_633",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_457",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_43",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_130",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_82",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_459",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_132",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_126",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_38",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_437",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_433",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_441",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_147",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_411",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_320",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_203",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_425",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_171",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_299",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_83",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_168",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_339",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_407",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_295",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_49",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_306",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_321",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_397",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_417",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_216",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_212",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_32",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_215",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_426",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_292",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_384",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_286",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_182",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_448",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_303",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_276",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_390",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_180",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_253",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_392",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_160",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_193",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_190",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_394",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_405",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_163",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_423",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_369",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_129",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_55",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_125",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_381",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "226-460_460",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "21-458_458",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_632",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_176",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_31",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_270",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_256",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_172",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_195",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_61",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_227",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_307",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_294",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_148",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_338",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_424",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_432",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_36",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_454",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_308",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_244",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_305",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_379",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_281",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_442",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_378",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_333",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_361",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_414",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_386",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_136",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_207",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_438",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_64",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "21-458_21",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-93_119",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-93_600",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "119-93_162",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-93_282",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-93_93",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "628-576_617",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "628-576_344",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "628-576_351",
+    "train_count": 4,
+    "capacity": 5
+  },
+  {
+    "track_id": "628-576_332",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "628-576_226",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "628-576_343",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "628-576_631",
+    "train_count": 4,
+    "capacity": 5
+  },
+  {
+    "track_id": "628-576_630",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "628-576_492",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "628-576_629",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "628-576_628",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "8-119_119",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_59",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_60",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_4",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_113",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_65",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_68",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_72",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_71",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_76",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_74",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_79",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_88",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_92",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_63",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_91",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_98",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_95",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_99",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_102",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_103",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_101",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_106",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_105",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_109",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_107",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_108",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_44",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_115",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_111",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_131",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_140",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_144",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_142",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_153",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_167",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_187",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_198",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_264",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_456",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_204",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_206",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_388",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_224",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_616",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_506",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_228",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_118",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_615",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_231",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_236",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_455",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_449",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_241",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_254",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_263",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_21",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_257",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_268",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_80",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_117",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_269",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_273",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_274",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_277",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_145",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_8",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "8-119_298",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_296",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_285",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_288",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "8-119_69",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "149-435_435",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_284",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_229",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_375",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_352",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_197",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_297",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_335",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_278",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_90",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_139",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_383",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_340",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_237",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_67",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_235",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_249",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_318",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_356",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_461",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_157",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_373",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_290",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_503",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_165",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_313",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_158",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_179",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_29",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_353",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_371",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_387",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_314",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_418",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_232",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_262",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_406",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_208",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_252",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_446",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_246",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_412",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_401",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_151",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_326",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_440",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_238",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_348",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_155",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "149-435_149",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_388",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_224",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_104",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_317",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_141",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_380",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_408",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_347",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_289",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_427",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_169",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_50",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_445",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_100",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_301",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_370",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_89",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_24",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_159",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_261",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_96",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_149",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_155",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_348",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_238",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_440",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_326",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_151",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_401",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_412",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_246",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_446",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_252",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_208",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_406",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_262",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_232",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_418",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_314",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_387",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_371",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_353",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_29",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_179",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_158",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_313",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_165",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_503",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_290",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_373",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_157",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_461",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_356",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_318",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_249",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_235",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_67",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_237",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_340",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_383",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_139",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_90",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_278",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_335",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_297",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_197",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_352",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_375",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_229",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_284",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "388-435_435",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "617-119_617",
+    "train_count": 21,
+    "capacity": 26.25
+  },
+  {
+    "track_id": "617-119_576",
+    "train_count": 21,
+    "capacity": 26.25
+  },
+  {
+    "track_id": "617-119_58",
+    "train_count": 20,
+    "capacity": 25
+  },
+  {
+    "track_id": "617-119_415",
+    "train_count": 16,
+    "capacity": 20
+  },
+  {
+    "track_id": "617-119_367",
+    "train_count": 17,
+    "capacity": 21.25
+  },
+  {
+    "track_id": "617-119_119",
+    "train_count": 21,
+    "capacity": 26.25
+  },
+  {
+    "track_id": "226-119_119",
+    "train_count": 12,
+    "capacity": 15
+  },
+  {
+    "track_id": "226-119_450",
+    "train_count": 10,
+    "capacity": 12.5
+  },
+  {
+    "track_id": "226-119_367",
+    "train_count": 12,
+    "capacity": 15
+  },
+  {
+    "track_id": "226-119_178",
+    "train_count": 7,
+    "capacity": 8.75
+  },
+  {
+    "track_id": "226-119_415",
+    "train_count": 9,
+    "capacity": 11.25
+  },
+  {
+    "track_id": "226-119_58",
+    "train_count": 12,
+    "capacity": 15
+  },
+  {
+    "track_id": "226-119_602",
+    "train_count": 12,
+    "capacity": 15
+  },
+  {
+    "track_id": "226-119_332",
+    "train_count": 12,
+    "capacity": 15
+  },
+  {
+    "track_id": "226-119_226",
+    "train_count": 12,
+    "capacity": 15
+  },
+  {
+    "track_id": "617-119_377",
+    "train_count": 11,
+    "capacity": 13.750000000000002
+  },
+  {
+    "track_id": "617-119_35",
+    "train_count": 14,
+    "capacity": 17.5
+  },
+  {
+    "track_id": "617-119_413",
+    "train_count": 7,
+    "capacity": 8.75
+  },
+  {
+    "track_id": "617-119_178",
+    "train_count": 13,
+    "capacity": 16.25
+  },
+  {
+    "track_id": "617-119_450",
+    "train_count": 15,
+    "capacity": 18.75
+  },
+  {
+    "track_id": "119-58_58",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "119-58_309",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-58_415",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "119-58_413",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-58_178",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "119-58_9",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "119-58_367",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "119-58_450",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-58_119",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-226_226",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-226_332",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-226_344",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-226_419",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-226_617",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-628_419",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-628_351",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "617-119_9",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "617-119_309",
+    "train_count": 6,
+    "capacity": 7.5
+  },
+  {
+    "track_id": "617-119_200",
+    "train_count": 4,
+    "capacity": 5
+  },
+  {
+    "track_id": "226-119_35",
+    "train_count": 4,
+    "capacity": 5
+  },
+  {
+    "track_id": "226-620_226",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_343",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_631",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_630",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_629",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_54",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_138",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_327",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_170",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_328",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_342",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_42",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_221",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_87",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_110",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_355",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_84",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_18",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_73",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_310",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_267",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_19",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_12",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_202",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_22",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_41",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_10",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "226-620_620",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_119",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_436",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_600",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_1",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_185",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_346",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_403",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_201",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_357",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_191",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_614",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_259",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_366",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_173",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_25",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_189",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_260",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_222",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_240",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_210",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_345",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "119-120_120",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "628-226_226",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "628-226_343",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "628-226_631",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "628-226_630",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "628-226_629",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "628-226_628",
+    "train_count": 3,
+    "capacity": 3.75
+  },
+  {
+    "track_id": "AC_332",
+    "train_count": 2,
+    "capacity": 2.5
+  },
+  {
+    "track_id": "AC_555",
+    "train_count": 1,
+    "capacity": 1.25
+  },
+  {
+    "track_id": "628-576_419",
+    "train_count": 1,
+    "capacity": 1.25
+  }
+]

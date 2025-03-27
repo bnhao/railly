@@ -13,6 +13,7 @@ import { trackCapacityData } from "@/data/trackData";
 import AIchatbot from "@/components/AIchatbot";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import WeatherWidget from "@/components/weather/WeatherWidget";
+import RailwayMap from "@/components/railwayMap";
 
 
 export default function Dashboard() {
@@ -30,8 +31,8 @@ export default function Dashboard() {
   };
 
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedFeatture, setSelectedFeature] = useState(null);
   const { forecastData } = useForecast();
-  const router = useRouter();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -101,10 +102,6 @@ export default function Dashboard() {
   };
 
   // Dynamically import the CombinedMap component
-  const CombinedMap = dynamic(
-    () => import("@/components/trackOverViewComponents/CombinedMap"),
-    { ssr: false }
-  );
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -146,8 +143,7 @@ export default function Dashboard() {
               />
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
-              onClick={() => router.push("/schedule")}
+              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer "
             >
               <h3 className="text-center text-lg font-bold">Schedules</h3>{" "}
               <table className="border-collapse border border-gray-800 w-full">
@@ -155,18 +151,18 @@ export default function Dashboard() {
                   <tr>
                     <th>Order #</th>
                     <th>Track</th>
-                    <th>Date</th>
+                    <th>Priority</th>
                     <th>Assigned To</th>
                     <th>Progress</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-center">
                   {tasks.map((task) => (
                     <tr key={task.id}>
                       <td>{task.id}</td>
                       <td>{task.track_id}</td>
-                      <td>{task.due_date}</td>
-                      <td>{task.title}</td>
+                      <td>{task.priority}</td>
+                      <td>{task.assigned_to}</td>
                       <td>{task.status}</td>
                       <td>
                         <button
@@ -192,11 +188,9 @@ export default function Dashboard() {
                 </tbody>
               </table>
             </div>
-            <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md bg-[#393A3E] hover:cursor-pointer z-0"
-              onClick={() => router.push("/trackOverview")}
-            >
-              <CombinedMap selectedTrack="defaultTrack" />
+            <div className="lg:col-span-1 lg:row-span-1 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer">
+              <RailwayMap onFeatureSelect={setSelectedFeature} />
+
             </div>
           </div>
         </div>
