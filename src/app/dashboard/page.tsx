@@ -4,17 +4,13 @@ import React, { useEffect, useRef, useState } from "react";
 import "chart.js/auto";
 import Nav from "@/components/navbar";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import useForecast from "../hooks/useForecast";
 import { useRouter } from "next/navigation";
 import TrackCapacityChart from "@/components/trackOverViewComponents/TrackCapacityChart";
 import { CHART_OPTIONS } from "@/data/chartConfig";
 import { trackCapacityData } from "@/data/trackData";
 import AIchatbot from "@/components/AIchatbot";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import RailwayMap from "@/components/railwayMap";
-
 
 export default function Dashboard() {
   type Task = {
@@ -32,8 +28,8 @@ export default function Dashboard() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedFeatture, setSelectedFeature] = useState(null);
-  const { forecastData } = useForecast();
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   // Initialize Google Maps
@@ -112,90 +108,78 @@ export default function Dashboard() {
     fetchTasks();
   }, []);
 
-  const forecast = forecastData["Banff"];
-
   return (
     // <ProtectedRoute allowedRoles={["admin", "user"]}>
-      <div className="flex">
-        <Nav />
-        <div className="px-6 bg-background text-foreground w-full h-screen flex flex-col">
-          <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-6 h-full">
-            <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer items-center justify-center overflow-hidden"
-              onClick={() => router.push("/weather")}
-            >
-              <h3 className="text-center text-lg font-bold">
-                Weather Overview
-              </h3>
-              <h3>Banff</h3>
-              <p>Wind: {forecast?.list[0].wind.speed ?? "-"} km/h</p>
-              <p>Temperature: {forecast?.list[0].main.temp ?? "-"}°C</p>
-              <p>Humidity: {forecast?.list[0].main.humidity ?? "-"}%</p>
-              <WeatherWidget />
-            </div>
-            <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md pb-12 pt-2 pr-2 pl-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
-              onClick={() => router.push("/trackOverview")}
-            >
-              <TrackCapacityChart
-                data={trackCapacityData}
-                options={CHART_OPTIONS}
-              />
-            </div>
-            <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer "
-            >
-              <h3 className="text-center text-lg font-bold">Schedules</h3>{" "}
-              <table className="border-collapse border border-gray-800 w-full">
-                <thead>
-                  <tr>
-                    <th>Order #</th>
-                    <th>Track</th>
-                    <th>Priority</th>
-                    <th>Assigned To</th>
-                    <th>Progress</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  {tasks.map((task) => (
-                    <tr key={task.id}>
-                      <td>{task.id}</td>
-                      <td>{task.track_id}</td>
-                      <td>{task.priority}</td>
-                      <td>{task.assigned_to}</td>
-                      <td>{task.status}</td>
-                      <td>
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteTask(task.id);
-                          }}
+    <div className="flex">
+      <Nav />
+      <div className="px-4 bg-background text-foreground w-full h-screen flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-4 h-full">
+          <div
+            className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer items-center justify-center overflow-hidden"
+            onClick={() => router.push("/weather")}
+          >
+            <WeatherWidget />
+          </div>
+          <div
+            className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md pb-12 pt-2 pr-2 pl-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
+            onClick={() => router.push("/trackOverview")}
+          >
+            <TrackCapacityChart
+              data={trackCapacityData}
+              options={CHART_OPTIONS}
+            />
+          </div>
+          <div className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer ">
+            <h3 className="text-center text-lg font-bold">Schedules</h3>{" "}
+            <table className="border-collapse border border-gray-800 w-full">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Track</th>
+                  <th>Priority</th>
+                  <th>Assigned To</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody className="text-center">
+                {tasks.map((task) => (
+                  <tr key={task.id}>
+                    <td>{task.id}</td>
+                    <td>{task.track_id}</td>
+                    <td>{task.priority}</td>
+                    <td>{task.assigned_to}</td>
+                    <td>{task.status}</td>
+                    <td>
+                      <button
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTask(task.id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                      <button>
+                        <Link
+                          href={`/task/${task.id}`}
+                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                         >
-                          Delete
-                        </button>
-                        <button>
-                          <Link
-                            href={`/task/${task.id}`}
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                          >
-                            Edit
-                          </Link>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="lg:col-span-1 lg:row-span-1 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer">
-              <RailwayMap onFeatureSelect={setSelectedFeature} />
-
-            </div>
+                          Edit
+                        </Link>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="lg:col-span-1 lg:row-span-1 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer">
+            <RailwayMap onFeatureSelect={setSelectedFeature} />
           </div>
         </div>
-        <AIchatbot />
       </div>
+      <AIchatbot />
+    </div>
     // </ProtectedRoute>
   );
 }

@@ -143,7 +143,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
         preferCanvas={true}
         updateWhenIdle={true}
         attributionControl={false}
-        style={{ height: "600px", width: "100%" }}
+        style={{ height: "264px", width: "100%" }}
         aria-label="Railway Map"
       >
         <TileLayer
