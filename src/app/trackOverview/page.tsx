@@ -52,12 +52,12 @@ export default function TrackOverview() {
         console.log("Raw History Data:", data); // Debugging output
   
         // Filter only relevant track data (ensure correct counting)
-        const filteredData = data.filter((entry) => entry.track_id === trackId);
+        const filteredData = data.filter((entry: any) => entry.track_id === trackId);
   
         // Create a mapping of months to the count of maintenance occurrences
         const historyByMonth: Record<string, number> = {};
   
-        filteredData.forEach((entry) => {
+        filteredData.forEach((entry: any) => {
           const date = new Date(entry.start_date);
           const monthLabel = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; // Format YYYY-MM
           

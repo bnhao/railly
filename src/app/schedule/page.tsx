@@ -92,7 +92,7 @@ export default function Schedule() {
 
         const albertaGeoJSON = await response.json();
 
-        const coordinatesMap = albertaGeoJSON.features.reduce((acc, feature) => {
+        const coordinatesMap = albertaGeoJSON.features.reduce((acc: any, feature: any) => {
           const trackId = feature.properties["@id"];
           acc[trackId] = feature.geometry.coordinates;
           return acc;

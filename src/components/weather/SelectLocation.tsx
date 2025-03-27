@@ -9,9 +9,11 @@ ChartJs.register(CategoryScale);
 const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY; // Replace with your actual key
 
 type Props = {
-    handleTrackChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     track: string;
-};
+    forecastData: { [key: string]: forecastType | null };
+    handleTrackChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    predictWeatherData: { [key: string]: any };
+  };
 
 const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
     const [tasks, setTasks] = useState<Task[]>([]);
