@@ -322,14 +322,13 @@ export default function Schedule() {
     return (
       <div className="flex">
         <Nav />
-
         {/* Modal for adding a task */}
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onAddTask={handleAddTask}
         />
-        <div className="bg-black text-white w-full min-h-screen px-6 mt-4">
+        <div className="bg-black text-white w-full h-screen px-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <button
@@ -352,11 +351,11 @@ export default function Schedule() {
 
           {/* Conditional Rendering for Calendar or Table View */}
           {viewMode === "calendar" ? (
-            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
-              <ScheduleXCalendar calendarApp={calendar} />
+            <div className="h-full flex-grow overflow-auto">
+              <ScheduleXCalendar calendarApp={calendar}/>
             </div>
           ) : (
-            <div className="mt-8 w-full h-full flex-grow">
+            <div className="mt-8 w-full h-full flex-grow overflow-auto">
               <h1 className="text-2xl font-bold mb-4 text-white">Scheduled Tasks</h1>
               <table className="border-collapse border border-gray-800 w-full">
                 <thead>
