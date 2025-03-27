@@ -38,10 +38,6 @@ export default function Schedule() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [trackCoordinates, setTrackCoordinates] = useState<{
-    [key: string]: [number, number][];
-  }>({});
-
   const [trackCoordinates, setTrackCoordinates] = useState<{ [key: string]: [number, number][] }>({});
   const [viewMode, setViewMode] = useState("calendar"); // Default view mode
 

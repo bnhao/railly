@@ -41,30 +41,30 @@ export default function TrackOverview() {
   // Handle track selection
   const handleTrackSelection = (trackId: string) => {
     setSelectedTrack(trackId);
-  
+
     const trackDetails = tasks.find((task) => task.track_id === trackId);
     setSelectedTrackDetails(trackDetails || null);
-  
+
     // Fetch history from API
     fetch(`/api/history?track_id=${trackId}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Raw History Data:", data); // Debugging output
-  
+
         // Filter only relevant track data (ensure correct counting)
         const filteredData = data.filter((entry: any) => entry.track_id === trackId);
-  
+
         // Create a mapping of months to the count of maintenance occurrences
         const historyByMonth: Record<string, number> = {};
-  
+
         filteredData.forEach((entry: any) => {
           const date = new Date(entry.start_date);
           const monthLabel = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; // Format YYYY-MM
-          
+
           // Increment occurrence count
           historyByMonth[monthLabel] = (historyByMonth[monthLabel] || 0) + 1;
         });
-  
+
         // Convert grouped data into chart format with month names
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const formattedData = Object.entries(historyByMonth)
@@ -78,14 +78,14 @@ export default function TrackOverview() {
             };
           })
           .sort((a, b) => a.sortKey.localeCompare(b.sortKey)); // Sort by the sortable key
-  
+
         console.log("Formatted and Sorted Track History:", formattedData); // Debugging output
         setTrackHistory(formattedData);
       })
       .catch((err) => console.error("Error fetching track history:", err));
   };
-  
-  
+
+
 
   // Handle toggling favorites
   const toggleFavorite = () => {
@@ -157,7 +157,7 @@ export default function TrackOverview() {
             </select>
           </div>
         </div>
-        
+
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-6">
@@ -179,24 +179,23 @@ export default function TrackOverview() {
             <div className="h-[400px] rounded-md bg-gray-200 overflow-hidden">
               <RailwayMap onFeatureSelect={setSelectedFeature} />
             </div>
-            <TrackCapacityChart data={trackCapacityData} options={CHART_OPTIONS} />
+            {/* Selected Track Details */}
+            {selectedTrackDetails && (
+              <div className="mt-8 p-4 bg-gray-800 rounded-md text-white">
+                <h2 className="text-lg font-semibold">Selected Working Track Details</h2>
+                <p><strong>Track ID:</strong> {selectedTrackDetails.track_id}</p>
+                <p><strong>Status:</strong> {selectedTrackDetails.status}</p>
+                <p><strong>Title:</strong> {selectedTrackDetails.title}</p>
+                <p><strong>Description:</strong> {selectedTrackDetails.description}</p>
+                <p><strong>Start Date:</strong> {selectedTrackDetails.start_date}</p>
+                <p><strong>End Date:</strong> {selectedTrackDetails.end_date}</p>
+                <p><strong>Assigned To:</strong> {selectedTrackDetails.assigned_to}</p>
+                <p><strong>Priority:</strong> {selectedTrackDetails.priority}</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Selected Track Details */}
-        {selectedTrackDetails && (
-          <div className="mt-8 p-4 bg-gray-800 rounded-md text-white">
-            <h2 className="text-lg font-semibold">Selected Working Track Details</h2>
-            <p><strong>Track ID:</strong> {selectedTrackDetails.track_id}</p>
-            <p><strong>Status:</strong> {selectedTrackDetails.status}</p>
-            <p><strong>Title:</strong> {selectedTrackDetails.title}</p>
-            <p><strong>Description:</strong> {selectedTrackDetails.description}</p>
-            <p><strong>Start Date:</strong> {selectedTrackDetails.start_date}</p>
-            <p><strong>End Date:</strong> {selectedTrackDetails.end_date}</p>
-            <p><strong>Assigned To:</strong> {selectedTrackDetails.assigned_to}</p>
-            <p><strong>Priority:</strong> {selectedTrackDetails.priority}</p>
-          </div>
-        )}
       </div>
     </div>
   );
