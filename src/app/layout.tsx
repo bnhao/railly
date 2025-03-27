@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/app/context/AuthContext";
+import Nav from "@/components/navbar"; // Import the nav bar
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,10 +26,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <AuthProvider>{children}</AuthProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider>
+          {/* Wrap everything in a flex container */}
+          <div className="flex">
+            {/* Nav is always visible */}
+            <Nav />
+            {/* Main content will be rendered next to Nav */}
+            <main className="flex-1">
+              {children}
+            </main>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -86,7 +86,6 @@ export default function FeedbackPage() {
 
   return (
     <div className="flex">
-      <Nav />
       <div className="px-6 bg-[#1e1e1e] text-white w-full min-h-screen">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">User Feedback</h1>

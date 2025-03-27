@@ -80,7 +80,6 @@ export default function UserFeedbackPage() {
   return (
     <ProtectedRoute allowedRoles={["user", "admin"]}>
       <div className="flex">
-        <Nav />
         <div className="px-6 bg-[#1e1e1e] text-white w-full min-h-screen">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">Community Feedback</h1>
