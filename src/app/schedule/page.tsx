@@ -91,7 +91,7 @@ export default function Schedule() {
         const albertaGeoJSON = await response.json();
 
         const coordinatesMap = albertaGeoJSON.features.reduce(
-          (acc, feature) => {
+          (acc: any, feature: any) => {
             const trackId = feature.properties["@id"];
             acc[trackId] = feature.geometry.coordinates;
             return acc;
@@ -182,8 +182,8 @@ export default function Schedule() {
     const formattedTrackId = trackId.startsWith("node/")
       ? trackId
       : trackId.startsWith("way/")
-      ? trackId
-      : `way/${trackId}`;
+        ? trackId
+        : `way/${trackId}`;
     console.log("Formatted Track ID:", formattedTrackId);
 
     // Fetch coordinates for the selected track
@@ -242,7 +242,7 @@ export default function Schedule() {
     }
     console.log("Request data being sent:", JSON.stringify(newTask, null, 2));
 
-    try{
+    try {
       const response = await fetch("/api/history", {
         method: "POST",
         headers: {
