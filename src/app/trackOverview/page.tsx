@@ -109,16 +109,13 @@ export default function TrackOverview() {
       },
     ],
   };
-  
-
-  
 
   return (
     <div className="flex">
       <Nav />
-      <div className="p-6 bg-background text-foreground w-full">
-        <div className="flex flex-row space-x-2">
-          <div className="mb-4 mt-7">
+      <div className="px-6 bg-background text-foreground w-full">
+        <div className="flex flex-row space-x-4">
+          <div className="mb-6 mt-7">
             <SearchBar
               tracks={Object.keys(trackDetails)}
               onTrackSelect={(track) => handleTrackSelection(track)}
@@ -127,7 +124,7 @@ export default function TrackOverview() {
             />
           </div>
 
-          <div className="mb-4 flex gap-4 items-center">
+          <div className="mb-6 flex gap-4 items-center">
             <div>
               <label htmlFor="date" className="block mb-1 text-darkgrey font-medium">
                 Select Date:
@@ -141,14 +138,13 @@ export default function TrackOverview() {
               />
             </div>
           </div>
-
           <div className="mt-1">
             <label htmlFor="favorites" className="block mb-1 text-darkgrey font-medium">
               Current Tracks:
             </label>
             <select
               id="favorites"
-              className="p-2 border rounded-md text-black"
+              className="px-1.5 py-[9.2px] border rounded-md text-black"
               value={selectedTrack}
               onChange={(e) => handleTrackSelection(e.target.value)}
             >
@@ -163,7 +159,7 @@ export default function TrackOverview() {
         </div>
         
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-6">
             <TrackMaintenanceChart data={maintenanceHistoryData} options={CHART_OPTIONS} />
             {selectedFeature ? (
