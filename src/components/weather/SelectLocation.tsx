@@ -116,7 +116,16 @@ const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
                     {tasks.map((task, i) => {
                         const forecast = forecastData[task.track_id];
                         return (
-                            <div key={i} className="bg-gray-800 p-4 rounded-[10px]">
+                            <div key={i} className="bg-gray-800 p-4 rounded-[10px]"
+                                onClick={() => {
+                                    const event = new Event("change", { bubbles: true }) as unknown as ChangeEvent<HTMLSelectElement>;
+                                    Object.defineProperty(event, "target", {
+                                        writable: false,
+                                        value: { value: task.track_id } as EventTarget & HTMLSelectElement,
+                                    });
+                                    handleTrackChange(event);
+                                }}
+                            >
                                 <h3 className="font-bold">
                                     {`Track ${i + 1} - ${task.track_id} (${forecast?.list?.[0]?.weather?.[0]?.main ?? "-"})`}
                                 </h3>
