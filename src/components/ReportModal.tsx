@@ -1,10 +1,20 @@
-// 📁 Final updated components/ReportModal.tsx
+// 📁 Updated components/ReportModal.tsx with bar chart instead of heat map
 
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 interface Task {
   id: number;
@@ -17,11 +27,7 @@ interface Task {
 interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  tasks: Task[];
 }
-
-const statusList = ["Pending", "In Progress"];
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const getWeekDates = () => {
   const now = new Date();
@@ -36,39 +42,49 @@ const getWeekDates = () => {
   return week;
 };
 
-export default function ReportModal({
-  isOpen,
-  onClose,
-  tasks,
-}: ReportModalProps) {
+export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
   const containerRef = useRef(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [weekDates, setWeekDates] = useState<string[]>([]);
 
   useEffect(() => {
     setWeekDates(getWeekDates());
   }, []);
 
-  const gridData = useMemo(() => {
-    const grid: Record<string, Record<string, number>> = {};
-    statusList.forEach((status) => {
-      grid[status] = {};
-      weekDates.forEach((date) => {
-        grid[status][date] = 0;
-      });
-    });
+  useEffect(() => {
+    if (!isOpen) return;
 
-    tasks.forEach((task) => {
-      const dateOnly = task.start_date.includes("T")
-        ? task.start_date.split("T")[0]
-        : task.start_date;
-      const status = task.status;
-      if (grid[status] && grid[status][dateOnly] !== undefined) {
-        grid[status][dateOnly]++;
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch("/api/tasks");
+        if (!response.ok) throw new Error("Failed to fetch tasks");
+        const data = await response.json();
+
+        const formatted = data.map((task: Task) => ({
+          ...task,
+          start_date: task.start_date.includes("T")
+            ? task.start_date.split("T")[0]
+            : task.start_date,
+        }));
+
+        setTasks(formatted);
+      } catch (err) {
+        console.error("Error fetching tasks:", err);
       }
-    });
+    };
 
-    return grid;
-  }, [tasks, weekDates]);
+    fetchTasks();
+  }, [isOpen]);
+
+  const chartData = weekDates.map((date) => {
+    const pending = tasks.filter(
+      (t) => t.status === "Pending" && t.start_date === date
+    ).length;
+    const inProgress = tasks.filter(
+      (t) => t.status === "In Progress" && t.start_date === date
+    ).length;
+    return { date, Pending: pending, "In Progress": inProgress };
+  });
 
   const downloadPDF = async () => {
     if (!containerRef.current) return;
@@ -76,50 +92,30 @@ export default function ReportModal({
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF();
     pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
-    pdf.save("weekly-task-report.pdf");
+    pdf.save("weekly-task-bar-report.pdf");
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-white p-6 rounded-lg w-[90%] max-w-4xl shadow-xl">
-        <h2 className="text-xl font-semibold mb-4">Weekly Task Heat Map</h2>
-        <div ref={containerRef} className="overflow-auto">
-          <table className="w-full border border-gray-300">
-            <thead>
-              <tr className="bg-black text-white font-bold">
-                <th className="border p-2">Status / Day</th>
-                {weekDates.map((date, i) => (
-                  <th key={date} className="border p-2">
-                    {days[i]}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {statusList.map((status) => (
-                <tr key={status}>
-                  <td className="border p-2 font-bold text-black bg-white">
-                    {status}
-                  </td>
-                  {weekDates.map((date) => {
-                    const count = gridData[status][date];
-                    const shade = `bg-blue-$
-                      {count === 0 ? "50" : count < 3 ? "200" : count < 6 ? "400" : "600"}`;
-                    return (
-                      <td
-                        key={date}
-                        className={`border text-center p-2 text-white ${shade}`}
-                      >
-                        {count > 0 ? count : "-"}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="bg-white p-6 rounded-lg w-[95%] max-w-5xl shadow-xl">
+        <h2 className="text-xl font-semibold mb-4">Weekly Task Bar Chart</h2>
+        <div ref={containerRef} className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="Pending" fill="#FFA500" />
+              <Bar dataKey="In Progress" fill="#008000" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
         <div className="flex justify-end gap-4 mt-6">
           <button
@@ -138,4 +134,4 @@ export default function ReportModal({
       </div>
     </div>
   );
-} // end
+}
