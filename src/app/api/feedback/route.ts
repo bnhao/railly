@@ -24,3 +24,4 @@ export async function POST(request: Request) {
 
   return new Response(JSON.stringify(response[0]), { status: 200 });
 }
+

@@ -2,7 +2,6 @@
 import { Loader } from "@googlemaps/js-api-loader";
 import React, { useEffect, useRef, useState } from "react";
 import "chart.js/auto";
-import Nav from "@/components/navbar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TrackCapacityChart from "@/components/trackOverViewComponents/TrackCapacityChart";
@@ -11,6 +10,7 @@ import { trackCapacityData } from "@/data/trackData";
 import AIchatbot from "@/components/AIchatbot";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import RailwayMap from "@/components/railwayMap";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {
   type Task = {
@@ -116,9 +116,8 @@ export default function Dashboard() {
   }, []);
 
   return (
-    // <ProtectedRoute allowedRoles={["admin", "user"]}>
+    <ProtectedRoute allowedRoles={["admin", "user"]}>
     <div className="flex">
-      <Nav />
       <div className="px-5 bg-background text-foreground w-full h-screen flex flex-col">
         <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-5 h-full">
           <div
@@ -151,7 +150,7 @@ export default function Dashboard() {
             )}
           </div>
           <div
-            className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
+            className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer "
             onMouseEnter={() => setHoveredContainer("schedules")}
             onMouseLeave={() => setHoveredContainer(null)}
           >
@@ -208,6 +207,6 @@ export default function Dashboard() {
       </div>
       <AIchatbot />
     </div>
-    // </ProtectedRoute>
+    </ProtectedRoute>
   );
 }

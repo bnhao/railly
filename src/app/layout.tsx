@@ -1,10 +1,11 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "@/app/context/AuthContext";
-import Nav from "@/components/navbar"; // Import the nav bar
+import Nav from "@/components/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,25 +22,17 @@ export const metadata: Metadata = {
   description: "Track Management System",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          {/* Wrap everything in a flex container */}
           <div className="flex">
-            {/* Nav is always visible */}
             <Nav />
-            {/* Main content will be rendered next to Nav */}
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
           </div>
           {children}
           <ToastContainer />
