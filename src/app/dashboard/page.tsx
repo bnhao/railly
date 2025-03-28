@@ -27,7 +27,7 @@ export default function Dashboard() {
   };
 
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [selectedFeatture, setSelectedFeature] = useState(null);
+  const [selectedFeature, setSelectedFeature] = useState(null);
   const [hoveredContainer, setHoveredContainer] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
