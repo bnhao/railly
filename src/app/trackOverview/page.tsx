@@ -129,7 +129,6 @@ export default function TrackOverview() {
 
   return (
     <div className="flex">
-      <Nav />
       <div className="px-5 bg-background text-foreground w-full flex flex-col">
         <div className="flex flex-row space-x-4">
           <div className="mb-6 mt-7">

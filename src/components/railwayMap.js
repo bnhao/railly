@@ -35,7 +35,7 @@ const isClient = typeof window !== "undefined";
 const L = isClient ? require("leaflet") : null;
 
 if (L) {
-  delete L.Icon.Default.prototype._getIconUrl;
+  // delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl: "/leaflet/marker-icon-2x.png",
     iconUrl: "/leaflet/marker-icon.png",
@@ -108,7 +108,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
     return {
       color:
         selectedFeature &&
-        selectedFeature.properties["@id"] === feature.properties["@id"]
+          selectedFeature.properties["@id"] === feature.properties["@id"]
           ? "#ed9e1f"
           : "#2b35f0",
       weight: 3,
