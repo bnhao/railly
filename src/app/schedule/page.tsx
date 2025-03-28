@@ -82,31 +82,6 @@ export default function Schedule() {
       return [];
     }
   };
-  useEffect(() => {
-    const fetchGeoJSON = async () => {
-      try {
-        const response = await fetch("/Alberta.geojson");
-        if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
-
-        const albertaGeoJSON = await response.json();
-
-        const coordinatesMap = albertaGeoJSON.features.reduce(
-          (acc: any, feature: any) => {
-            const trackId = feature.properties["@id"];
-            acc[trackId] = feature.geometry.coordinates;
-            return acc;
-          },
-          {}
-        );
-
-        setTrackCoordinates(coordinatesMap);
-      } catch (error) {
-        console.error("Error fetching GeoJSON:", error);
-      }
-    };
-
-    fetchGeoJSON();
-  }, []);
 
   useEffect(() => {
     const fetchGeoJSON = async () => {
@@ -297,7 +272,7 @@ export default function Schedule() {
       createViewMonthGrid(),
       createViewMonthAgenda(),
     ],
-    defaultView: "week",
+    defaultView: "calendar",
     events,
     plugins: [eventsService],
     callbacks: {
@@ -311,6 +286,19 @@ export default function Schedule() {
       },
     },
   });
+  useEffect(() => {
+    console.log("Track Coordinates:", trackCoordinates);
+  }, [trackCoordinates]);
+
+  useEffect(() => {
+    tasks.forEach((task) => {
+      console.log(`Task ${task.id} Coordinates:`, task.coordinates);
+    });
+  }, [tasks]);
+  // pharse coordinates to string
+  const formatCoordinates = (coordinates: [number, number][]) => {
+    return coordinates.map((coord) => `${coord[0]},${coord[1]}`).join(";");
+  };
 
   if (loading) {
     return (
@@ -321,14 +309,14 @@ export default function Schedule() {
   } else {
     return (
       <div className="flex">
-
+        <Nav />
         {/* Modal for adding a task */}
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onAddTask={handleAddTask}
         />
-        <div className="bg-black text-white w-full min-h-screen px-6 mt-4">
+        <div className="bg-black text-white w-full h-screen px-6">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <button
@@ -351,11 +339,11 @@ export default function Schedule() {
 
           {/* Conditional Rendering for Calendar or Table View */}
           {viewMode === "calendar" ? (
-            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
-              <ScheduleXCalendar calendarApp={calendar} />
+            <div className="h-full flex-grow overflow-auto">
+              <ScheduleXCalendar calendarApp={calendar}/>
             </div>
           ) : (
-            <div className="mt-8 w-full h-full flex-grow">
+            <div className="mt-8 w-full h-full flex-grow overflow-auto">
               <h1 className="text-2xl font-bold mb-4 text-white">Scheduled Tasks</h1>
               <table className="border-collapse border border-gray-800 w-full">
                 <thead>
@@ -388,7 +376,7 @@ export default function Schedule() {
                       <td className="border border-gray-300">{task.end_time}</td>
                       <td className="border border-gray-300">{task.assigned_to}</td>
                       <td className="border border-gray-300">{task.priority}</td>
-                      <td>{task.coordinates ? JSON.stringify(task.coordinates) : "N/A"}</td>
+                      <td>{task.coordinates ? formatCoordinates(task.coordinates) : "N/A"}</td>
                     </tr>
                   ))}
                 </tbody>
