@@ -113,7 +113,6 @@ export default function page() {
     return (
       <ProtectedRoute allowedRoles={["admin"]}>
         <div className="flex">
-          <Nav />
           <div className="px-6 w-full">
             <h1>Manage Users</h1>
             <div className="flex justify-between">

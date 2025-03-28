@@ -94,6 +94,7 @@ export default function Schedule() {
 
         const coordinatesMap = albertaGeoJSON.features.reduce(
           (acc: any, feature: any) => {
+          (acc: any, feature: any) => {
             const trackId = feature.properties["@id"];
             acc[trackId] = feature.geometry.coordinates;
             return acc;
@@ -193,8 +194,8 @@ export default function Schedule() {
     const formattedTrackId = trackId.startsWith("node/")
       ? trackId
       : trackId.startsWith("way/")
-      ? trackId
-      : `way/${trackId}`;
+        ? trackId
+        : `way/${trackId}`;
     console.log("Formatted Track ID:", formattedTrackId);
 
     // Fetch coordinates for the selected track
@@ -331,7 +332,72 @@ export default function Schedule() {
   } else {
     return (
       <div className="flex">
-        <Nav />
+        <div className="flex flex-col px-6 w-full">
+          <div className="text-white">
+            {/* Schedule-X Calendar */}
+            <div className="sx-react-calendar-wrapper w-full">
+              <ScheduleXCalendar calendarApp={calendar} />
+            </div>
+          </div>
+          {/* Task Table */}
+          <div className="mt-6">
+            <div className="flex justify-between">
+              <h1 className="text-2xl font-bold mb-4 text-white">
+                Scheduled Tasks
+              </h1>
+              <button
+                className="bg-blue-600 w-32 h-10 rounded-full cursor-pointer hover:bg-blue-500"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Schedule
+              </button>
+            </div>
+            <table className="border-collapse border border-gray-800 w-full ">
+              <thead>
+                <tr>
+                  <th className="border border-gray-800">Order ID</th>
+                  <th className="border border-gray-800">Track ID</th>
+                  <th className="border border-gray-800">Status</th>
+                  <th className="border border-gray-800">Title</th>
+                  <th className="border border-gray-800">Description</th>
+                  <th className="border border-gray-800">Start Date</th>
+                  <th className="border border-gray-800">End Date</th>
+                  <th className="border border-gray-800">Assigned To</th>
+                  <th className="border border-gray-800">Priority</th>
+                  <th className="border border-gray-800">
+                    Midpoint Coordinates
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((task) => (
+                  <tr key={task.id}>
+                    <td className="border border-gray-300">#{task.id}</td>
+                    <td className="border border-gray-300">#{task.track_id}</td>
+                    <td className="border border-gray-300">{task.status}</td>
+                    <td className="border border-gray-300">{task.title}</td>
+                    <td className="border border-gray-300">
+                      {task.description}
+                    </td>
+                    <td className="border border-gray-300">
+                      {task.start_date}
+                    </td>
+                    <td className="border border-gray-300">{task.end_date}</td>
+                    <td className="border border-gray-300">
+                      {task.assigned_to}
+                    </td>
+                    <td className="border border-gray-300">{task.priority}</td>
+                    <td>
+                      {task.coordinates
+                        ? JSON.stringify(task.coordinates)
+                        : "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         {/* Modal for adding a task */}
         <Modal
@@ -367,9 +433,7 @@ export default function Schedule() {
             </div>
           ) : (
             <div className="mt-8 w-full h-full flex-grow">
-              <h1 className="text-2xl font-bold mb-4 text-white">
-                Scheduled Tasks
-              </h1>
+              <h1 className="text-2xl font-bold mb-4 text-white">Scheduled Tasks</h1>
               <table className="border-collapse border border-gray-800 w-full">
                 <thead>
                   <tr>

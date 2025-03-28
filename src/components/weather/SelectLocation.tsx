@@ -13,9 +13,15 @@ type Props = {
     forecastData: { [key: string]: forecastType | null };
     handleTrackChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     predictWeatherData: { [key: string]: any };
-  };
+};
 
-const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
+const getWindDirection = (degree: number): string => {
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const index = Math.round(degree / 45) % 8;
+    return directions[index];
+};
+
+const SelectLocation = ({ handleTrackChange, track, predictWeatherData }: Props): JSX.Element => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [forecastData, setForecastData] = useState<{ [key: string]: forecastType | null }>({});
     const [mapUrl, setMapUrl] = useState<string>("");
@@ -105,7 +111,7 @@ const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
     const selectedForecast = forecastData[track];
 
     return (
-        <div className="bg-black text-white min-h-screen">
+        <div className="bg-black text-white min-h-screen mt-zero p-3">
             <div className="grid grid-cols-12 gap-6">
                 {/* Current forecast per track */}
                 <div className="col-span-4 space-y-4">
@@ -116,7 +122,16 @@ const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
                     {tasks.map((task, i) => {
                         const forecast = forecastData[task.track_id];
                         return (
-                            <div key={i} className="bg-gray-800 p-4 rounded-[10px]">
+                            <div key={i} className="bg-gray-800 p-4 rounded-[10px]"
+                                onClick={() => {
+                                    const event = new Event("change", { bubbles: true }) as unknown as ChangeEvent<HTMLSelectElement>;
+                                    Object.defineProperty(event, "target", {
+                                        writable: false,
+                                        value: { value: task.track_id } as EventTarget & HTMLSelectElement,
+                                    });
+                                    handleTrackChange(event);
+                                }}
+                            >
                                 <h3 className="font-bold">
                                     {`Track ${i + 1} - ${task.track_id} (${forecast?.list?.[0]?.weather?.[0]?.main ?? "-"})`}
                                 </h3>
@@ -148,10 +163,71 @@ const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
                             ))}
                         </select>
                     </div>
-
+                    
                     <div className="grid grid-cols-12 gap-6">
-                        {/* Weather Map */}
-                        <div className="col-span-12">
+                        {/* Wind Direction for Selected Track */}
+                        <div className="col-span-6">
+                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded ">
+                                Wind Direction for Selected Track
+                            </h2>
+                            <div className="font-bold text-5xl h-40 bg-gray-800 rounded-[10px] mt-4 flex items-center justify-center">
+                                {selectedForecast?.list?.[0]?.wind?.deg !== undefined
+                                    ? `${getWindDirection(Math.round(selectedForecast.list[0].wind.deg))}`
+                                    : 'No data'}
+                            </div>
+                            <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded mt-4">
+                                Wind Speed for Selected Track
+                            </h2>
+                            <div className="h-[200px] bg-gray-800 rounded-[10px] p-3 mt-4 flex items-center justify-center">
+                                {selectedForecast ? (
+                                    <Line
+                                        data={{
+                                            labels: selectedForecast.list.map((entry) =>
+                                                new Date(entry.dt * 1000).toLocaleTimeString([], {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })
+                                            ),
+                                            datasets: [
+                                                {
+                                                    label: "Wind Speed",
+                                                    data: selectedForecast.list.map((entry) => entry.wind.speed),
+                                                    borderColor: "rgba(75, 192, 192, 1)",
+                                                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                                                    borderWidth: 2,
+                                                    pointBackgroundColor: "rgba(75, 192, 192, 1)",
+                                                    pointBorderColor: "#fff",
+                                                    pointRadius: 5,
+                                                    pointHoverRadius: 7,
+                                                    fill: true,
+                                                    tension: 0.4,
+                                                },
+                                            ],
+                                        }}
+                                        options={{
+                                            maintainAspectRatio: false,
+                                            scales: {
+                                                x: {
+                                                    ticks: {
+                                                        color: "white",
+                                                    },
+                                                },
+                                                y: {
+                                                    ticks: {
+                                                        color: "white",
+                                                    },
+                                                    beginAtZero: false,
+                                                },
+                                            },
+                                        }}
+                                    />
+                                ) : (
+                                    <p className="text-gray-500">No wind speed data available for the selected track.</p>
+                                )}
+                            </div>
+                        </div>
+                        {/* Meteoblue Weather Map */}
+                        <div className="col-span-6">
                             <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded">
                                 Meteoblue Weather Map for Selected Track
                             </h2>
@@ -176,6 +252,9 @@ const SelectLocation = ({ handleTrackChange, track }: Props): JSX.Element => {
                                 )}
                             </div>
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-6">
 
                         {/* Temperature Chart */}
                         <div className="col-span-12">
