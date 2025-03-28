@@ -40,7 +40,6 @@ export default function Page() {
 
   return (
     <div className="flex">
-      <Nav />
       <div className="flex flex-col items-center w-full">
         <h1 className="text-2xl font-bold mb-4">Help</h1>
         <div className="w-full max-w-lg">

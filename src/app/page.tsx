@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, firestore } from "@/app/_utils/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import type { User } from "firebase/auth";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -46,8 +47,8 @@ export default function Home() {
   }, [router]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return "Loading...";
   }
 
-  return <div>{user ? "Redirecting to dashboard..." : "Redirecting to login..."}</div>;
+  return <div>{user ? <p><LoadingSpinner />Redirecting to dashboard...</p> : <p><LoadingSpinner />Redirecting to login...</p>}</div>;
 }

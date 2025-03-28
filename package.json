@@ -26,6 +26,7 @@
     "firebase-admin": "^13.2.0",
     "fs": "^0.0.1-security",
     "leaflet": "^1.9.4",
+    "leaflet-markercluster": "^0.2.2",
     "leaflet.gridlayer.googlemutant": "^0.14.1",
     "legacy": "^0.0.3",
     "lucide-react": "^0.476.0",
