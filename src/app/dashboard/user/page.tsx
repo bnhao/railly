@@ -82,30 +82,6 @@ export default function Dashboard() {
     }
   };
 
-  // Delete a task
-  const handleDeleteTask = async (taskId: number) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch(`/api/tasks/${taskId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to delete task: ${response.statusText}`);
-      }
-
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
-      alert("Task deleted successfully");
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      alert("Failed to delete task");
-    }
-  };
-
   // Fetch tasks on component mount
   useEffect(() => {
     const fetchTasks = async () => {
