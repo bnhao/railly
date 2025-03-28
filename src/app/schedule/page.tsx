@@ -397,8 +397,6 @@ export default function Schedule() {
           )}
         </div>
  
-        {/* Modal for adding a task */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAddTask={handleAddTask} />
  
         {/* Modal for task details */}
         {selectedTask && (
