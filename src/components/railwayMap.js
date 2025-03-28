@@ -35,7 +35,7 @@ const isClient = typeof window !== "undefined";
 const L = isClient ? require("leaflet") : null;
 
 if (L) {
-  delete L.Icon.Default.prototype._getIconUrl;
+  // delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl: "/leaflet/marker-icon-2x.png",
     iconUrl: "/leaflet/marker-icon.png",
