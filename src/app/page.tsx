@@ -43,7 +43,6 @@ export default function Home() {
         }
       } else {
         setUser(null);
-        toast.error("Redirecting to login...");
         router.push("/logIn");
       }
       setLoading(false);
