@@ -14,6 +14,8 @@ import AIchatbot from "@/components/AIchatbot";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import RailwayMap from "@/components/railwayMap";
+import { toast, Toaster } from "react-hot-toast"
+import { useAuth } from "@/app/context/AuthContext";
 
 
 export default function Dashboard() {
@@ -36,7 +38,7 @@ export default function Dashboard() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
-
+  const { role } = useAuth();
   // Initialize Google Maps
   useEffect(() => {
     if (!googleMapsApiKey) {
@@ -113,10 +115,30 @@ export default function Dashboard() {
     fetchTasks();
   }, []);
 
+  const hasShownToast = useRef(false);
+  useEffect(() => {
+    if (!role || hasShownToast.current) return;
+    hasShownToast.current = true;
+    toast.success(
+      <span>
+        You are logged in as <strong>{role}</strong>
+      </span>,
+      {
+        duration: 3000,
+        position: "top-right",
+        style: {
+          background: "#333",
+          color: "#fff",
+        },
+      }
+    );
+  }, [role]);
+
   const forecast = forecastData["Banff"];
 
   return (
     <ProtectedRoute allowedRoles={["admin", "user"]}>
+      <Toaster />
       <div className="flex">
         <div className="px-6 bg-background text-foreground w-full h-screen flex flex-col">
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-6 h-full">

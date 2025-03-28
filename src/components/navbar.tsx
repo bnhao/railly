@@ -46,7 +46,6 @@ export default function Nav() {
       icon: <AiOutlineSchedule />,
       path: "/schedule",
     },
-    { title: "Admin", id: 5, icon: <GrUserAdmin />, path: "/admin" },
     { title: "Help", id: 6, icon: <IoIosHelpCircleOutline />, path: "/help" },
     {
       title: "Manage User",
