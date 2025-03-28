@@ -50,5 +50,5 @@ export default function Home() {
     return "Loading...";
   }
 
-  return <div>{user ? <p><LoadingSpinner />Redirecting to dashboard...</p> : <p><LoadingSpinner />Redirecting to login...</p>}</div>;
+  return <div>{user ? <p>Redirecting to dashboard...</p> : <p>Redirecting to login...</p>}</div>;
 }

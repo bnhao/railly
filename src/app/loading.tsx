@@ -1,5 +1,5 @@
 // app/loading.tsx
-import LoadingSpinner from "@/components/Loadingspinner";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Loading() {
     return (
