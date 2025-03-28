@@ -320,7 +320,7 @@ export default function Schedule() {
     );
   } else {
     return (
-      <div className="flex relative flex-col h-screen">
+      <div className="flex flex-col h-screen">
  
         {/* Modal for adding a task */}
         <Modal
@@ -351,7 +351,7 @@ export default function Schedule() {
  
           {/* Conditional Rendering for Calendar or Table View */}
           {viewMode === "calendar" ? (
-            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
+            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4 max-w-full max-h-full">
               <ScheduleXCalendar calendarApp={calendar} />
             </div>
           ) : (
