@@ -2,21 +2,16 @@
 import { Loader } from "@googlemaps/js-api-loader";
 import React, { useEffect, useRef, useState } from "react";
 import "chart.js/auto";
-import Nav from "@/components/navbar";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import useForecast from "../hooks/useForecast";
-import { useRouter } from "next/navigation";
 import TrackCapacityChart from "@/components/trackOverViewComponents/TrackCapacityChart";
 import { CHART_OPTIONS } from "@/data/chartConfig";
 import { trackCapacityData } from "@/data/trackData";
 import AIchatbot from "@/components/AIchatbot";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import RailwayMap from "@/components/railwayMap";
 import { toast, Toaster } from "react-hot-toast"
 import { useAuth } from "@/app/context/AuthContext";
-
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {
   type Task = {
@@ -33,12 +28,19 @@ export default function Dashboard() {
   };
 
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [selectedFeatture, setSelectedFeature] = useState(null);
-  const { forecastData } = useForecast();
+  const [selectedFeature, setSelectedFeature] = useState(null);
+  const [hoveredContainer, setHoveredContainer] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const router = useRouter();
+
+  const descriptions: Record<string, string> = {
+    weather: "View the latest weather updates for railway operations.",
+    capacity: "Track capacity overview and congestion levels.",
+    schedules: "Manage and view the railway schedules and priorities.",
+  };
+
   const { role } = useAuth();
+
   // Initialize Google Maps
   useEffect(() => {
     if (!googleMapsApiKey) {
@@ -104,8 +106,6 @@ export default function Dashboard() {
     }
   };
 
-  // Dynamically import the CombinedMap component
-
   // Fetch tasks on component mount
   useEffect(() => {
     const fetchTasks = async () => {
@@ -134,38 +134,43 @@ export default function Dashboard() {
     );
   }, [role]);
 
-  const forecast = forecastData["Banff"];
-
   return (
     <ProtectedRoute allowedRoles={["admin", "user"]}>
       <Toaster />
       <div className="flex">
-        <div className="px-6 bg-background text-foreground w-full h-screen flex flex-col">
-          <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-6 h-full">
+        <div className="px-5 bg-background text-foreground w-full h-screen flex flex-col">
+          <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-5 h-full">
             <div
               className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer items-center justify-center overflow-hidden"
-              onClick={() => router.push("/weather")}
+              onMouseEnter={() => setHoveredContainer("weather")}
+              onMouseLeave={() => setHoveredContainer(null)}
             >
-              <h3 className="text-center text-lg font-bold">
-                Weather Overview
-              </h3>
-              <h3>Banff</h3>
-              <p>Wind: {forecast?.list[0].wind.speed ?? "-"} km/h</p>
-              <p>Temperature: {forecast?.list[0].main.temp ?? "-"}°C</p>
-              <p>Humidity: {forecast?.list[0].main.humidity ?? "-"}%</p>
               <WeatherWidget />
+              {hoveredContainer === "weather" && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+                  {descriptions.weather}
+                </div>
+              )}
             </div>
             <div
               className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md pb-12 pt-2 pr-2 pl-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
-              onClick={() => router.push("/trackOverview")}
+              onMouseEnter={() => setHoveredContainer("capacity")}
+              onMouseLeave={() => setHoveredContainer(null)}
             >
               <TrackCapacityChart
                 data={trackCapacityData}
                 options={CHART_OPTIONS}
               />
+              {hoveredContainer === "capacity" && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+                  {descriptions.capacity}
+                </div>
+              )}
             </div>
             <div
               className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer "
+              onMouseEnter={() => setHoveredContainer("schedules")}
+              onMouseLeave={() => setHoveredContainer(null)}
             >
               <h3 className="text-center text-lg font-bold">Schedules</h3>{" "}
               <table className="border-collapse border border-gray-800 w-full">
@@ -209,11 +214,13 @@ export default function Dashboard() {
                   ))}
                 </tbody>
               </table>
+              {hoveredContainer === "schedules" && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+                  {descriptions.schedules}
+                </div>
+              )}
             </div>
-            <div className="lg:col-span-1 lg:row-span-1 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer">
-              <RailwayMap onFeatureSelect={setSelectedFeature} />
-
-            </div>
+            <RailwayMap onFeatureSelect={setSelectedFeature} />
           </div>
         </div>
         <AIchatbot />

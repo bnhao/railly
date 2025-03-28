@@ -4,14 +4,14 @@ import React, { useState, FormEvent } from "react";
 import { useEffect } from "react";
 import Nav from "@/components/navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AIchatbot from "@/components/AIchatbot";
 
 /**
- * 
- * Sources used: 
- * https://webdev2-git-dv-dereksaits-projects.vercel.app/week-12/api-implementation 
- * https://github.com/warsylewicz/webdev2/blob/main/pages/week-12/api-implementation.mdx 
+ *
+ * Sources used:
+ * https://webdev2-git-dv-dereksaits-projects.vercel.app/week-12/api-implementation
+ * https://github.com/warsylewicz/webdev2/blob/main/pages/week-12/api-implementation.mdx
  */
-
 
 type User = {
   id: number;
@@ -258,7 +258,10 @@ export default function page() {
                     placeholder="Email"
                     value={selectedUser.email}
                     onChange={(e) =>
-                      setSelectedUser({ ...selectedUser, email: e.target.value })
+                      setSelectedUser({
+                        ...selectedUser,
+                        email: e.target.value,
+                      })
                     }
                   />
                   <select
@@ -289,6 +292,7 @@ export default function page() {
             )}
           </div>
         </div>
+        <AIchatbot />
       </ProtectedRoute>
     );
   }
