@@ -60,6 +60,9 @@ export default function Nav() {
     try {
       await signOut(auth);
       router.push("/logIn");
+      toast.success("Logged out successfully", {
+        position: "top-center",
+      });
     } catch (error) {
       toast.error("Log out failed!", {
         position: "top-center",
