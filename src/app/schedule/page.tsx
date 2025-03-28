@@ -320,7 +320,7 @@ export default function Schedule() {
     );
   } else {
     return (
-      <div className="flex">
+      <div className="flex relative flex-col h-screen">
  
         {/* Modal for adding a task */}
         <Modal
