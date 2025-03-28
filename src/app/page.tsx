@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, firestore } from "@/app/_utils/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import type { User } from "firebase/auth";
+import { toast } from "react-toastify";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Home() {
@@ -29,26 +30,31 @@ export default function Home() {
             });
             localStorage.removeItem("registrationData");
           }
+
           const roleData = userDoc.exists() ? userDoc.data().role : "user";
           setUser(user);
           setRole(roleData);
+          toast.success("Redirecting to dashboard...");
           router.push("/dashboard");
         } else {
           setUser(null);
+          toast.error("Please verify your email");
           router.push("/logIn");
         }
       } else {
         setUser(null);
+        toast.error("Redirecting to login...");
         router.push("/logIn");
       }
       setLoading(false);
     });
+
     return () => unsubscribe();
   }, [router]);
 
   if (loading) {
-    return "Loading...";
+    return <p>Loading...</p>;
   }
 
-  return <div>{user ? <p>Redirecting to dashboard...</p> : <p>Redirecting to login...</p>}</div>;
+  return <LoadingSpinner />; // You can replace this with your actual loading spinner component
 }

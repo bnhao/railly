@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 type ProtectedRouteProps = {
     children: React.ReactNode;
@@ -18,42 +19,45 @@ const ProtectedRoute = ({
     const router = useRouter();
 
     useEffect(() => {
-        if (!isLoading) {
-            if (!user) {
-                router.push("/logIn");
-            } else if (allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
-                router.push("/unauthorized");
-            } else if (requiredPermissions.length > 0) {
-                const hasAllPermissions = requiredPermissions.every(permission =>
-                    hasPermission(permission)
-                );
+        if (isLoading) {
+            toast.info("Loading...");
+            return;
+        }
 
-                if (!hasAllPermissions) {
-                    router.push("/unauthorized");
-                }
+        if (!user) {
+            toast.error("You are not logged in. Redirecting to login page...");
+            router.push("/logIn");
+            return;
+        }
+
+        if (allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
+            toast.error("You don't have permission to access this page. Redirecting...");
+            router.push("/unauthorized");
+            return;
+        }
+
+        if (requiredPermissions.length > 0) {
+            const hasAllPermissions = requiredPermissions.every(permission =>
+                hasPermission(permission)
+            );
+
+            if (!hasAllPermissions) {
+                toast.error("You don't have the required permissions. Redirecting...");
+                router.push("/unauthorized");
             }
         }
     }, [user, role, isLoading, allowedRoles, requiredPermissions, router, hasPermission]);
 
-    if (isLoading) {
-        return <p>Loading authentication...</p>;
-    }
-
-    if (!user) {
-        return <p>You need to be logged in to access this page. Redirecting...</p>;
-    }
-
-    if (allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
-        return <p>You don't have permission to access this page. Redirecting...</p>;
+    if (isLoading || !user || (allowedRoles.length > 0 && role && !allowedRoles.includes(role))) {
+        return null;
     }
 
     if (requiredPermissions.length > 0) {
         const hasAllPermissions = requiredPermissions.every(permission =>
             hasPermission(permission)
         );
-
         if (!hasAllPermissions) {
-            return <p>You don't have the required permissions. Redirecting...</p>;
+            return null;
         }
     }
 
