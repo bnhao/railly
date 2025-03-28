@@ -31,17 +31,8 @@ const MarkerClusterGroup = dynamic(() => import("react-leaflet-cluster"), {
 });
 
 // Ensure Leaflet is only loaded on the client side
-const isClient = typeof window !== "undefined";
-const L = isClient ? require("leaflet") : null;
+// const isClient = typeof window !== "undefined";
 
-if (L) {
-  // delete L.Icon.Default.prototype._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: "/leaflet/marker-icon-2x.png",
-    iconUrl: "/leaflet/marker-icon.png",
-    shadowUrl: "/leaflet/marker-shadow.png",
-  });
-}
 
 // Default map center (Alberta)
 const DEFAULT_POSITION = [51.0447, -114.0719];
@@ -75,6 +66,16 @@ const RailwayMap = ({ onFeatureSelect }) => {
         setIsLoading(false);
         setError("Failed to load railway data. Please try again later.");
       });
+  }, []);
+
+  useEffect(() => {
+    const L = require("leaflet");
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+      iconUrl: "/leaflet/marker-icon.png",
+      shadowUrl: "/leaflet/marker-shadow.png",
+    });
   }, []);
 
   // Function to get the midpoint of a geometry
