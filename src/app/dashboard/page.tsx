@@ -3,13 +3,14 @@ import { Loader } from "@googlemaps/js-api-loader";
 import React, { useEffect, useRef, useState } from "react";
 import "chart.js/auto";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import TrackCapacityChart from "@/components/trackOverViewComponents/TrackCapacityChart";
 import { CHART_OPTIONS } from "@/data/chartConfig";
 import { trackCapacityData } from "@/data/trackData";
 import AIchatbot from "@/components/AIchatbot";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import RailwayMap from "@/components/railwayMap";
+import { toast, Toaster } from "react-hot-toast"
+import { useAuth } from "@/app/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {
@@ -30,7 +31,6 @@ export default function Dashboard() {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [hoveredContainer, setHoveredContainer] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const router = useRouter();
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const descriptions: Record<string, string> = {
@@ -38,6 +38,8 @@ export default function Dashboard() {
     capacity: "Track capacity overview and congestion levels.",
     schedules: "Manage and view the railway schedules and priorities.",
   };
+
+  const { role } = useAuth();
 
   // Initialize Google Maps
   useEffect(() => {
@@ -104,8 +106,6 @@ export default function Dashboard() {
     }
   };
 
-  // Dynamically import the CombinedMap component
-
   // Fetch tasks on component mount
   useEffect(() => {
     const fetchTasks = async () => {
@@ -115,14 +115,33 @@ export default function Dashboard() {
     fetchTasks();
   }, []);
 
+  const hasShownToast = useRef(false);
+  useEffect(() => {
+    if (!role || hasShownToast.current) return;
+    hasShownToast.current = true;
+    toast.success(
+      <span>
+        You are logged in as <strong>{role}</strong>
+      </span>,
+      {
+        duration: 3000,
+        position: "top-right",
+        style: {
+          background: "#333",
+          color: "#fff",
+        },
+      }
+    );
+  }, [role]);
+
   return (
     <ProtectedRoute allowedRoles={["admin", "user"]}>
+      <Toaster />
       <div className="flex">
         <div className="px-5 bg-background text-foreground w-full h-screen flex flex-col">
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-5 h-full">
             <div
               className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md p-2 bg-[#393A3E] flex-grow hover:cursor-pointer items-center justify-center overflow-hidden"
-              onClick={() => router.push("/weather")}
               onMouseEnter={() => setHoveredContainer("weather")}
               onMouseLeave={() => setHoveredContainer(null)}
             >
@@ -135,7 +154,6 @@ export default function Dashboard() {
             </div>
             <div
               className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md pb-12 pt-2 pr-2 pl-2 bg-[#393A3E] flex-grow hover:cursor-pointer"
-              onClick={() => router.push("/trackOverview")}
               onMouseEnter={() => setHoveredContainer("capacity")}
               onMouseLeave={() => setHoveredContainer(null)}
             >

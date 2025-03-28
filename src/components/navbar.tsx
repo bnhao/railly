@@ -8,7 +8,6 @@ import { AiOutlineSchedule } from "react-icons/ai";
 import { RiDashboardFill, RiLogoutCircleRLine } from "react-icons/ri";
 import { LuTrainTrack } from "react-icons/lu";
 import { TiWeatherPartlySunny } from "react-icons/ti";
-import { GrUserAdmin } from "react-icons/gr";
 import { MdOutlineManageAccounts, MdOutlineFeedback } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
@@ -43,16 +42,15 @@ export default function Nav() {
       icon: <AiOutlineSchedule />,
       path: "/schedule",
     },
-    { title: "Admin", id: 5, icon: <GrUserAdmin />, path: "/admin" },
     {
       title: "Manage User",
-      id: 6,
+      id: 5,
       icon: <MdOutlineManageAccounts />,
       path: "/manageusers",
     },
     {
       title: "Feedback",
-      id: 7,
+      id: 6,
       icon: <MdOutlineFeedback />,
       path: "/feedback",
     },

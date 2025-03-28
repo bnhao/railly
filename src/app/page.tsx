@@ -32,7 +32,7 @@ export default function Home() {
           const roleData = userDoc.exists() ? userDoc.data().role : "user";
           setUser(user);
           setRole(roleData);
-          router.push(roleData === "admin" ? "/admin" : "/dashboard");
+          router.push("/dashboard");
         } else {
           setUser(null);
           router.push("/logIn");

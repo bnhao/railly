@@ -55,7 +55,7 @@ export default function LogInPage() {
         emailVerified: user.emailVerified,
       });
 
-      router.push(role === "admin" ? "/admin" : "/dashboard");
+      router.push("/dashboard");
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
