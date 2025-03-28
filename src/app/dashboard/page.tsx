@@ -124,8 +124,8 @@ export default function Dashboard() {
         You are logged in as <strong>{role}</strong>
       </span>,
       {
-        duration: 3000,
-        position: "top-right",
+        duration: 4000,
+        position: "top-center",
         style: {
           background: "#333",
           color: "#fff",
