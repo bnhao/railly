@@ -328,96 +328,92 @@ export default function Schedule() {
     );
   } else {
     return (
-      <div className="flex">
-        {/* Modal for adding a task */}
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onAddTask={handleAddTask}
-        />
-        <div className="bg-black text-white w-full min-h-screen px-6 mt-4">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-4">
-            <button
-              className="bg-gray-700 px-6 py-2 rounded-full cursor-pointer hover:bg-gray-600"
-              onClick={() =>
-                setViewMode(viewMode === "calendar" ? "table" : "calendar")
-              }
-            >
-              {viewMode === "calendar"
-                ? "Switch to Table View"
-                : "Switch to Calendar View"}
-            </button>
-          </div>
+      <div className="flex flex-col h-screen bg-black text-white">
+        {/* Header */}
+        <div className="flex justify-between items-center px-6 py-4 bg-gray-800">
+          <button
+            className="bg-gray-700 px-6 py-2 rounded-full cursor-pointer hover:bg-gray-600"
+            onClick={() =>
+              setViewMode(viewMode === "calendar" ? "table" : "calendar")
+            }
+          >
+            {viewMode === "calendar"
+              ? "Switch to Table View"
+              : "Switch to Calendar View"}
+          </button>
+        </div>
 
-          {/* Conditional Rendering for Calendar or Table View */}
+        {/* Main Content */}
+        <div className="flex-grow flex flex-col">
           {viewMode === "calendar" ? (
-            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
+            <div className="sx-react-calendar-wrapper w-full h-full flex-grow">
               <ScheduleXCalendar calendarApp={calendar} />
             </div>
           ) : (
-            <div className="mt-8 w-full h-full flex-grow">
-              <h1 className="text-2xl font-bold mb-4 text-white">
+            <div className="w-full h-full flex-grow overflow-hidden">
+              <h1 className="text-2xl font-bold mb-4 text-white px-6">
                 Scheduled Tasks
               </h1>
-              <table className="border-collapse border border-gray-800 w-full">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-800">Order ID</th>
-                    <th className="border border-gray-800">Track ID</th>
-                    <th className="border border-gray-800">Status</th>
-                    <th className="border border-gray-800">Title</th>
-                    <th className="border border-gray-800">Description</th>
-                    <th className="border border-gray-800">Start Date</th>
-                    <th className="border border-gray-800">Start Time</th>
-                    <th className="border border-gray-800">End Date</th>
-                    <th className="border border-gray-800">End Time</th>
-                    <th className="border border-gray-800">Assigned To</th>
-                    <th className="border border-gray-800">Priority</th>
-                    <th className="border border-gray-800">
-                      Midpoint Coordinates
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.map((task) => (
-                    <tr key={task.id}>
-                      <td className="border border-gray-300">#{task.id}</td>
-                      <td className="border border-gray-300">
-                        #{task.track_id}
-                      </td>
-                      <td className="border border-gray-300">{task.status}</td>
-                      <td className="border border-gray-300">{task.title}</td>
-                      <td className="border border-gray-300">
-                        {task.description}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.start_date}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.start_time}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.end_date}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.end_time}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.assigned_to}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.priority}
-                      </td>
-                      <td>
-                        {task.coordinates
-                          ? JSON.stringify(task.coordinates)
-                          : "N/A"}
-                      </td>
+              <div className="overflow-auto h-full px-6">
+                <table className="border-collapse border border-gray-800 w-full">
+                  <thead>
+                    <tr>
+                      <th className="border border-gray-800">Order ID</th>
+                      <th className="border border-gray-800">Track ID</th>
+                      <th className="border border-gray-800">Status</th>
+                      <th className="border border-gray-800">Title</th>
+                      <th className="border border-gray-800">Description</th>
+                      <th className="border border-gray-800">Start Date</th>
+                      <th className="border border-gray-800">Start Time</th>
+                      <th className="border border-gray-800">End Date</th>
+                      <th className="border border-gray-800">End Time</th>
+                      <th className="border border-gray-800">Assigned To</th>
+                      <th className="border border-gray-800">Priority</th>
+                      <th className="border border-gray-800">
+                        Midpoint Coordinates
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {tasks.map((task) => (
+                      <tr key={task.id}>
+                        <td className="border border-gray-300">#{task.id}</td>
+                        <td className="border border-gray-300">
+                          #{task.track_id}
+                        </td>
+                        <td className="border border-gray-300">{task.status}</td>
+                        <td className="border border-gray-300">{task.title}</td>
+                        <td className="border border-gray-300">
+                          {task.description}
+                        </td>
+                        <td className="border border-gray-300">
+                          {task.start_date}
+                        </td>
+                        <td className="border border-gray-300">
+                          {task.start_time}
+                        </td>
+                        <td className="border border-gray-300">
+                          {task.end_date}
+                        </td>
+                        <td className="border border-gray-300">
+                          {task.end_time}
+                        </td>
+                        <td className="border border-gray-300">
+                          {task.assigned_to}
+                        </td>
+                        <td className="border border-gray-300">
+                          {task.priority}
+                        </td>
+                        <td>
+                          {task.coordinates
+                            ? JSON.stringify(task.coordinates)
+                            : "N/A"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

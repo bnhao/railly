@@ -1,5 +1,6 @@
 "use client";
-
+import ReportModal from "@/components/ReportModal";
+import { startOfWeek, endOfWeek, isWithinInterval, parseISO } from "date-fns";
 import { useState, useEffect, useMemo } from "react";
 import { useNextCalendarApp, ScheduleXCalendar } from "@schedule-x/react";
 import {
@@ -37,6 +38,7 @@ export default function Schedule() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isReportOpen, setIsReportOpen] = useState(false);
   const [trackCoordinates, setTrackCoordinates] = useState<{
     [key: string]: [number, number][];
   }>({});
@@ -53,6 +55,15 @@ export default function Schedule() {
 
     fetchTasks();
   }, []);
+
+  const currentWeekTasks = useMemo(() => {
+    const start = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const end = endOfWeek(new Date(), { weekStartsOn: 1 });
+    return tasks.filter((task) => {
+      const date = parseISO(task.start_date);
+      return isWithinInterval(date, { start, end });
+    });
+  }, [tasks]);
 
   // Fetch all tasks
   const getTasks = async (): Promise<Task[]> => {
@@ -338,12 +349,20 @@ export default function Schedule() {
         <div className="bg-black text-white w-full min-h-screen px-6 mt-4">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
-            <button
-              className="bg-blue-600 px-6 py-2 rounded-full cursor-pointer hover:bg-blue-500"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Schedule
-            </button>
+            <div className="flex gap-4">
+              <button
+                className="bg-blue-600 px-6 py-2 rounded-full cursor-pointer hover:bg-blue-500"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Schedule
+              </button>
+              <button
+                className="bg-indigo-600 px-6 py-2 rounded-full cursor-pointer hover:bg-indigo-500"
+                onClick={() => setIsReportOpen(true)}
+              >
+                Generate Report
+              </button>
+            </div>
             <button
               className="bg-gray-700 px-6 py-2 rounded-full cursor-pointer hover:bg-gray-600"
               onClick={() =>
@@ -356,6 +375,11 @@ export default function Schedule() {
             </button>
           </div>
 
+          <ReportModal
+            isOpen={isReportOpen}
+            onClose={() => setIsReportOpen(false)}
+            tasks={currentWeekTasks}
+          />
           {/* Conditional Rendering for Calendar or Table View */}
           {viewMode === "calendar" ? (
             <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">

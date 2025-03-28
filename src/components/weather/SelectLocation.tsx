@@ -120,8 +120,8 @@ const SelectLocation = ({
   const selectedForecast = forecastData[track];
 
   return (
-    <div className="bg-black text-white min-h-screen mt-zero p-3">
-      <div className="grid grid-cols-12 gap-6">
+    <div className="bg-black text-white min-h-screen">
+      <div className="grid grid-cols-12 gap-5">
         {/* Current forecast per track */}
         <div className="col-span-4 space-y-4">
           <div className="bg-emerald-950 p-4 rounded">
@@ -178,15 +178,14 @@ const SelectLocation = ({
               onChange={handleTrackChange}
             >
               <option value="">Select a Track</option>
-              {tasks.map((task) => (
-                <option key={task.track_id} value={task.track_id}>
+              {tasks.map((task, index) => (
+                <option key={`${task.track_id}-${index}`} value={task.track_id}>
                   {`Track ${task.track_id}`}
                 </option>
               ))}
             </select>
           </div>
-
-          <div className="grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-5">
             {/* Wind Direction for Selected Track */}
             <div className="col-span-6">
               <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded ">
