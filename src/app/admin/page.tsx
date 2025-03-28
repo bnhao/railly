@@ -1,4 +1,5 @@
 // app/admin/page.tsx
+import AIchatbot from "@/components/AIchatbot";
 import Nav from "@/components/navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -10,6 +11,7 @@ export default function AdminPage() {
           <h1 className="text-2xl font-bold">Welcome to the Admin Dashboard</h1>
         </div>
       </ProtectedRoute>
+      <AIchatbot />
     </div>
   );
 }

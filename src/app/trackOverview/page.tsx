@@ -1,22 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Nav from "@/components/navbar";
 import RailwayMap from "@/components/railwayMap";
 import TrackMaintenanceChart from "@/components/trackOverViewComponents/TrackMaintenanceChart";
 import TrackDetailsTable from "@/components/trackOverViewComponents/TrackDetailsTable";
-import TrackCapacityChart from "@/components/trackOverViewComponents/TrackCapacityChart";
 import SearchBar from "@/components/trackOverViewComponents/SearchBar";
-import {
-  trackDetails,
-  trackMaintenanceData,
-  trackCapacityData,
-} from "@/data/trackData";
-import {
-  CHART_LABELS,
-  CHART_BACKGROUND_COLORS,
-  CHART_OPTIONS,
-} from "@/data/chartConfig";
-import { Task } from "../schedule/user/page";
+import { trackDetails } from "@/data/trackData";
+import { CHART_BACKGROUND_COLORS, CHART_OPTIONS } from "@/data/chartConfig";
+import { Task } from "../schedule/page";
+import AIchatbot from "@/components/AIchatbot";
 
 export default function TrackOverview() {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -137,7 +128,7 @@ export default function TrackOverview() {
 
   return (
     <div className="flex">
-      <div className="px-6 bg-background text-foreground w-full">
+      <div className="px-5 bg-background text-foreground w-full flex flex-col">
         <div className="flex flex-row space-x-4">
           <div className="mb-6 mt-7">
             <SearchBar
@@ -165,7 +156,7 @@ export default function TrackOverview() {
               />
             </div>
           </div>
-          <div className="mt-1">
+          <div className="mb-6">
             <label
               htmlFor="favorites"
               className="block mb-1 text-darkgrey font-medium"
@@ -188,12 +179,15 @@ export default function TrackOverview() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 h-full">
+          <div className="lg:col-span-1 space-y-6 flex-grow">
             <TrackMaintenanceChart
               data={maintenanceHistoryData}
               options={CHART_OPTIONS}
             />
+          </div>
+          <RailwayMap onFeatureSelect={setSelectedFeature} />
+          <div className="lg:col-span-1 space-y-6 flex-grow h-full">
             {selectedFeature ? (
               <TrackDetailsTable
                 details={selectedFeature.properties}
@@ -206,14 +200,10 @@ export default function TrackOverview() {
               </div>
             )}
           </div>
-
-          <div className="lg:col-span-2 space-y-6">
-            <div className="h-[400px] rounded-md bg-gray-200 overflow-hidden">
-              <RailwayMap onFeatureSelect={setSelectedFeature} />
-            </div>
+          <div className="lg:col-span-1 space-y-6 flex-grow h-full">
             {/* Selected Track Details */}
             {selectedTrackDetails && (
-              <div className="mt-8 p-4 bg-gray-800 rounded-md text-white">
+              <div className="p-4 bg-gray-800 rounded-md text-white">
                 <h2 className="text-lg font-semibold">
                   Selected Working Track Details
                 </h2>
@@ -248,6 +238,7 @@ export default function TrackOverview() {
           </div>
         </div>
       </div>
+      <AIchatbot />
     </div>
   );
 }

@@ -3,11 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { MessageCircle, X } from "lucide-react";
-import { sendError } from "next/dist/server/api-utils";
 
 export default function AIchatbot() {
   const [input, setInput] = useState("");
-  const [response, setResponse] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { text: "Hello! How can I assist you?", sender: "bot" },

@@ -5,6 +5,7 @@ import FeedbackForm from "@/components/feedback/FeedbackForm";
 import { PlusCircle } from "lucide-react";
 import Nav from "@/components/navbar";
 import { FeedbackData } from "@/app/types/feedback";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function FeedbackPage() {
   const [feedbackList, setFeedbackList] = useState<FeedbackData[]>([]);
@@ -85,49 +86,51 @@ export default function FeedbackPage() {
   });
 
   return (
-    <div className="flex">
-      <div className="px-6 bg-[#1e1e1e] text-white w-full min-h-screen">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">User Feedback</h1>
-          <button
-            onClick={() => {
-              setSelectedFeedback(null);
-              setShowForm(true);
-            }}
-            className="bg-blue-600 text-white p-3 rounded-md shadow-md flex items-center justify-center hover:bg-blue-700"
-          >
-            <PlusCircle size={20} className="mr-2" /> Add Feedback
-          </button>
-        </div>
-
-        <div className="mb-4">
-          <select
-            className="p-2 bg-[#393A3E] text-white rounded-md border-none"
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-          >
-            <option value="date">Sort by Date</option>
-            <option value="actor">Sort by Actor</option>
-            <option value="relevance">Sort by Most Relevant</option>
-          </select>
-        </div>
-
-        <FeedbackTable
-          feedbackList={sortedFeedbackList}
-          onEdit={handleEditFeedback}
-          onDelete={handleDeleteFeedback}
-        />
-
-        {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
-            <FeedbackForm
-              initialData={selectedFeedback}
-              onSubmit={handleAddFeedback}
-              onCancel={() => setShowForm(false)}
-            />
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <div className="flex">
+        <div className="px-6 bg-[#1e1e1e] text-white w-full min-h-screen">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">User Feedback</h1>
+            <button
+              onClick={() => {
+                setSelectedFeedback(null);
+                setShowForm(true);
+              }}
+              className="bg-blue-600 text-white p-3 rounded-md shadow-md flex items-center justify-center hover:bg-blue-700"
+            >
+              <PlusCircle size={20} className="mr-2" /> Add Feedback
+            </button>
           </div>
-        )}
+
+          <div className="mb-4">
+            <select
+              className="p-2 bg-[#393A3E] text-white rounded-md border-none"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
+              <option value="date">Sort by Date</option>
+              <option value="actor">Sort by Actor</option>
+              <option value="relevance">Sort by Most Relevant</option>
+            </select>
+          </div>
+
+          <FeedbackTable
+            feedbackList={sortedFeedbackList}
+            onEdit={handleEditFeedback}
+            onDelete={handleDeleteFeedback}
+          />
+
+          {showForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+              <FeedbackForm
+                initialData={selectedFeedback}
+                onSubmit={handleAddFeedback}
+                onCancel={() => setShowForm(false)}
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }

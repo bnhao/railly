@@ -2,11 +2,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
-
+ 
 export default function FeedbackRedirect() {
   const { role, isLoading } = useAuth();
   const router = useRouter();
-
+ 
   useEffect(() => {
     if (!isLoading) {
       if (role === "admin") {
@@ -18,6 +18,6 @@ export default function FeedbackRedirect() {
       }
     }
   }, [role, isLoading, router]);
-
+ 
   return <p>Redirecting to your feedback page...</p>;
 }

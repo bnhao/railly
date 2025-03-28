@@ -4,6 +4,7 @@ import React, { JSX } from "react";
 import SelectLocation from "../../components/weather/SelectLocation";
 import useForecast from "../hooks/useForecast";
 import Nav from "@/components/navbar";
+import AIchatbot from "@/components/AIchatbot";
 
 const App = (): JSX.Element => {
   const {
@@ -24,6 +25,7 @@ const App = (): JSX.Element => {
 
         />
       </div>
+      <AIchatbot />
     </div>
   );
 };

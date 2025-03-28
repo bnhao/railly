@@ -1,20 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, firestore } from "@/app/_utils/firebase";
-import type { User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { auth } from "@/app/_utils/firebase";
 import { FcEnteringHeavenAlive } from "react-icons/fc";
-import { BsArrowLeftShort } from "react-icons/bs";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { RiDashboardFill, RiLogoutCircleRLine } from "react-icons/ri";
 import { LuTrainTrack } from "react-icons/lu";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import { GrUserAdmin } from "react-icons/gr";
-import { IoIosHelpCircleOutline } from "react-icons/io";
 import { MdOutlineManageAccounts, MdOutlineFeedback } from "react-icons/md";
 import { usePathname } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function Nav() {
   const router = useRouter();
@@ -47,16 +44,15 @@ export default function Nav() {
       path: "/schedule",
     },
     { title: "Admin", id: 5, icon: <GrUserAdmin />, path: "/admin" },
-    { title: "Help", id: 6, icon: <IoIosHelpCircleOutline />, path: "/help" },
     {
       title: "Manage User",
-      id: 7,
+      id: 6,
       icon: <MdOutlineManageAccounts />,
       path: "/manageusers",
     },
     {
       title: "Feedback",
-      id: 8,
+      id: 7,
       icon: <MdOutlineFeedback />,
       path: "/feedback",
     },
@@ -67,15 +63,21 @@ export default function Nav() {
       await signOut(auth);
       router.push("/logIn");
     } catch (error) {
+      toast.error("Log out failed!", {
+        position: "top-center",
+      });
       console.error("Log out failed: ", error);
     }
   };
 
+  if (pathName === "/logIn" || pathName === "/signIn") {
+    return null;
+  }
+
   return (
     <div
-      className={`bg-[#393A3E] h-screen p-5 ${
-        isMenuOpen ? "w-72" : "w-20"
-      } duration-300 rounded-md sticky top-0`}
+      className={`bg-[#393A3E] h-screen p-5 ${isMenuOpen ? "w-72" : "w-20"
+        } duration-300 rounded-md sticky top-0`}
       onMouseEnter={() => setIsMenuOpen(true)}
       onMouseLeave={() => setIsMenuOpen(false)}
     >
@@ -83,9 +85,8 @@ export default function Nav() {
         <div onClick={() => router.push("/dashboard")}>
           <FcEnteringHeavenAlive className="text-4xl cursor-pointer float-left block mr-3" />
           <h1
-            className={`text-white font-medium text-2xl ${
-              !isMenuOpen && "hidden"
-            } cursor-pointer`}
+            className={`text-white font-medium text-2xl ${!isMenuOpen && "hidden"
+              } cursor-pointer`}
           >
             RAILLY
           </h1>
@@ -96,16 +97,14 @@ export default function Nav() {
             return (
               <li
                 key={menu.id}
-                className={`text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer p-2 hover:bg-slate-500 rounded-md mt-2 ${
-                  isActive && "bg-slate-500"
-                }`}
+                className={`text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer p-2 hover:bg-slate-500 rounded-md mt-2 ${isActive && "bg-slate-500"
+                  }`}
                 onClick={() => router.push(menu.path)}
               >
                 <span className="text-2xl">{menu.icon}</span>
                 <span
-                  className={`text-base font-medium flex-1 duration-300 ${
-                    !isMenuOpen && "hidden"
-                  }`}
+                  className={`text-base font-medium flex-1 duration-300 ${!isMenuOpen && "hidden"
+                    }`}
                 >
                   {menu.title}
                 </span>
@@ -122,9 +121,8 @@ export default function Nav() {
             <RiLogoutCircleRLine />
           </span>
           <span
-            className={`text-base font-medium flex-1 duration-300 ${
-              !isMenuOpen && "hidden"
-            }`}
+            className={`text-base font-medium flex-1 duration-300 ${!isMenuOpen && "hidden"
+              }`}
           >
             Sign Out
           </span>
