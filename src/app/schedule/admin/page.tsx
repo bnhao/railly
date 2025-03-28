@@ -357,11 +357,11 @@ export default function Schedule() {
           </div>
 
           {/* Conditional Rendering for Calendar or Table View */}
-          {viewMode === "calendar" ? (
+          {/* {viewMode === "calendar" ? (
             <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
               <ScheduleXCalendar calendarApp={calendar} />
             </div>
-          ) : (
+          ) : ( */}
             <div className="mt-8 w-full h-full flex-grow">
               <h1 className="text-2xl font-bold mb-4 text-white">
                 Scheduled Tasks
@@ -425,7 +425,7 @@ export default function Schedule() {
                 </tbody>
               </table>
             </div>
-          )}
+          {/* )} */}
         </div>
 
         {/* Modal for adding a task */}
