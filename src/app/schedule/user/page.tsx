@@ -345,11 +345,11 @@ export default function Schedule() {
 
         {/* Main Content */}
         <div className="flex-grow flex flex-col">
-          {viewMode === "calendar" ? (
+          {/* {viewMode === "calendar" ? (
             <div className="sx-react-calendar-wrapper w-full h-full flex-grow">
               <ScheduleXCalendar calendarApp={calendar} />
             </div>
-          ) : (
+          ) : ( */}
             <div className="w-full h-full flex-grow overflow-hidden">
               <h1 className="text-2xl font-bold mb-4 text-white px-6">
                 Scheduled Tasks
@@ -415,7 +415,7 @@ export default function Schedule() {
                 </table>
               </div>
             </div>
-          )}
+          {/* )} */}
         </div>
 
         {/* Modal for adding a task */}
