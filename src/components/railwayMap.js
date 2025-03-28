@@ -8,6 +8,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo, memo } from "react";
 import "leaflet/dist/leaflet.css";
+import { useRouter } from "next/navigation";
 
 // Dynamic imports for Leaflet components
 const MapContainer = dynamic(
@@ -25,10 +26,9 @@ const GeoJSON = dynamic(
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
-const MarkerClusterGroup = dynamic(
-  () => import("react-leaflet-cluster"),
-  { ssr: false }
-);
+const MarkerClusterGroup = dynamic(() => import("react-leaflet-cluster"), {
+  ssr: false,
+});
 
 // Ensure Leaflet is only loaded on the client side
 const isClient = typeof window !== "undefined";
@@ -51,6 +51,12 @@ const RailwayMap = ({ onFeatureSelect }) => {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log("RailwayMap mounted.");
+  }, []);
 
   // Fetch the GeoJSON data
   useEffect(() => {
@@ -101,7 +107,8 @@ const RailwayMap = ({ onFeatureSelect }) => {
   const railwayStyle = (feature) => {
     return {
       color:
-        selectedFeature && selectedFeature.properties["@id"] === feature.properties["@id"]
+        selectedFeature &&
+        selectedFeature.properties["@id"] === feature.properties["@id"]
           ? "#ed9e1f"
           : "#2b35f0",
       weight: 3,
@@ -121,19 +128,33 @@ const RailwayMap = ({ onFeatureSelect }) => {
 
   // Memoized GeoJSON layer
   const geoJsonLayer = useMemo(() => {
-    if (!railwayData || !railwayData.features || railwayData.features.length === 0) {
+    if (
+      !railwayData ||
+      !railwayData.features ||
+      railwayData.features.length === 0
+    ) {
       return null;
     }
     return (
       <MarkerClusterGroup chunkedLoading>
-        <GeoJSON data={railwayData} style={railwayStyle} onEachFeature={onEachFeature} />
+        <GeoJSON
+          data={railwayData}
+          style={railwayStyle}
+          onEachFeature={onEachFeature}
+        />
       </MarkerClusterGroup>
     );
   }, [railwayData, selectedFeature]);
 
   // Render the map and popups
   return (
-    <div>
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => {
+        router.push("/trackOverview");
+      }}
+    >
       {isLoading && <div className="loading-spinner">Loading...</div>}
       {error && <div className="error-message">{error}</div>}
       <MapContainer
@@ -143,7 +164,12 @@ const RailwayMap = ({ onFeatureSelect }) => {
         preferCanvas={true}
         updateWhenIdle={true}
         attributionControl={false}
-        style={{ height: "430px", width: "100%" }}
+        style={{
+          height: "100%",
+          width: "100%",
+          borderRadius: "6px",
+          zIndex: "0",
+        }}
         aria-label="Railway Map"
       >
         <TileLayer
@@ -152,20 +178,30 @@ const RailwayMap = ({ onFeatureSelect }) => {
         />
         {geoJsonLayer}
         {selectedFeature && selectedFeature.geometry && (
-          <Popup position={getMidpoint(selectedFeature.geometry)} onClose={() => setSelectedFeature(null)}>
+          <Popup
+            position={getMidpoint(selectedFeature.geometry)}
+            onClose={() => setSelectedFeature(null)}
+          >
             <div>
               <h3>Railway Details</h3>
               <ul>
-                {Object.entries(selectedFeature.properties).map(([key, value]) => (
-                  <li key={key}>
-                    <strong>{key}:</strong> {value}
-                  </li>
-                ))}
+                {Object.entries(selectedFeature.properties).map(
+                  ([key, value]) => (
+                    <li key={key}>
+                      <strong>{key}:</strong> {value}
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           </Popup>
         )}
       </MapContainer>
+      {isHovered && (
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
+          Interactive railway map for monitoring routes.
+        </div>
+      )}
     </div>
   );
 };

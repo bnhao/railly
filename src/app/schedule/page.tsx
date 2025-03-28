@@ -1,5 +1,5 @@
 "use client";
-
+ 
 import { useState, useEffect, useMemo } from "react";
 import { useNextCalendarApp, ScheduleXCalendar } from "@schedule-x/react";
 import {
@@ -31,7 +31,7 @@ export type Task = {
   track_id: string;
   coordinates: [number, number][];
 };
-
+ 
 export default function Schedule() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,20 +40,20 @@ export default function Schedule() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [trackCoordinates, setTrackCoordinates] = useState<{ [key: string]: [number, number][] }>({});
   const [viewMode, setViewMode] = useState("calendar"); // Default view mode
-
+ 
   const eventsService = useState(() => createEventsServicePlugin())[0];
-
-
+ 
+ 
   useEffect(() => {
     const fetchTasks = async () => {
       const fetchedTasks = await getTasks();
       setTasks(fetchedTasks);
       setLoading(false);
     };
-
+ 
     fetchTasks();
   }, []);
-
+ 
   // Fetch all tasks
   const getTasks = async (): Promise<Task[]> => {
     try {
@@ -67,14 +67,14 @@ export default function Schedule() {
         throw new Error("Failed to fetch tasks");
       }
       const data = await response.json();
-
+ 
       // Format dates to match the calendar's expected format
       const formattedTasks = data.map((task: Task) => ({
         ...task,
         start_date: task.start_date.split("T")[0], // Extract YYYY-MM-DD
         end_date: task.end_date.split("T")[0], // Extract YYYY-MM-DD
       }));
-
+ 
       console.log("Formatted tasks:", formattedTasks); // Debugging
       return formattedTasks;
     } catch (error) {
@@ -82,35 +82,60 @@ export default function Schedule() {
       return [];
     }
   };
-
   useEffect(() => {
     const fetchGeoJSON = async () => {
       try {
         const response = await fetch("/Alberta.geojson");
         if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
-
+ 
         const albertaGeoJSON = await response.json();
-
-        const coordinatesMap = albertaGeoJSON.features.reduce((acc: any, feature: any) => {
-          const trackId = feature.properties["@id"];
-          acc[trackId] = feature.geometry.coordinates;
-          return acc;
-        }, {});
-
+ 
+        const coordinatesMap = albertaGeoJSON.features.reduce(
+          (acc: any, feature: any) => {
+            const trackId = feature.properties["@id"];
+            acc[trackId] = feature.geometry.coordinates;
+            return acc;
+          },
+          {}
+        );
+ 
         setTrackCoordinates(coordinatesMap);
       } catch (error) {
         console.error("Error fetching GeoJSON:", error);
       }
     };
-
+ 
     fetchGeoJSON();
   }, []);
-
+ 
+  useEffect(() => {
+    const fetchGeoJSON = async () => {
+      try {
+        const response = await fetch("/Alberta.geojson");
+        if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
+ 
+        const albertaGeoJSON = await response.json();
+ 
+        const coordinatesMap = albertaGeoJSON.features.reduce((acc: any, feature: any) => {
+          const trackId = feature.properties["@id"];
+          acc[trackId] = feature.geometry.coordinates;
+          return acc;
+        }, {});
+ 
+        setTrackCoordinates(coordinatesMap);
+      } catch (error) {
+        console.error("Error fetching GeoJSON:", error);
+      }
+    };
+ 
+    fetchGeoJSON();
+  }, []);
+ 
   const calculateMidpoint = (coordinates: [number, number][]) => {
     console.log("Calculating midpoint for coordinates:", coordinates);
     if (!coordinates || coordinates.length === 0) return null;
     console.error("No valid coordinates provided");
-
+ 
     if (coordinates.length === 1) {
       console.log("Only one coordinate, returning:", coordinates[0]);
       return coordinates[0];
@@ -130,7 +155,7 @@ export default function Schedule() {
       return [(mid1[0] + mid2[0]) / 2, (mid1[1] + mid2[1]) / 2];
     }
   };
-
+ 
   // Handle adding a new task
   const handleAddTask = async (
     title: string,
@@ -147,29 +172,29 @@ export default function Schedule() {
     const due_date = `${endDate}T${endTime}:00`;
     console.log("Selected Track ID:", trackId);
     // console.log("Available Track IDs:", Object.keys(trackCoordinates));
-
+ 
     if (!trackCoordinates || Object.keys(trackCoordinates).length === 0) {
       console.log("All Track IDs in trackCoordinates:", Object.keys(trackCoordinates));
       console.error("No track coordinates found");
       return;
     }
-
+ 
     const formattedTrackId = trackId.startsWith("node/")
       ? trackId
       : trackId.startsWith("way/")
         ? trackId
         : `way/${trackId}`;
     console.log("Formatted Track ID:", formattedTrackId);
-
+ 
     // Fetch coordinates for the selected track
     const coordinates = trackCoordinates[trackId.toString()];
     if (!coordinates) {
       console.error("Invalid Track ID: Coordinates not found");
       return;
     }
-
+ 
     console.log("Coordinates for selected track:", coordinates);
-
+ 
     // Calculate the midpoint
     const midpoint = calculateMidpoint(coordinates);
     console.log("Midpoint calculated:", midpoint);
@@ -177,7 +202,7 @@ export default function Schedule() {
       console.error("No valid midpoint found for the selected track");
       return;
     }
-
+ 
     const newTask = {
       title,
       description,
@@ -193,7 +218,7 @@ export default function Schedule() {
       track_id: trackId, // Save the track ID
       coordinates: [midpoint], // Save the midpoint
     };
-
+ 
     try {
       const response = await fetch("/api/tasks", {
         method: "POST",
@@ -202,21 +227,21 @@ export default function Schedule() {
         },
         body: JSON.stringify(newTask),
       });
-
+ 
       if (!response.ok) {
         throw new Error("Failed to add task");
       }
-
+ 
       const createdTask = await response.json();
-
+ 
       setTasks((prevTasks) => [...prevTasks, createdTask]);
-
+ 
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error adding task:", error);
     }
     console.log("Request data being sent:", JSON.stringify(newTask, null, 2));
-
+ 
     try {
       const response = await fetch("/api/history", {
         method: "POST",
@@ -225,25 +250,25 @@ export default function Schedule() {
         },
         body: JSON.stringify(newTask),
       });
-
+ 
       if (!response.ok) {
         throw new Error("Failed to add task to history");
       }
-
+ 
       const createdTask = await response.json();
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error adding task:", error);
     }
   };
-
-
+ 
+ 
   const handleDeleteTask = async (taskId: number) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: "DELETE",
       });
-
+ 
       if (response.ok) {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
         setIsDetailsModalOpen(false);
@@ -254,7 +279,7 @@ export default function Schedule() {
       console.error("Error deleting task:", error);
     }
   };
-
+ 
   // Transform tasks for Schedule-X format
   const events = useMemo(() => {
     return tasks.map((task) => ({
@@ -264,7 +289,7 @@ export default function Schedule() {
       end: task.end_date, // Already formatted as YYYY-MM-DD
     }));
   }, [tasks]);
-
+ 
   const calendar = useNextCalendarApp({
     views: [
       createViewDay(),
@@ -272,7 +297,7 @@ export default function Schedule() {
       createViewMonthGrid(),
       createViewMonthAgenda(),
     ],
-    defaultView: "calendar",
+    defaultView: "week",
     events,
     plugins: [eventsService],
     callbacks: {
@@ -286,16 +311,7 @@ export default function Schedule() {
       },
     },
   });
-  useEffect(() => {
-    console.log("Track Coordinates:", trackCoordinates);
-  }, [trackCoordinates]);
-
-  useEffect(() => {
-    tasks.forEach((task) => {
-      console.log(`Task ${task.id} Coordinates:`, task.coordinates);
-    });
-  }, [tasks]);
-
+ 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -305,14 +321,14 @@ export default function Schedule() {
   } else {
     return (
       <div className="flex">
-        <Nav />
+ 
         {/* Modal for adding a task */}
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onAddTask={handleAddTask}
         />
-        <div className="bg-black text-white w-full h-screen px-6">
+        <div className="bg-black text-white w-full min-h-screen px-6 mt-4">
           {/* Header */}
           <div className="flex justify-between items-center mb-4">
             <button
@@ -332,14 +348,14 @@ export default function Schedule() {
                 : "Switch to Calendar View"}
             </button>
           </div>
-
+ 
           {/* Conditional Rendering for Calendar or Table View */}
           {viewMode === "calendar" ? (
-            <div className="h-full flex-grow overflow-auto">
-              <ScheduleXCalendar calendarApp={calendar}/>
+            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
+              <ScheduleXCalendar calendarApp={calendar} />
             </div>
           ) : (
-            <div className="mt-8 w-full h-full flex-grow overflow-auto">
+            <div className="mt-8 w-full h-full flex-grow">
               <h1 className="text-2xl font-bold mb-4 text-white">Scheduled Tasks</h1>
               <table className="border-collapse border border-gray-800 w-full">
                 <thead>
@@ -380,7 +396,10 @@ export default function Schedule() {
             </div>
           )}
         </div>
-
+ 
+        {/* Modal for adding a task */}
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAddTask={handleAddTask} />
+ 
         {/* Modal for task details */}
         {selectedTask && (
           <TaskDetailsModal
