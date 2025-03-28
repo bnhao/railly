@@ -13,6 +13,16 @@ export default function FeedbackRedirect() {
     if (!isLoading && !hasRedirected.current) {
       hasRedirected.current = true;
 
+      toast.info("Redirecting to your dashboard page...", {
+        position: "top-center",
+        autoClose: 300,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        progress: undefined,
+      });
+
       switch (role) {
         case "admin":
           router.replace("/dashboard/admin");
