@@ -295,10 +295,6 @@ export default function Schedule() {
       console.log(`Task ${task.id} Coordinates:`, task.coordinates);
     });
   }, [tasks]);
-  // pharse coordinates to string
-  const formatCoordinates = (coordinates: [number, number][]) => {
-    return coordinates.map((coord) => `${coord[0]},${coord[1]}`).join(";");
-  };
 
   if (loading) {
     return (
@@ -376,7 +372,7 @@ export default function Schedule() {
                       <td className="border border-gray-300">{task.end_time}</td>
                       <td className="border border-gray-300">{task.assigned_to}</td>
                       <td className="border border-gray-300">{task.priority}</td>
-                      <td>{task.coordinates ? formatCoordinates(task.coordinates) : "N/A"}</td>
+                      <td>{task.coordinates ? JSON.stringify(task.coordinates) : "N/A"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -384,9 +380,6 @@ export default function Schedule() {
             </div>
           )}
         </div>
-
-        {/* Modal for adding a task */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAddTask={handleAddTask} />
 
         {/* Modal for task details */}
         {selectedTask && (
