@@ -4,8 +4,8 @@ import Nav from "@/components/navbar";
 import { FeedbackData } from "@/app/types/feedback";
 import { useAuth } from "@/app/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import FeedbackForm from "@/components/feedback/FeedbackForm"; // make sure this is imported
-import { PlusCircle } from "lucide-react"; // import if you want the icon
+import FeedbackForm from "@/components/feedback/FeedbackForm";
+import { PlusCircle } from "lucide-react";
 
 type LocalFeedback = FeedbackData & { likes: number; comments: string[] };
 
@@ -16,13 +16,16 @@ export default function UserFeedbackPage() {
   const [newComment, setNewComment] = useState("");
   const [sort, setSort] = useState("date");
   const [showForm, setShowForm] = useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState<FeedbackData | null>(
+    null
+  );
 
   const fetchFeedback = async () => {
     const res = await fetch("/api/feedback");
     const data: FeedbackData[] = await res.json();
     const enriched = data.map((item) => ({
       ...item,
-      likes: 0,
+      likes: item.description?.length || 0, // initial relevance score
       comments: [],
     }));
     setFeedbackList(enriched);
@@ -43,9 +46,14 @@ export default function UserFeedbackPage() {
   const handleDislike = (id: number) => {
     setFeedbackList((prev) =>
       prev.map((f) =>
-        f.feedback_id === id && f.likes > 0 ? { ...f, likes: f.likes - 1 } : f
+        f.feedback_id === id ? { ...f, likes: Math.max(0, f.likes - 1) } : f
       )
     );
+  };
+
+  const handleDelete = async (id: number) => {
+    await fetch(`/api/feedback/${id}`, { method: "DELETE" });
+    fetchFeedback();
   };
 
   const handleComment = (id: number) => {
@@ -79,12 +87,15 @@ export default function UserFeedbackPage() {
 
   return (
     <ProtectedRoute allowedRoles={["user", "admin"]}>
-      <div className="flex">
-        <div className="px-6 bg-[#1e1e1e] text-white w-full min-h-screen">
+      <div className="flex min-h-screen bg-[#1e1e1e] text-white">
+        <div className="px-6 w-full">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">Community Feedback</h1>
             <button
-              onClick={() => setShowForm(true)}
+              onClick={() => {
+                setSelectedFeedback(null);
+                setShowForm(true);
+              }}
               className="bg-blue-600 text-white p-3 rounded-md shadow-md flex items-center justify-center hover:bg-blue-700"
             >
               <PlusCircle size={20} className="mr-2" /> Add Feedback
@@ -127,18 +138,18 @@ export default function UserFeedbackPage() {
                   <strong>Suggestions:</strong> {feedback.suggestion}
                 </p>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button
                     onClick={() => handleLike(feedback.feedback_id)}
                     className="bg-green-600 px-3 py-1 rounded"
                   >
-                    Like
+                    👍 Like
                   </button>
                   <button
                     onClick={() => handleDislike(feedback.feedback_id)}
                     className="bg-red-600 px-3 py-1 rounded"
                   >
-                    Dislike
+                    👎 Dislike
                   </button>
                   <button
                     onClick={() =>
@@ -150,15 +161,26 @@ export default function UserFeedbackPage() {
                     }
                     className="bg-blue-600 px-3 py-1 rounded"
                   >
-                    Comment
+                    💬 Comment
                   </button>
                   {isUserPost(feedback) && (
-                    <button
-                      onClick={() => alert("Edit modal coming soon.")}
-                      className="bg-yellow-600 px-3 py-1 rounded"
-                    >
-                      Edit
-                    </button>
+                    <>
+                      <button
+                        onClick={() => {
+                          setSelectedFeedback(feedback);
+                          setShowForm(true);
+                        }}
+                        className="bg-yellow-600 px-3 py-1 rounded"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(feedback.feedback_id)}
+                        className="bg-red-700 px-3 py-1 rounded"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </>
                   )}
                 </div>
 
@@ -166,7 +188,7 @@ export default function UserFeedbackPage() {
                   <div className="mt-2">
                     <textarea
                       className="w-full p-2 bg-[#393A3E] text-white rounded-md"
-                      placeholder="Write a comment (not saved to database)..."
+                      placeholder="Share your thought..."
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                     />
@@ -194,24 +216,37 @@ export default function UserFeedbackPage() {
           </div>
         </div>
       </div>
+
       {/* Global Feedback Form modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <FeedbackForm
-            initialData={null}
+            initialData={selectedFeedback}
             onSubmit={async (feedback) => {
-              await fetch("/api/feedback", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  ...feedback,
-                  created_by: user?.email || "anonymous",
-                }),
-              });
+              const isEdit = Boolean(selectedFeedback);
+
+              await fetch(
+                isEdit
+                  ? `/api/feedback/${selectedFeedback?.feedback_id}`
+                  : "/api/feedback",
+                {
+                  method: isEdit ? "PUT" : "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    ...feedback,
+                    created_by: user?.email || "anonymous",
+                  }),
+                }
+              );
+
               setShowForm(false);
+              setSelectedFeedback(null);
               fetchFeedback();
             }}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => {
+              setShowForm(false);
+              setSelectedFeedback(null);
+            }}
           />
         </div>
       )}
