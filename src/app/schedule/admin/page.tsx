@@ -392,7 +392,7 @@ export default function Schedule() {
               <h1 className="text-2xl font-bold mb-4 text-white">
                 Scheduled Tasks
               </h1>
-              <table className="border-collapse border border-gray-800 w-full">
+              <table className="border-collapse border border-gray-800 w-full text-center">
                 <thead>
                   <tr>
                     <th className="border border-gray-800">Order ID</th>
@@ -418,7 +418,17 @@ export default function Schedule() {
                       <td className="border border-gray-300">
                         #{task.track_id}
                       </td>
-                      <td className="border border-gray-300">{task.status}</td>
+                      <td
+                        className={`border border-gray-300 ${
+                          task.status === "Pending"
+                            ? "bg-yellow-500 text-black"
+                            : task.status === "In Progress"
+                            ? "bg-green-500 text-white"
+                            : ""
+                        }`}
+                      >
+                        {task.status}
+                      </td>
                       <td className="border border-gray-300">{task.title}</td>
                       <td className="border border-gray-300">
                         {task.description}

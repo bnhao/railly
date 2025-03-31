@@ -27,6 +27,7 @@ interface Task {
 interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  tasks: Task[];
 }
 
 const getWeekDates = () => {
