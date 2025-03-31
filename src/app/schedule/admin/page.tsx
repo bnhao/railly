@@ -147,9 +147,11 @@ export default function Schedule() {
 
   const calculateMidpoint = (coordinates: [number, number][]) => {
     console.log("Calculating midpoint for coordinates:", coordinates);
-    if (!coordinates || coordinates.length === 0) return null;
-    console.error("No valid coordinates provided");
-
+    if (!coordinates || coordinates.length === 0) {
+      console.error("No valid coordinates provided", coordinates);
+      return null;
+    }
+    
     if (coordinates.length === 1) {
       console.log("Only one coordinate, returning:", coordinates[0]);
       return coordinates[0];
