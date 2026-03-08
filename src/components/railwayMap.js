@@ -2,14 +2,14 @@
  * Sources used: chatGPT-o4
  * Prompted used: How do I integrate Leaflet with Next.js and get track details on the map.
  */
-
+ 
 "use client";
-
+ 
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo, memo } from "react";
 import "leaflet/dist/leaflet.css";
 import { useRouter } from "next/navigation";
-
+ 
 // Dynamic imports for Leaflet components
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -29,14 +29,14 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
 const MarkerClusterGroup = dynamic(() => import("react-leaflet-cluster"), {
   ssr: false,
 });
-
+ 
 // Ensure Leaflet is only loaded on the client side
 // const isClient = typeof window !== "undefined";
-
-
+ 
+ 
 // Default map center (Alberta)
 const DEFAULT_POSITION = [51.0447, -114.0719];
-
+ 
 const RailwayMap = ({ onFeatureSelect }) => {
   const [railwayData, setRailwayData] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
@@ -44,11 +44,11 @@ const RailwayMap = ({ onFeatureSelect }) => {
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
-
+ 
   useEffect(() => {
     console.log("RailwayMap mounted.");
   }, []);
-
+ 
   // Fetch the GeoJSON data
   useEffect(() => {
     fetch("/Alberta.geojson")
@@ -67,7 +67,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
         setError("Failed to load railway data. Please try again later.");
       });
   }, []);
-
+ 
   useEffect(() => {
     const L = require("leaflet");
     delete L.Icon.Default.prototype._getIconUrl;
@@ -77,33 +77,33 @@ const RailwayMap = ({ onFeatureSelect }) => {
       shadowUrl: "/leaflet/marker-shadow.png",
     });
   }, []);
-
+ 
   // Function to get the midpoint of a geometry
   const getMidpoint = (geometry) => {
     if (!geometry || !geometry.coordinates) return DEFAULT_POSITION;
-
+ 
     if (geometry.type === "LineString") {
       const coords = geometry.coordinates;
       if (coords.length === 0) return DEFAULT_POSITION;
       const midIndex = Math.floor(coords.length / 2);
       return [coords[midIndex][1], coords[midIndex][0]];
     }
-
+ 
     if (geometry.type === "MultiLineString") {
       const firstLine = geometry.coordinates[0];
       if (!firstLine || firstLine.length === 0) return DEFAULT_POSITION;
       const midIndex = Math.floor(firstLine.length / 2);
       return [firstLine[midIndex][1], firstLine[midIndex][0]];
     }
-
+ 
     if (geometry.type === "Point") {
       return [geometry.coordinates[1], geometry.coordinates[0]];
     }
-
+ 
     console.warn("Unknown geometry type:", geometry.type);
     return DEFAULT_POSITION;
   };
-
+ 
   // Function to style the railway lines
   const railwayStyle = (feature) => {
     return {
@@ -116,7 +116,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
       opacity: 0.8,
     };
   };
-
+ 
   // Function to handle feature click
   const onEachFeature = (feature, layer) => {
     layer.on({
@@ -126,7 +126,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
       },
     });
   };
-
+ 
   // Memoized GeoJSON layer
   const geoJsonLayer = useMemo(() => {
     if (
@@ -146,7 +146,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
       </MarkerClusterGroup>
     );
   }, [railwayData, selectedFeature]);
-
+ 
   // Render the map and popups
   return (
     <div
@@ -158,46 +158,48 @@ const RailwayMap = ({ onFeatureSelect }) => {
     >
       {isLoading && <div className="loading-spinner">Loading...</div>}
       {error && <div className="error-message">{error}</div>}
-      <MapContainer
-        center={DEFAULT_POSITION}
-        zoom={10}
-        zoomControl={false}
-        preferCanvas={true}
-        updateWhenIdle={true}
-        attributionControl={false}
-        style={{
-          height: "100%",
-          width: "100%",
-          borderRadius: "6px",
-          zIndex: "0",
-        }}
-        aria-label="Railway Map"
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-        />
-        {geoJsonLayer}
-        {selectedFeature && selectedFeature.geometry && (
-          <Popup
-            position={getMidpoint(selectedFeature.geometry)}
-            onClose={() => setSelectedFeature(null)}
-          >
-            <div>
-              <h3>Railway Details</h3>
-              <ul>
-                {Object.entries(selectedFeature.properties).map(
-                  ([key, value]) => (
-                    <li key={key}>
-                      <strong>{key}:</strong> {value}
-                    </li>
-                  )
-                )}
-              </ul>
-            </div>
-          </Popup>
-        )}
-      </MapContainer>
+      {!isLoading && !error && (
+        <MapContainer
+          center={DEFAULT_POSITION}
+          zoom={10}
+          zoomControl={false}
+          preferCanvas={true}
+          updateWhenIdle={true}
+          attributionControl={false}
+          style={{
+            height: "100%",
+            width: "100%",
+            borderRadius: "6px",
+            zIndex: "0",
+          }}
+          aria-label="Railway Map"
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+          />
+          {geoJsonLayer}
+          {selectedFeature && selectedFeature.geometry && (
+            <Popup
+              position={getMidpoint(selectedFeature.geometry)}
+              onClose={() => setSelectedFeature(null)}
+            >
+              <div>
+                <h3>Railway Details</h3>
+                <ul>
+                  {Object.entries(selectedFeature.properties).map(
+                    ([key, value]) => (
+                      <li key={key}>
+                        <strong>{key}:</strong> {value}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
+            </Popup>
+          )}
+        </MapContainer>
+      )}
       {isHovered && (
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
           Interactive railway map for monitoring routes.
@@ -206,5 +208,6 @@ const RailwayMap = ({ onFeatureSelect }) => {
     </div>
   );
 };
-
+ 
 export default memo(RailwayMap);
+ 
