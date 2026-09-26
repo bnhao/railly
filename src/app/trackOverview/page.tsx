@@ -6,7 +6,7 @@ import TrackDetailsTable from "@/components/trackOverViewComponents/TrackDetails
 import SearchBar from "@/components/trackOverViewComponents/SearchBar";
 import { trackDetails } from "@/data/trackData";
 import { CHART_BACKGROUND_COLORS, CHART_OPTIONS } from "@/data/chartConfig";
-import { Task } from "../schedule/page";
+import { Task } from "@/app/schedule/admin/page";
 import AIchatbot from "@/components/AIchatbot";
 
 export default function TrackOverview() {

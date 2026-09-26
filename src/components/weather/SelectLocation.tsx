@@ -97,8 +97,9 @@ const SelectLocation = ({
         const updatedForecastData: { [key: string]: forecastType | null } = {};
 
         for (const task of tasks) {
-          if (task.coordinates) {
-            const coordinates = parseCoordinates(task.coordinates);
+          if (task.coordinates && task.coordinates.length > 0) {
+            // task.coordinates is [number, number][]
+            const coordinates = task.coordinates[0];
             if (coordinates) {
               const [lat, lon] = coordinates;
               setMapUrl(
@@ -150,7 +151,7 @@ const SelectLocation = ({
               >
                 <h3 className="font-bold">
                   {`Track ${i + 1} - ${task.track_id} (${
-                    forecast?.list?.[0]?.weather?.[0]?.main ?? "-"
+                    (forecast as any)?.list?.[0]?.weather?.[0]?.main ?? "-"
                   })`}
                 </h3>
                 <p>

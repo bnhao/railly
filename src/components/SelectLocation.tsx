@@ -3,7 +3,7 @@ import { forecastType, locationType } from "../app/types";
 import { getWindDirection } from "@/app/helpers";
 import { Chart as ChartJs, defaults, CategoryScale } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
-import WeatherMap, { meteoMaps } from "@/components/meteo-maps";
+import WeatherMap from "@/components/weather/meteo-maps";
 
 ChartJs.register(CategoryScale);
 

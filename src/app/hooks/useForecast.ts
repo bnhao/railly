@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { locationType, forecastType } from '../types';
-import { meteoMaps } from '@/components/weather/meteo-maps';
 
 
 const useForecast = () => {
