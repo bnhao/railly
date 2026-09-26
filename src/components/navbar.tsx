@@ -89,34 +89,38 @@ export default function Nav() {
 
   return (
     <div
-      className={`bg-[#393A3E] flex-shrink-0 h-screen p-5 ${isMenuOpen ? "w-64" : "w-20"
-        } duration-300 rounded-md sticky top-0`}
+      className={`bg-[#1a1c23] border-r border-gray-800 flex-shrink-0 h-screen py-6 px-4 ${isMenuOpen ? "w-64" : "w-20"
+        } duration-300 sticky top-0 transition-all z-50`}
       onMouseEnter={() => setIsMenuOpen(true)}
       onMouseLeave={() => setIsMenuOpen(false)}
     >
       <div className="flex flex-col justify-between h-full">
-        <div className="flex" onClick={() => router.push("/dashboard")}>
-          <FcEnteringHeavenAlive className="text-4xl cursor-pointer float-left block mr-3" />
+        <div className="flex items-center pl-2 mb-8" onClick={() => router.push("/dashboard")}>
+          <FcEnteringHeavenAlive className="text-4xl cursor-pointer flex-shrink-0 mr-3" />
           <h1
-            className={`text-white font-medium text-2xl duration-300 transform transition-all ${isMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-75"
+            className={`text-gray-100 font-bold tracking-widest text-xl duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
               } cursor-pointer`}
           >
             RAILLY
           </h1>
         </div>
-        <ul>
+        <ul className="flex-1 space-y-2">
           {Menus.map((menu) => {
-            const isActive = pathName === menu.path;
+            // Updated active logic to handle sub-paths
+            const isActive = pathName.startsWith(menu.path);
             return (
               <li
                 key={menu.id}
-                className={`text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer p-2 hover:bg-slate-500 rounded-md mt-2 ${isActive && "bg-slate-500"
+                className={`relative text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 rounded-lg transition-colors duration-200 group ${isActive ? "bg-gray-800/60 text-cyan-400" : "hover:bg-gray-800/40 hover:text-gray-200"
                   }`}
                 onClick={() => router.push(menu.path)}
               >
-                <span className="text-2xl">{menu.icon}</span>
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-cyan-500 rounded-r-md shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+                )}
+                <span className={`text-2xl transition-colors duration-200 ${isActive ? "text-cyan-400" : "text-gray-400 group-hover:text-cyan-300"}`}>{menu.icon}</span>
                 <span
-                  className={`text-base font-medium flex-1 duration-300 transform transition-all ${isMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-75"
+                  className={`text-base font-medium whitespace-nowrap duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
                     }`}
                 >
                   {menu.title}
@@ -127,14 +131,14 @@ export default function Nav() {
         </ul>
 
         <div
-          className={`text-gray-300 text-sm flex items-center gap-x-4 cursor-pointer p-2 hover:bg-slate-500 rounded-md`}
+          className={`text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 hover:bg-gray-800/40 hover:text-red-400 rounded-lg transition-colors duration-200 group mt-auto`}
           onClick={handleSignOut}
         >
-          <span className="text-2xl">
+          <span className="text-2xl group-hover:text-red-400 transition-colors">
             <RiLogoutCircleRLine />
           </span>
           <span
-            className={`text-base font-medium flex-1 duration-300 transform transition-all ${isMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-75"
+            className={`text-base font-medium whitespace-nowrap duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
               }`}
           >
             Sign Out

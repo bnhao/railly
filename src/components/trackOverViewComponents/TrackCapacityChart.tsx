@@ -23,9 +23,13 @@ export default function TrackCapacityChart({
   options: any;
 }) {
   return (
-    <div className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-3 h-full rounded-md bg-[#393A3E] flex-grow hover:cursor-pointer">
-      <h3 className="text-center text-lg font-bold mb-4">Track Capacity</h3>
-      <Line data={data} options={options} />
+    <div className="flex flex-col h-full w-full">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-semibold text-gray-100">Track Capacity</h3>
+      </div>
+      <div className="relative flex-1 w-full min-h-0">
+        <Line data={data} options={options} />
+      </div>
     </div>
   );
 }

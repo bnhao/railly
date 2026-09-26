@@ -24,7 +24,7 @@ export default function AIchatbot() {
         throw new Error("API key is not defined");
       }
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
 
       const systemPrompt = `
       You are a chatbot for "Railly" a platform designed for railway operators to view weather and track data, and schedule railway maintenance plan based on these information.
@@ -73,23 +73,18 @@ export default function AIchatbot() {
               />
             </div>
             <div className="flex-1 overflow-auto p-2 border rounded bg-gray-50">
-              {messages.map(
-                (msg, index) => (
-                  console.log(msg),
-                  (
-                    <div
-                      key={index}
-                      className={`p-2 my-1 rounded-md text-sm ${
-                        msg.sender === "user"
-                          ? "bg-blue-500 text-white self-end"
-                          : "bg-gray-200 text-gray-800 self-start"
-                      }`}
-                    >
-                      {msg.text}
-                    </div>
-                  )
-                )
-              )}
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`p-2 my-1 rounded-md text-sm ${
+                    msg.sender === "user"
+                      ? "bg-blue-500 text-white self-end"
+                      : "bg-gray-200 text-gray-800 self-start"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
               <div ref={messagesEndRef} />
             </div>
             <div className="flex mt-2">

@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+import { MapPin, Edit2, Trash2 } from "lucide-react";
 import ReportModal from "@/components/ReportModal";
 import { startOfWeek, endOfWeek, isWithinInterval, parseISO } from "date-fns";
 import { useState, useEffect, useMemo } from "react";
@@ -392,74 +394,74 @@ export default function Schedule() {
               <h1 className="text-2xl font-bold mb-4 text-white">
                 Scheduled Tasks
               </h1>
-              <table className="border-collapse border border-gray-800 w-full text-center">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-800">Order ID</th>
-                    <th className="border border-gray-800">Track ID</th>
-                    <th className="border border-gray-800">Status</th>
-                    <th className="border border-gray-800">Title</th>
-                    <th className="border border-gray-800">Description</th>
-                    <th className="border border-gray-800">Start Date</th>
-                    <th className="border border-gray-800">Start Time</th>
-                    <th className="border border-gray-800">End Date</th>
-                    <th className="border border-gray-800">End Time</th>
-                    <th className="border border-gray-800">Assigned To</th>
-                    <th className="border border-gray-800">Priority</th>
-                    <th className="border border-gray-800">
-                      Midpoint Coordinates
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.map((task) => (
-                    <tr key={task.id}>
-                      <td className="border border-gray-300">#{task.id}</td>
-                      <td className="border border-gray-300">
-                        #{task.track_id}
-                      </td>
-                      <td
-                        className={`border border-gray-300 ${
-                          task.status === "Pending"
-                            ? "bg-yellow-500 text-black"
-                            : task.status === "In Progress"
-                            ? "bg-green-500 text-white"
-                            : ""
-                        }`}
-                      >
-                        {task.status}
-                      </td>
-                      <td className="border border-gray-300">{task.title}</td>
-                      <td className="border border-gray-300">
-                        {task.description}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.start_date}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.start_time}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.end_date}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.end_time}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.assigned_to}
-                      </td>
-                      <td className="border border-gray-300">
-                        {task.priority}
-                      </td>
-                      <td>
-                        {task.coordinates
-                          ? JSON.stringify(task.coordinates)
-                          : "N/A"}
-                      </td>
+              <table className="w-full text-left text-sm text-gray-400">
+                  <thead className="bg-[#181a20] text-xs uppercase text-gray-500 sticky top-0">
+                    <tr>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800">Task ID</th>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800">Track ID</th>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800">Title & Details</th>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800">Assigned To</th>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800">Schedule</th>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800">Status</th>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800 text-center">Map</th>
+                      <th className="px-6 py-4 font-medium border-b border-gray-800 text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800/50">
+                    {tasks.map((task) => (
+                      <tr key={task.id} className="hover:bg-gray-800/30 transition-colors">
+                        <td className="px-6 py-4 font-mono text-gray-300">{task.id}</td>
+                        <td className="px-6 py-4 font-mono text-cyan-400">#{task.track_id}</td>
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-gray-200">{task.title}</div>
+                          <div className="text-xs text-gray-500 mt-1 max-w-[200px] truncate">{task.description}</div>
+                        </td>
+                        <td className="px-6 py-4 text-gray-300">{task.assigned_to}</td>
+                        <td className="px-6 py-4">
+                          <div className="font-mono text-xs">{task.start_date} to {task.end_date}</div>
+                          <div className="font-mono text-xs text-gray-500">{task.start_time} - {task.end_time}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                            task.status.toLowerCase() === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                            task.status.toLowerCase() === 'in progress' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
+                            'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                          }`}>
+                            {task.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {task.coordinates ? (
+                            <a href={`/trackOverview?track=${task.track_id}`} className="inline-flex items-center justify-center p-1.5 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors" title="View on Map">
+                              <MapPin size={18} />
+                            </a>
+                          ) : (
+                            <span className="text-gray-600">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 flex justify-end gap-3 h-full items-center">
+                          <Link
+                            href={`/task/${task.id}`}
+                            className="p-1.5 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors"
+                            title="Edit Task"
+                          >
+                            <Edit2 size={18} />
+                          </Link>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteTask(task.id);
+                            }}
+                            className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-colors"
+                            title="Delete Task"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
             </div>
           {/* )} */}
         </div>

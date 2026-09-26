@@ -70,63 +70,52 @@ const SelectLocation = ({
     }
   };
 
-  // // Update Meteoblue map and fetch weather when track changes
-  // useEffect(() => {
-  //     const selectedTask = tasks.find((task) => task.track_id === track);
-  //     if (selectedTask?.coordinates) {
-  //         const coordinates = parseCoordinates(selectedTask.coordinates);
-  //         if (coordinates) {
-  //             const [lat, lon] = coordinates;
-  //             setMapUrl(
-  //                 `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
-  //             );
-
-  //             // Fetch weather data
-  //             fetchWeather(lat, lon).then((data) => {
-  //                 setForecastData((prev) => ({
-  //                     ...prev,
-  //                     [track]: data, // Store weather data by track ID
-  //                 }));
-  //             });
-  //         }
-  //     }
-  // }, [track, tasks]);
   useEffect(() => {
     const fetchAllForecasts = async () => {
       if (tasks.length > 0) {
-        const updatedForecastData: { [key: string]: forecastType | null } = {};
+        const updatedForecastData: { [key: string]: any | null } = {};
 
         for (const task of tasks) {
-          if (task.coordinates && task.coordinates.length > 0) {
-            // task.coordinates is [number, number][]
-            const coordinates = task.coordinates[0];
+          if (task.coordinates) {
+            const coordinates = parseCoordinates(task.coordinates as unknown as string);
             if (coordinates) {
               const [lat, lon] = coordinates;
-              setMapUrl(
-                `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
-              );
               const data = await fetchWeather(lat, lon);
               updatedForecastData[task.track_id] = data;
             }
           }
         }
-
         setForecastData(updatedForecastData);
       }
     };
-
     fetchAllForecasts();
   }, [tasks]);
+
+  // Update mapUrl when track changes
+  useEffect(() => {
+    const selectedTask = tasks.find((t) => String(t.track_id) === String(track));
+    if (selectedTask?.coordinates) {
+      const coordinates = parseCoordinates(selectedTask.coordinates as unknown as string);
+      if (coordinates) {
+        const [lat, lon] = coordinates;
+        setMapUrl(
+          `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
+        );
+      }
+    } else {
+      setMapUrl("");
+    }
+  }, [track, tasks]);
 
   const selectedForecast = forecastData[track];
 
   return (
-    <div className="bg-black text-white min-h-screen">
-      <div className="grid grid-cols-12 gap-5">
+    <div className="bg-[#121418] text-gray-200 min-h-screen p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Current forecast per track */}
         <div className="col-span-4 space-y-4">
-          <div className="bg-emerald-950 p-4 rounded">
-            <h2 className="text-lg font-semibold">
+          <div className="bg-[#1e2128] p-5 rounded-xl shadow-lg shadow-black/20 mb-4 border border-gray-800/50">
+            <h2 className="text-lg font-semibold text-gray-100">
               Current Forecast Per Track
             </h2>
           </div>
@@ -136,7 +125,7 @@ const SelectLocation = ({
             return (
               <div
                 key={i}
-                className="bg-gray-800 p-4 rounded-[10px]"
+                className="bg-[#1e2128] p-5 rounded-xl border border-gray-800/50 cursor-pointer hover:bg-gray-800/60 transition-colors"
                 onClick={() => {
                   const event = new Event("change", {
                     bubbles: true,
@@ -149,7 +138,7 @@ const SelectLocation = ({
                   handleTrackChange(event);
                 }}
               >
-                <h3 className="font-bold">
+                <h3 className="font-bold text-cyan-400 mb-2">
                   {`Track ${i + 1} - ${task.track_id} (${
                     (forecast as any)?.list?.[0]?.weather?.[0]?.main ?? "-"
                   })`}
@@ -169,12 +158,12 @@ const SelectLocation = ({
 
         {/* Detailed Information for Selected Track */}
         <div className="col-span-8 space-y-4">
-          <div className="flex justify-between items-center bg-emerald-950 p-4 rounded">
-            <h2 className="text-lg font-semibold">Select a Track</h2>
+          <div className="flex justify-between items-center bg-[#1e2128] p-5 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
+            <h2 className="text-lg font-semibold text-gray-100">Select a Track</h2>
             <select
               name="track"
               id="track"
-              className="bg-gray-800 text-white border p-0.5 rounded cursor-pointer hover:bg-gray-700 transition"
+              className="bg-[#181a20] text-gray-200 border border-gray-700 p-2 rounded-lg cursor-pointer hover:border-cyan-500/50 transition outline-none focus:border-cyan-500"
               value={track}
               onChange={handleTrackChange}
             >
@@ -186,24 +175,24 @@ const SelectLocation = ({
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-12 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Wind Direction for Selected Track */}
             <div className="col-span-6">
-              <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded ">
+              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
                 Wind Direction for Selected Track
               </h2>
-              <div className="font-bold text-5xl h-40 bg-gray-800 rounded-[10px] mt-4 flex items-center justify-center">
+              <div className="font-bold text-6xl h-32 bg-[#1e2128] rounded-xl mt-4 flex items-center justify-center text-cyan-400 border border-gray-800/50 shadow-lg shadow-black/20">
                 {selectedForecast?.list?.[0]?.wind?.deg !== undefined
                   ? `${getWindDirection(
                       Math.round(selectedForecast.list[0].wind.deg)
                     )}`
                   : "No data"}
               </div>
-              <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded mt-4">
+              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50 mt-6">
                 Wind Speed for Selected Track
               </h2>
-              <div className="h-[200px] bg-gray-800 rounded-[10px] p-3 mt-4 flex items-center justify-center">
-                {selectedForecast ? (
+              <div className="relative h-[240px] w-full bg-[#1e2128] rounded-xl p-4 mt-4 flex items-center justify-center border border-gray-800/50 shadow-lg shadow-black/20">
+                {selectedForecast && Array.isArray(selectedForecast.list) ? (
                   <Line
                     data={{
                       labels: selectedForecast.list.map((entry) =>
@@ -216,35 +205,24 @@ const SelectLocation = ({
                         {
                           label: "Wind Speed",
                           data: selectedForecast.list.map(
-                            (entry) => entry.wind.speed
+                            (entry) => entry.wind?.speed ?? 0
                           ),
-                          borderColor: "rgba(75, 192, 192, 1)",
-                          backgroundColor: "rgba(75, 192, 192, 0.2)",
+                          backgroundColor: "rgba(6, 182, 212, 0.1)",
                           borderWidth: 2,
-                          pointBackgroundColor: "rgba(75, 192, 192, 1)",
-                          pointBorderColor: "#fff",
-                          pointRadius: 5,
+                          pointBackgroundColor: "#06b6d4", pointRadius: 0,
+                          pointBorderColor: "transparent",
                           pointHoverRadius: 7,
                           fill: true,
-                          tension: 0.4,
                         },
                       ],
                     }}
                     options={{
                       maintainAspectRatio: false,
                       scales: {
-                        x: {
-                          ticks: {
-                            color: "white",
-                          },
-                        },
-                        y: {
-                          ticks: {
-                            color: "white",
-                          },
-                          beginAtZero: false,
-                        },
+                        x: { grid: { display: false, drawTicks: false }, ticks: { color: "#6b7280" } },
+                        y: { grid: { color: "rgba(255, 255, 255, 0.05)", drawTicks: false }, ticks: { color: "#6b7280" }, beginAtZero: true }
                       },
+                      plugins: { legend: { display: false } }
                     }}
                   />
                 ) : (
@@ -256,7 +234,7 @@ const SelectLocation = ({
             </div>
             {/* Meteoblue Weather Map */}
             <div className="col-span-6">
-              <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded">
+              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
                 Meteoblue Weather Map for Selected Track
               </h2>
               <div className="mt-4">
@@ -285,14 +263,14 @@ const SelectLocation = ({
           <div className="grid grid-cols-12 gap-6">
             {/* Temperature Chart */}
             <div className="col-span-12">
-              <h2 className="text-lg font-semibold bg-emerald-950 px-4 py-2 rounded">
+              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
                 Temperature for Selected Track
               </h2>
-              <div className="overflow-x-auto bg-gray-800 rounded-[10px] mt-4 p-4">
+              <div className="relative h-[300px] w-full bg-[#1e2128] rounded-xl mt-4 p-4 border border-gray-800/50 shadow-lg shadow-black/20">
                 <Line
                   data={{
                     labels:
-                      selectedForecast?.list.map((entry) =>
+                      selectedForecast?.list?.map((entry) =>
                         new Date(entry.dt * 1000).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
@@ -302,28 +280,26 @@ const SelectLocation = ({
                       {
                         label: "Temperature",
                         data:
-                          selectedForecast?.list.map(
-                            (entry) => entry.main.temp
+                          selectedForecast?.list?.map(
+                            (entry) => entry.main?.temp ?? 0
                           ) || [],
-                        borderColor: "rgba(75, 192, 192, 1)",
-                        backgroundColor: "rgba(75, 192, 192, 0.2)",
+                        backgroundColor: "rgba(6, 182, 212, 0.1)",
                         borderWidth: 2,
-                        pointBackgroundColor: "rgba(75, 192, 192, 1)",
-                        pointBorderColor: "#fff",
-                        pointRadius: 5,
+                        pointBackgroundColor: "#06b6d4", pointRadius: 0,
+                        pointBorderColor: "transparent",
                         pointHoverRadius: 7,
                         fill: true,
-                        tension: 0.4,
                       },
                     ],
                   }}
                   options={{
-                    maintainAspectRatio: false,
-                    scales: {
-                      x: { ticks: { color: "white" } },
-                      y: { ticks: { color: "white" }, beginAtZero: true },
-                    },
-                  }}
+                      maintainAspectRatio: false,
+                      scales: {
+                        x: { grid: { display: false, drawTicks: false }, ticks: { color: "#6b7280" } },
+                        y: { grid: { color: "rgba(255, 255, 255, 0.05)", drawTicks: false }, ticks: { color: "#6b7280" }, beginAtZero: true }
+                      },
+                      plugins: { legend: { display: false } }
+                    }}
                 />
               </div>
             </div>
