@@ -35,14 +35,18 @@ const MarkerClusterGroup = dynamic(() => import("react-leaflet-cluster"), {
  
  
 // Default map center (Alberta)
-const DEFAULT_POSITION = [51.0447, -114.0719];
- 
-const RailwayMap = ({ onFeatureSelect }) => {
-  const [railwayData, setRailwayData] = useState(null);
-  const [selectedFeature, setSelectedFeature] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+const DEFAULT_POSITION: [number, number] = [51.0447, -114.0719];
+
+interface RailwayMapProps {
+  onFeatureSelect: (feature: any) => void;
+}
+
+const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
+  const [railwayData, setRailwayData] = useState<any>(null);
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
   const router = useRouter();
  
   useEffect(() => {
@@ -79,7 +83,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
   }, []);
  
   // Function to get the midpoint of a geometry
-  const getMidpoint = (geometry) => {
+  const getMidpoint = (geometry: any): [number, number] => {
     if (!geometry || !geometry.coordinates) return DEFAULT_POSITION;
  
     if (geometry.type === "LineString") {
@@ -105,7 +109,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
   };
  
   // Function to style the railway lines
-  const railwayStyle = (feature) => {
+  const railwayStyle = (feature: any) => {
     return {
       color:
         selectedFeature &&
@@ -118,7 +122,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
   };
  
   // Function to handle feature click
-  const onEachFeature = (feature, layer) => {
+  const onEachFeature = (feature: any, layer: any) => {
     layer.on({
       click: () => {
         setSelectedFeature(feature);
@@ -164,7 +168,6 @@ const RailwayMap = ({ onFeatureSelect }) => {
           zoom={10}
           zoomControl={false}
           preferCanvas={true}
-          updateWhenIdle={true}
           attributionControl={false}
           style={{
             height: "100%",
@@ -182,7 +185,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
           {selectedFeature && selectedFeature.geometry && (
             <Popup
               position={getMidpoint(selectedFeature.geometry)}
-              onClose={() => setSelectedFeature(null)}
+              eventHandlers={{ remove: () => setSelectedFeature(null) }}
             >
               <div>
                 <h3>Railway Details</h3>
@@ -190,7 +193,7 @@ const RailwayMap = ({ onFeatureSelect }) => {
                   {Object.entries(selectedFeature.properties).map(
                     ([key, value]) => (
                       <li key={key}>
-                        <strong>{key}:</strong> {value}
+                        <strong>{key}:</strong> {String(value)}
                       </li>
                     )
                   )}

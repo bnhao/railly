@@ -1,5 +1,4 @@
 "use client";
-import { Loader } from "@googlemaps/js-api-loader";
 import React, { useEffect, useRef, useState } from "react";
 import "chart.js/auto";
 import Link from "next/link";
@@ -30,8 +29,6 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [hoveredContainer, setHoveredContainer] = useState<string | null>(null);
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const descriptions: Record<string, string> = {
     weather: "View the latest weather updates for railway operations.",
@@ -41,26 +38,7 @@ export default function Dashboard() {
 
   const { role } = useAuth();
 
-  // Initialize Google Maps
-  useEffect(() => {
-    if (!googleMapsApiKey) {
-      console.error("Google Maps API key is missing.");
-      return;
-    }
 
-    const loader = new Loader({
-      apiKey: googleMapsApiKey,
-    });
-
-    loader.load().then(() => {
-      if (mapRef.current) {
-        new google.maps.Map(mapRef.current, {
-          center: { lat: 51.0447, lng: -114.0719 }, // Calgary, Alberta
-          zoom: 13,
-        });
-      }
-    });
-  }, [googleMapsApiKey]);
 
   // Fetch tasks from the API
   const getTasks = async (): Promise<Task[]> => {
