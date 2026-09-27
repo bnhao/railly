@@ -105,10 +105,10 @@ export default function UserDashboardClient() {
     <ProtectedRoute allowedRoles={["admin", "user"]}>
       <Toaster />
       <div className="flex">
-        <div className="px-6 py-6 bg-[#121418] text-gray-200 w-full min-h-screen flex flex-col">
+        <div className="px-6 py-6 bg-[#121418] text-gray-200 w-full h-screen overflow-hidden flex flex-col">
           <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-6 h-full">
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col h-full min-h-[300px] bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
+              className="lg:col-span-1 lg:row-span-1 flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
               
             >
               <WeatherWidget />
@@ -119,7 +119,7 @@ export default function UserDashboardClient() {
               )}
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-4 h-full min-h-[300px] p-6 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
+              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-4 h-full min-h-0 p-6 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
               
             >
               <TrackCapacityChart
@@ -133,13 +133,13 @@ export default function UserDashboardClient() {
               )}
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-4 h-full min-h-[300px] rounded-xl p-6 bg-[#1e2128] shadow-lg shadow-black/20 flex-grow hover:cursor-pointer overflow-hidden"
+              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-4 h-full min-h-0 rounded-xl p-6 bg-[#1e2128] shadow-lg shadow-black/20 flex-grow hover:cursor-pointer overflow-hidden"
               
             >
               <div className="flex items-center justify-between mb-2"><h3 className="text-lg font-semibold text-gray-100">Active Schedules</h3></div>{" "}
-              <div className="w-full overflow-hidden rounded-lg border border-gray-800/50">
+              <div className="w-full overflow-y-auto rounded-lg border border-gray-800/50 flex-1 min-h-0 relative">
                 <table className="w-full text-left text-sm text-gray-400">
-                  <thead className="bg-[#181a20] text-xs uppercase text-gray-500">
+                  <thead className="bg-[#181a20] text-xs uppercase text-gray-500 sticky top-0 z-10">
                     <tr>
                       <th className="px-6 py-4 font-medium">Order #</th>
                       <th className="px-6 py-4 font-medium">Track</th>

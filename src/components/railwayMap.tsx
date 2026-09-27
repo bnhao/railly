@@ -154,6 +154,7 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
   // Render the map and popups
   return (
     <div
+      className="lg:col-span-1 lg:row-span-1 relative flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => {
@@ -172,7 +173,7 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
           style={{
             height: "100%",
             width: "100%",
-            borderRadius: "6px",
+            borderRadius: "12px",
             zIndex: "0",
           }}
           aria-label="Railway Map"

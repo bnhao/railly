@@ -75,28 +75,28 @@ export default function LogInPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-[#33313B] p-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-6 ronuded-lg shadow-md">
-        <h3 className="text-center text-lg font-bold mb-6 text-white">RAILLY</h3>
+    <div className="flex flex-col justify-center items-center min-h-screen bg-[#121418] p-4">
+      <div className="w-full max-w-md bg-[#1e2128] border border-gray-800/50 p-8 rounded-2xl shadow-2xl shadow-black/40">
+        <h3 className="text-center text-2xl font-bold mb-8 text-cyan-400 tracking-widest drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">RAILLY</h3>
         <form className="space-y-4 md:space-y-6" onSubmit={handleLogIn}>
           <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-            <input type="email" id="email" placeholder="johndoe@gmail.com" value={email} onChange={(event) => setEmail(event.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg" required />
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-300">Email</label>
+            <input type="email" id="email" placeholder="johndoe@gmail.com" value={email} onChange={(event) => setEmail(event.target.value)} className="w-full p-3 bg-[#181a20] border border-gray-700 text-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors" required />
           </div>
           <div>
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-300">Password</label>
             <div className="relative w-full">
-              <input type={visible ? "text" : "password"} id="password" placeholder="••••••••" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full p-2.5 mb-2 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg" required />
-              <span className="absolute inset-y-0 right-3 flex items-center pb-2 cursor-pointer">
+              <input type={visible ? "text" : "password"} id="password" placeholder="••••••••" value={password} onChange={(event) => setPassword(event.target.value)} className="w-full p-3 mb-2 bg-[#181a20] border border-gray-700 text-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors" required />
+              <span className="absolute inset-y-0 flex items-center right-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity">
                 <Image src={visible ? "/icons/password-show.svg" : "/icons/password-hide.svg"} alt="" width={20} height={20} onClick={() => setVisible(!visible)} />
               </span>
             </div>
           </div>
           {error && <p className="text-red-500 text-sm ">{error}</p>}
-          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5">Log In</button>
+          <button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-sm px-5 py-3.5 transition-colors duration-200 shadow-lg shadow-cyan-500/20 mt-4">Log In</button>
         </form>
         <div className="flex justify-center mt-6">
-          <p>Don&apos;t have an account? <Link href="/signIn" className="hover:underline text-blue-400">Sign Up here!</Link></p>
+          <p className="text-gray-400">Don&apos;t have an account? <Link href="/signIn" className="hover:underline text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Sign Up here!</Link></p>
         </div>
       </div>
     </div>

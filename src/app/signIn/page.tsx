@@ -85,9 +85,9 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-[#33313B] p-4">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-        <h3 className="text-center text-lg font-bold mb-6 text-white">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-[#121418] p-4">
+      <div className="w-full max-w-md bg-[#1e2128] border border-gray-800/50 p-8 rounded-2xl shadow-2xl shadow-black/40">
+        <h3 className="text-center text-2xl font-bold mb-8 text-cyan-400 tracking-widest drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">
           RAILLY
         </h3>
         <form className="space-y-4 md:space-y-6" onSubmit={handleSignIn}>
@@ -95,7 +95,7 @@ export default function SignInPage() {
             <div className="w-1/2">
               <label
                 htmlFor="firstName"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-gray-300"
               >
                 First Name
               </label>
@@ -105,14 +105,14 @@ export default function SignInPage() {
                 placeholder="John"
                 value={firstName}
                 onChange={(event) => setFirstName(event.target.value)}
-                className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full p-3 bg-[#181a20] border border-gray-700 text-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors"
                 required
               />
             </div>
             <div className="w-1/2">
               <label
                 htmlFor="lastName"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-gray-300"
               >
                 Last Name
               </label>
@@ -122,7 +122,7 @@ export default function SignInPage() {
                 placeholder="Doe"
                 value={lastName}
                 onChange={(event) => setLastName(event.target.value)}
-                className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full p-3 bg-[#181a20] border border-gray-700 text-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors"
                 required
               />
             </div>
@@ -130,7 +130,7 @@ export default function SignInPage() {
           <div>
             <label
               htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-300"
             >
               Email
             </label>
@@ -140,7 +140,7 @@ export default function SignInPage() {
               placeholder="johndoe@gmail.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full p-3 bg-[#181a20] border border-gray-700 text-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors"
               required
             />
           </div>
@@ -148,7 +148,7 @@ export default function SignInPage() {
             <div className="w-1/2">
               <label
                 htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-gray-300"
               >
                 Password
               </label>
@@ -159,10 +159,10 @@ export default function SignInPage() {
                   placeholder="••••••••••••••"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="w-full p-2.5 mb-2 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full p-3 mb-2 bg-[#181a20] border border-gray-700 text-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors"
                   required
                 />
-                <span className="absolute inset-y-0 right-3 flex items-center pb-2 cursor-pointer">
+                <span className="absolute inset-y-0 flex items-center right-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity">
                   <Image
                     src={
                       visible1
@@ -180,7 +180,7 @@ export default function SignInPage() {
             <div className="w-1/2">
               <label
                 htmlFor="confirmPassword"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-gray-300"
               >
                 Confirm Password
               </label>
@@ -191,10 +191,10 @@ export default function SignInPage() {
                   placeholder="••••••••••••••"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
-                  className="w-full p-2.5 mb-2 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full p-3 mb-2 bg-[#181a20] border border-gray-700 text-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 transition-colors"
                   required
                 />
-                <span className="absolute inset-y-0 right-3 flex items-center pb-2 cursor-pointer">
+                <span className="absolute inset-y-0 flex items-center right-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity">
                   <Image
                     src={
                       visible2
@@ -216,27 +216,27 @@ export default function SignInPage() {
               type="checkbox"
               value=""
               required
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-4 h-4 text-cyan-500 bg-[#181a20] border-gray-700 rounded focus:ring-cyan-500 focus:ring-offset-gray-800 focus:ring-1 cursor-pointer"
             />
             <label
               htmlFor="default-checkbox"
-              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              className="ms-2 text-sm font-medium text-gray-400"
             >
               By signing up I accept the{" "}
-              <Link href="terms-and-conditions" className="hover:underline text-blue-400">Terms & Conditions</Link>
+              <Link href="terms-and-conditions" className="hover:underline text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Terms & Conditions</Link>
             </label>
           </div>
           {error && <p className="text-red-500 text-sm ">{error}</p>}
           {message && <p className="text-green-500 text-sm ">{message}</p>}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:ring-4 focus:ring-blue-300"
+            className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-sm px-5 py-3.5 transition-colors duration-200 shadow-lg shadow-cyan-500/20 mt-4"
           >
             Sign Up
           </button>
           <div className="flex justify-center mt-6">
-            <p className="mr-1">Already have an account?</p>
-            <Link href="/logIn" className="hover:underline text-blue-400">
+            <p className="mr-1 text-gray-400">Already have an account?</p>
+            <Link href="/logIn" className="hover:underline text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
               Log In here!
             </Link>
           </div>
