@@ -128,7 +128,7 @@ export default function TrackOverview() {
 
   return (
     <div className="flex">
-      <div className="px-5 bg-background text-foreground w-full flex flex-col">
+      <div className="px-6 py-6 bg-[#121418] text-gray-200 w-full min-h-screen flex flex-col">
         <div className="flex flex-row space-x-4">
           <div className="mb-6 mt-7">
             <SearchBar
@@ -150,7 +150,7 @@ export default function TrackOverview() {
               <input
                 type="date"
                 id="date"
-                className="p-1.5 border rounded-md text-black"
+                className="p-2.5 bg-[#181a20] border border-gray-700 rounded-xl text-gray-200 focus:outline-none focus:border-cyan-500 transition-colors"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
               />
@@ -165,7 +165,7 @@ export default function TrackOverview() {
             </label>
             <select
               id="favorites"
-              className="px-1.5 py-[9.2px] border rounded-md text-black"
+              className="px-3 py-2.5 bg-[#181a20] border border-gray-700 rounded-xl text-gray-200 focus:outline-none focus:border-cyan-500 transition-colors"
               value={selectedTrack}
               onChange={(e) => handleTrackSelection(e.target.value)}
             >
@@ -195,7 +195,7 @@ export default function TrackOverview() {
                 onToggleFavorite={toggleFavorite}
               />
             ) : (
-              <div className="rounded-md p-4 bg-[#393A3E] text-center text-white">
+              <div className="rounded-xl p-4 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl border border-gray-800/50 text-center text-white">
                 No track selected.
               </div>
             )}
@@ -203,7 +203,7 @@ export default function TrackOverview() {
           <div className="lg:col-span-1 space-y-6 flex-grow h-full">
             {/* Selected Track Details */}
             {selectedTrackDetails && (
-              <div className="p-4 bg-gray-800 rounded-md text-white">
+              <div className="p-4 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl border border-gray-800/50 rounded-xl text-white">
                 <h2 className="text-lg font-semibold">
                   Selected Working Track Details
                 </h2>

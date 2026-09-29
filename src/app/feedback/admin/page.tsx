@@ -90,13 +90,13 @@ export default function FeedbackPage() {
       <div className="flex">
         <div className="px-6 bg-[#1e1e1e] text-white w-full min-h-screen">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">User Feedback</h1>
+            <h1 className="font-bold text-3xl text-cyan-400 tracking-wide drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">User Feedback</h1>
             <button
               onClick={() => {
                 setSelectedFeedback(null);
                 setShowForm(true);
               }}
-              className="bg-blue-600 text-white p-3 rounded-md shadow-md flex items-center justify-center hover:bg-blue-700"
+              className="bg-cyan-600 px-5 py-2.5 rounded-xl text-white shadow-lg shadow-cyan-500/20 hover:bg-cyan-500 transition-colors duration-200 flex items-center justify-center font-semibold text-sm"
             >
               <PlusCircle size={20} className="mr-2" /> Add Feedback
             </button>
@@ -104,7 +104,7 @@ export default function FeedbackPage() {
 
           <div className="mb-4">
             <select
-              className="p-2 bg-[#393A3E] text-white rounded-md border-none"
+              className="p-3 bg-[#181a20] text-gray-200 rounded-xl border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors shadow-lg shadow-black/20"
               value={sort}
               onChange={(e) => setSort(e.target.value)}
             >
@@ -121,7 +121,7 @@ export default function FeedbackPage() {
           />
 
           {showForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
               <FeedbackForm
                 initialData={selectedFeedback}
                 onSubmit={handleAddFeedback}

@@ -51,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ tracks, onTrackSelect, searchTerm
         <input
           type="text"
           placeholder="Search..."
-          className="p-2 w-full rounded-md bg-[#393A3E] text-white pl-10"
+          className="p-2.5 w-full rounded-xl bg-[#1e2128] border border-gray-800/50 text-gray-200 pl-10 focus:outline-none focus:border-cyan-500 transition-colors"
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -63,14 +63,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ tracks, onTrackSelect, searchTerm
         <img
           src="/icons/search-icon.png"
           alt="Search"
-          className="absolute left-3 top-2.5 w-5 h-5"
+          className="absolute left-3 top-3 w-5 h-5 opacity-60"
         />
       </div>
 
       {/* Dropdown Options */}
       {isDropdownVisible && searchTerm && (
         <ul
-          className="absolute z-10 mt-1 w-full bg-[#393A3E] rounded-md max-h-40 overflow-y-auto text-white"
+          className="absolute z-10 mt-1 w-full bg-[#1e2128] border border-gray-800/50 rounded-xl max-h-40 overflow-y-auto text-gray-200 shadow-xl shadow-black/50"
           style={{
             scrollbarWidth: "thin",
             scrollbarColor: "transparent transparent", // Transparent scrollbar
@@ -79,7 +79,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ tracks, onTrackSelect, searchTerm
           {filteredTracks.map((track) => (
             <li
               key={track}
-              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+              className="px-4 py-2 hover:bg-cyan-500/20 hover:text-cyan-400 transition-colors cursor-pointer"
               onClick={() => handleTrackSelect(track)}
             >
               {track}

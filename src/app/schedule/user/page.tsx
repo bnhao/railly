@@ -333,7 +333,7 @@ export default function Schedule() {
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 bg-gray-800">
           <button
-            className="bg-gray-700 px-6 py-2 rounded-full cursor-pointer hover:bg-gray-600"
+            className="bg-[#1e2128] border border-gray-700 px-6 py-2.5 rounded-xl font-semibold text-sm text-gray-300 hover:bg-gray-800 transition-colors"
             onClick={() =>
               setViewMode(viewMode === "calendar" ? "table" : "calendar")
             }

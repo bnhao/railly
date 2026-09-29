@@ -22,9 +22,11 @@ export default function TrackMaintenanceChart({
   options: any;
 }) {
   return (
-    <div className="h-80 rounded-md pb-12 pt-2 pr-2 pl-2 space-y-3 bg-[#393A3E] ">
-      <h3 className="text-center text-lg font-bold mb-4">Track Maintenance History</h3>
+    <div className="h-80 rounded-xl p-6 flex flex-col bg-[#1e2128] shadow-lg shadow-black/20 border border-gray-800/50">
+      <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-semibold text-gray-100">Track Maintenance History</h3></div>
+      <div className="relative flex-1 w-full min-h-0">
       <Bar data={data} options={options} />
+      </div>
     </div>
   );
 }

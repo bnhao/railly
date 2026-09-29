@@ -53,6 +53,18 @@ export default function AdminDashboardClient() {
 
   const { role } = useAuth();
 
+    useEffect(() => {
+        const logHover = (e: MouseEvent) => {
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            if (el) {
+                console.log("Hovering over:", el.tagName, el.className, el.id);
+            }
+        };
+        window.addEventListener('mousemove', logHover);
+        return () => window.removeEventListener('mousemove', logHover);
+    }, []);
+
+
   // Fetch tasks from the API
   const getTasks = async (): Promise<Task[]> => {
     try {
@@ -127,14 +139,15 @@ export default function AdminDashboardClient() {
 
   return (
     <ProtectedRoute allowedRoles={["admin"]}>
-      <Toaster />
+      
       <div className="flex">
         <div className="px-6 py-6 bg-[#121418] text-gray-200 w-full h-screen overflow-hidden flex flex-col">
-          <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-6 h-full">
+          <div className="grid grid-cols-2 grid-rows-2 gap-6 flex-1 min-h-0">
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
-              
-            >
+              className="flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
+              onMouseEnter={() => setHoveredContainer("weather")}
+              onMouseLeave={() => setHoveredContainer(null)}
+              >
               <WeatherWidget />
               {hoveredContainer === "weather" && (
                 <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-black text-white text-md px-2 py-1 rounded shadow-md z-10">
@@ -143,9 +156,10 @@ export default function AdminDashboardClient() {
               )}
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-4 h-full min-h-0 p-6 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
-              
-            >
+              className="flex flex-col space-y-4 h-full min-h-0 p-6 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
+              onMouseEnter={() => setHoveredContainer("capacity")}
+              onMouseLeave={() => setHoveredContainer(null)}
+              >
               <TrackCapacityChart
                 data={trackCapacityData}
                 options={CHART_OPTIONS}
@@ -157,9 +171,10 @@ export default function AdminDashboardClient() {
               )}
             </div>
             <div
-              className="lg:col-span-1 lg:row-span-1 flex flex-col space-y-4 h-full min-h-0 rounded-xl p-6 bg-[#1e2128] shadow-lg shadow-black/20 flex-grow hover:cursor-pointer overflow-hidden"
-              
-            >
+              className="flex flex-col space-y-4 h-full min-h-0 rounded-xl p-6 bg-[#1e2128] shadow-lg shadow-black/20 flex-grow hover:cursor-pointer overflow-hidden"
+              onMouseEnter={() => setHoveredContainer("schedules")}
+              onMouseLeave={() => setHoveredContainer(null)}
+              >
               <div className="flex items-center justify-between mb-2"><h3 className="text-lg font-semibold text-gray-100">Active Schedules</h3></div>{" "}
               <div className="w-full overflow-y-auto rounded-lg border border-gray-800/50 flex-1 min-h-0 relative">
                 <table className="w-full text-left text-sm text-gray-400">

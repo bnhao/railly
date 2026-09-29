@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Nav />
             <main className="flex-1">{children}</main>
           </div>
-          <ToastContainer />
+          
         </AuthProvider>
       </body>
     </html>

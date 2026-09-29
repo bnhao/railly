@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/app/_utils/firebase";
@@ -16,6 +16,10 @@ export default function Nav() {
   const router = useRouter();
   const pathName = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const [activeTop, setActiveTop] = useState<number | null>(null);
+  const [activeHeight, setActiveHeight] = useState<number>(0);
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   const Menus = [
     {
@@ -55,6 +59,18 @@ export default function Nav() {
       path: "/feedback",
     },
   ];
+
+  const activeIndex = Menus.findIndex((menu) => pathName.startsWith(menu.path));
+
+  useEffect(() => {
+    if (activeIndex !== -1 && itemRefs.current[activeIndex]) {
+      setActiveTop(itemRefs.current[activeIndex]?.offsetTop || 0);
+      setActiveHeight(itemRefs.current[activeIndex]?.offsetHeight || 0);
+    } else {
+      setActiveTop(null);
+    }
+  }, [activeIndex, pathName]);
+
 
   const handleSignOut = async () => {
     try {
@@ -104,20 +120,30 @@ export default function Nav() {
             RAILLY
           </h1>
         </div>
-        <ul className="flex-1 space-y-2">
-          {Menus.map((menu) => {
+                <ul className="flex-1 space-y-2 relative">
+          {activeTop !== null && (
+            <div
+              className="absolute left-0 w-full rounded-lg bg-gray-800/60 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              style={{ top: `${activeTop}px`, height: `${activeHeight}px` }}
+            ></div>
+          )}
+          {activeTop !== null && (
+            <div
+              className="absolute left-0 w-1 h-8 bg-cyan-500 rounded-r-md shadow-[0_0_8px_rgba(6,182,212,0.6)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              style={{ top: `${activeTop + (activeHeight / 2) - 16}px` }}
+            ></div>
+          )}
+          {Menus.map((menu, index) => {
             // Updated active logic to handle sub-paths
             const isActive = pathName.startsWith(menu.path);
             return (
               <li
                 key={menu.id}
-                className={`relative text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 rounded-lg transition-colors duration-200 group ${isActive ? "bg-gray-800/60 text-cyan-400" : "hover:bg-gray-800/40 hover:text-gray-200"
+                ref={(el) => { itemRefs.current[index] = el; }}
+                className={`relative z-10 text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 rounded-lg transition-colors duration-200 group ${isActive ? "text-cyan-400" : "hover:bg-gray-800/40 hover:text-gray-200"
                   }`}
                 onClick={() => router.push(menu.path)}
               >
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-cyan-500 rounded-r-md shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
-                )}
                 <span className={`text-2xl transition-colors duration-200 ${isActive ? "text-cyan-400" : "text-gray-400 group-hover:text-cyan-300"}`}>{menu.icon}</span>
                 <span
                   className={`text-base font-medium whitespace-nowrap duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"

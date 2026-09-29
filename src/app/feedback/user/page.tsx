@@ -87,16 +87,16 @@ export default function UserFeedbackPage() {
 
   return (
     <ProtectedRoute allowedRoles={["user", "admin"]}>
-      <div className="flex min-h-screen bg-[#1e1e1e] text-white">
+      <div className="flex min-h-screen bg-[#121418] text-gray-200">
         <div className="px-6 w-full">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Community Feedback</h1>
+            <h1 className="font-bold text-3xl text-cyan-400 tracking-wide drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">Community Feedback</h1>
             <button
               onClick={() => {
                 setSelectedFeedback(null);
                 setShowForm(true);
               }}
-              className="bg-blue-600 text-white p-3 rounded-md shadow-md flex items-center justify-center hover:bg-blue-700"
+              className="bg-cyan-600 px-5 py-2.5 rounded-xl text-white shadow-lg shadow-cyan-500/20 hover:bg-cyan-500 transition-colors duration-200 flex items-center justify-center font-semibold text-sm"
             >
               <PlusCircle size={20} className="mr-2" /> Add Feedback
             </button>
@@ -104,7 +104,7 @@ export default function UserFeedbackPage() {
 
           <div className="mb-4">
             <select
-              className="p-2 bg-[#393A3E] text-white rounded-md border-none"
+              className="p-3 bg-[#181a20] text-gray-200 rounded-xl border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors shadow-lg shadow-black/20"
               value={sort}
               onChange={(e) => setSort(e.target.value)}
             >
@@ -118,14 +118,14 @@ export default function UserFeedbackPage() {
             {sortedFeedbackList.map((feedback) => (
               <div
                 key={feedback.feedback_id}
-                className="border border-gray-700 rounded-lg p-4 bg-[#2e2e2e]"
+                className="bg-[#1e2128] border border-gray-800/50 rounded-xl p-6 shadow-lg shadow-black/20"
               >
                 <div className="flex justify-between items-center mb-2">
                   <div>
-                    <p className="text-lg font-semibold">
+                    <p className="text-xl font-semibold text-cyan-400">
                       {feedback.created_by}
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-500">
                       {new Date(feedback.created_at).toLocaleString()}
                     </p>
                   </div>
@@ -141,13 +141,13 @@ export default function UserFeedbackPage() {
                 <div className="flex gap-2 flex-wrap">
                   <button
                     onClick={() => handleLike(feedback.feedback_id)}
-                    className="bg-green-600 px-3 py-1 rounded"
+                    className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
                   >
                     👍 Like
                   </button>
                   <button
                     onClick={() => handleDislike(feedback.feedback_id)}
-                    className="bg-red-600 px-3 py-1 rounded"
+                    className="bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
                   >
                     👎 Dislike
                   </button>
@@ -159,7 +159,7 @@ export default function UserFeedbackPage() {
                           : feedback.feedback_id
                       )
                     }
-                    className="bg-blue-600 px-3 py-1 rounded"
+                    className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
                   >
                     💬 Comment
                   </button>
@@ -170,13 +170,13 @@ export default function UserFeedbackPage() {
                           setSelectedFeedback(feedback);
                           setShowForm(true);
                         }}
-                        className="bg-yellow-600 px-3 py-1 rounded"
+                        className="bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
                       >
                         ✏️ Edit
                       </button>
                       <button
                         onClick={() => handleDelete(feedback.feedback_id)}
-                        className="bg-red-700 px-3 py-1 rounded"
+                        className="bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm"
                       >
                         🗑️ Delete
                       </button>
@@ -187,13 +187,13 @@ export default function UserFeedbackPage() {
                 {commentBoxOpen === feedback.feedback_id && (
                   <div className="mt-2">
                     <textarea
-                      className="w-full p-2 bg-[#393A3E] text-white rounded-md"
+                      className="w-full p-3 bg-[#181a20] text-gray-200 rounded-xl border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors resize-none"
                       placeholder="Share your thought..."
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                     />
                     <button
-                      className="mt-1 bg-blue-500 px-3 py-1 rounded"
+                      className="mt-1 mt-2 bg-cyan-600 px-4 py-2 rounded-xl text-sm font-semibold text-white hover:bg-cyan-500 transition-colors shadow-lg shadow-cyan-500/20"
                       onClick={() => handleComment(feedback.feedback_id)}
                     >
                       Post
@@ -219,7 +219,7 @@ export default function UserFeedbackPage() {
 
       {/* Global Feedback Form modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
           <FeedbackForm
             initialData={selectedFeedback}
             onSubmit={async (feedback) => {

@@ -20,7 +20,7 @@ type User = {
   role: string;
 };
 
-export default function page() {
+export default function ManageUsersPage() {
   const [users, setUsers] = useState([] as User[]);
   const [selectedUser, setSelectedUser] = useState({} as User);
   const [newUser, setNewUser] = useState({ name: "", email: "", role: "" });

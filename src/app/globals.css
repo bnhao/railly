@@ -124,27 +124,7 @@ body {
   color: #ffffff; /* White text for agenda events */
 }
 
-/* Slide-in modal animation */
-.fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 50;
-}
-
-.transition-transform {
-  transition: transform 0.3s ease-in-out;
-}
-
-.translate-x-0 {
-  transform: translateX(0);
-}
-
-.translate-x-full {
-  transform: translateX(100%);
-}
+/* Removed conflicting Tailwind utility overrides */
 
 /* Custom Scrollbar */
 .scrollbar-custom {

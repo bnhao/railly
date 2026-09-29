@@ -79,11 +79,11 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
-      <div className="absolute right-0 top-0 h-full w-1/3 bg-gray-800 p-8 shadow-lg">
+      <div className="absolute right-0 top-0 h-full w-1/3 bg-[#1e2128] border-l border-gray-800/50 p-8 shadow-lg">
         <form onSubmit={handleSubmit}>
           <div className="space-y-12">
-            <div className="border-b border-gray-900/10 pb-12">
-              <h2 className="font-medium text-center text-xl text-white">
+            <div className="border-b border-gray-800/50 pb-12">
+              <h2 className="font-bold text-center text-2xl text-cyan-400 tracking-wide drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">
                 Add Task
               </h2>
               {error && (
@@ -92,7 +92,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
                   <div className="mt-2">
-                    <div className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+                    <div className="flex items-center rounded-xl bg-[#181a20] px-3 border border-gray-700 focus-within:border-cyan-500 transition-colors">
                       <input
                         id="title"
                         name="username"
@@ -100,7 +100,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                         placeholder="Add a title"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
-                        className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-800 focus:outline focus:outline-0 sm:text-sm/6"
+                        className="block w-full py-2.5 bg-transparent text-gray-200 placeholder:text-gray-500 focus:outline-none sm:text-sm"
                       />
                     </div>
                   </div>
@@ -112,7 +112,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                       id="about"
                       name="about"
                       rows={4}
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-800 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      className="block w-full rounded-xl bg-[#181a20] px-3 py-2.5 text-base text-gray-200 placeholder:text-gray-500 border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors sm:text-sm"
                       value={textareaValue}
                       onChange={(e) => setTextareaValue(e.target.value)}
                       placeholder="Add task description"
@@ -121,14 +121,14 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                 </div>
                 <div className="col-span-full">
                   <div className="mt-2">
-                    <label className="block text-sm font-medium leading-6 text-white">
+                    <label className="block text-sm font-medium leading-6 text-gray-100">
                       Track ID
                     </label>
                     <textarea
                       id="trackID"
                       name="trackID"
                       rows={1}
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-800 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                      className="block w-full rounded-xl bg-[#181a20] px-3 py-2.5 text-base text-gray-200 placeholder:text-gray-500 border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors sm:text-sm"
                       value={trackId}
                       onChange={(e) => setTrackId(e.target.value)}
                     />
@@ -136,38 +136,38 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                 </div>
               </div>
               <div className="col-span-full mt-4">
-                <label className="block text-sm font-medium leading-6 text-white">
+                <label className="block text-sm font-medium leading-6 text-gray-100">
                   Start Date and Time
                 </label>
                 <div className="mt-2 flex gap-4">
                   <input
                     type="date"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-800 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-xl bg-[#181a20] px-3 py-2.5 text-base text-gray-200 placeholder:text-gray-500 border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors sm:text-sm"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                   />
                   <input
                     type="time"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-800 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-xl bg-[#181a20] px-3 py-2.5 text-base text-gray-200 placeholder:text-gray-500 border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors sm:text-sm"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                   />
                 </div>
               </div>
               <div className="col-span-full mt-4">
-                <label className="block text-sm font-medium leading-6 text-white">
+                <label className="block text-sm font-medium leading-6 text-gray-100">
                   End Date and Time
                 </label>
                 <div className="mt-2 flex gap-4">
                   <input
                     type="date"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-800 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-xl bg-[#181a20] px-3 py-2.5 text-base text-gray-200 placeholder:text-gray-500 border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors sm:text-sm"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                   />
                   <input
                     type="time"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-800 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-xl bg-[#181a20] px-3 py-2.5 text-base text-gray-200 placeholder:text-gray-500 border border-gray-700 focus:outline-none focus:border-cyan-500 transition-colors sm:text-sm"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                   />
@@ -176,7 +176,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
               <div className="col-span-full mt-4">
                 <label
                   htmlFor="users"
-                  className="block text-sm font-medium leading-6 text-white"
+                  className="block text-sm font-medium leading-6 text-gray-100"
                 >
                   Assign User
                 </label>
@@ -184,7 +184,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                   <select
                     name="users"
                     id="users"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-md bg-[#181a20] px-3 py-1.5 text-base text-gray-200 outline outline-1 -outline-offset-1 outline-gray-700 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-500 sm:text-sm/6"
                     value={assignedTo}
                     onChange={(e) => setAssignedTo(Number(e.target.value))}
                   >
@@ -200,7 +200,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
               <div className="col-span-full mt-4">
                 <label
                   htmlFor="priority"
-                  className="block text-sm font-medium leading-6 text-white"
+                  className="block text-sm font-medium leading-6 text-gray-100"
                 >
                   Priority
                 </label>
@@ -208,7 +208,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                   <select
                     id="priority"
                     name="priority"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-md bg-[#181a20] px-3 py-1.5 text-base text-gray-200 outline outline-1 -outline-offset-1 outline-gray-700 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-500 sm:text-sm/6"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
                   >
@@ -222,7 +222,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
               <div className="col-span-full mt-4">
                 <label
                   htmlFor="status"
-                  className="block text-sm font-medium leading-6 text-white"
+                  className="block text-sm font-medium leading-6 text-gray-100"
                 >
                   Status
                 </label>
@@ -230,7 +230,7 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                   <select
                     id="status"
                     name="status"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-md bg-[#181a20] px-3 py-1.5 text-base text-gray-200 outline outline-1 -outline-offset-1 outline-gray-700 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-500 sm:text-sm/6"
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
@@ -244,13 +244,13 @@ export default function Modal({ isOpen, onClose, onAddTask }: ModalProps) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  className="rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-gray-100 shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-gray-100 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                   Save
                 </button>

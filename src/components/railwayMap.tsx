@@ -10,6 +10,7 @@ import { useEffect, useState, useMemo, memo } from "react";
 import "leaflet/dist/leaflet.css";
 import { useRouter } from "next/navigation";
  
+
 // Dynamic imports for Leaflet components
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -72,15 +73,6 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
       });
   }, []);
  
-  useEffect(() => {
-    const L = require("leaflet");
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "/leaflet/marker-icon-2x.png",
-      iconUrl: "/leaflet/marker-icon.png",
-      shadowUrl: "/leaflet/marker-shadow.png",
-    });
-  }, []);
  
   // Function to get the midpoint of a geometry
   const getMidpoint = (geometry: any): [number, number] => {
@@ -131,6 +123,22 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
     });
   };
  
+  
+  // Custom pointToLayer to prevent [object Object] bug from default leaflet markers
+  const pointToLayer = (feature: any, latlng: any) => {
+    const L = require('leaflet');
+    const customIcon = new L.Icon({
+      iconUrl: '/leaflet/marker-icon.png',
+      iconRetinaUrl: '/leaflet/marker-icon-2x.png',
+      shadowUrl: '/leaflet/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    return L.marker(latlng, { icon: customIcon });
+  };
+
   // Memoized GeoJSON layer
   const geoJsonLayer = useMemo(() => {
     if (
@@ -146,6 +154,7 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
           data={railwayData}
           style={railwayStyle}
           onEachFeature={onEachFeature}
+          pointToLayer={pointToLayer}
         />
       </MarkerClusterGroup>
     );
@@ -154,13 +163,10 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
   // Render the map and popups
   return (
     <div
-      className="lg:col-span-1 lg:row-span-1 relative flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
+      className="relative flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => {
-        router.push("/trackOverview");
-      }}
-    >
+      >
       {isLoading && <div className="loading-spinner">Loading...</div>}
       {error && <div className="error-message">{error}</div>}
       {!isLoading && !error && (

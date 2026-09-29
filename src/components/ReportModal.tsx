@@ -99,35 +99,35 @@ export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-white p-6 rounded-lg w-[95%] max-w-5xl shadow-xl">
-        <h2 className="text-xl font-semibold mb-4">Weekly Task Bar Chart</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-[#1e2128] border border-gray-800/50 p-8 rounded-2xl w-[95%] max-w-5xl shadow-2xl shadow-black/50">
+        <h2 className="font-bold text-2xl text-cyan-400 tracking-wide drop-shadow-[0_0_8px_rgba(6,182,212,0.4)] mb-8">Weekly Task Bar Chart</h2>
         <div ref={containerRef} className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+              <XAxis dataKey="date" stroke="#9ca3af" tick={{fill: "#9ca3af"}} tickLine={false} axisLine={false} />
+              <YAxis allowDecimals={false} stroke="#9ca3af" tick={{fill: "#9ca3af"}} tickLine={false} axisLine={false} />
+              <Tooltip cursor={{fill: "rgba(255,255,255,0.05)"}} contentStyle={{backgroundColor: "#181a20", borderColor: "#374151", borderRadius: "8px", color: "#f3f4f6"}} />
               <Legend />
-              <Bar dataKey="Pending" fill="#FFA500" />
-              <Bar dataKey="In Progress" fill="#008000" />
+              <Bar dataKey="Pending" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="In Progress" fill="#06b6d4" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="flex justify-end gap-4 mt-6">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-500"
+            className="rounded-xl bg-gray-800 px-6 py-2.5 text-sm font-semibold text-gray-300 hover:bg-gray-700 hover:text-gray-100 transition-colors"
           >
             Close
           </button>
           <button
             onClick={downloadPDF}
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-500"
+            className="rounded-xl bg-cyan-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-cyan-500 transition-colors shadow-lg shadow-cyan-500/20"
           >
             Download PDF
           </button>

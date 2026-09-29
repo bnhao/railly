@@ -355,20 +355,20 @@ export default function Schedule() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-4">
               <button
-                className="bg-blue-600 px-6 py-2 rounded-full cursor-pointer hover:bg-blue-500"
+                className="bg-cyan-600 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-cyan-500 transition-colors shadow-lg shadow-cyan-500/20"
                 onClick={() => setIsModalOpen(true)}
               >
                 Schedule
               </button>
               <button
-                className="bg-indigo-600 px-6 py-2 rounded-full cursor-pointer hover:bg-indigo-500"
+                className="bg-cyan-600/10 border border-cyan-500/30 px-6 py-2.5 rounded-xl font-semibold text-sm text-cyan-400 hover:bg-cyan-500/20 transition-colors"
                 onClick={() => setIsReportOpen(true)}
               >
                 Generate Report
               </button>
             </div>
             <button
-              className="bg-gray-700 px-6 py-2 rounded-full cursor-pointer hover:bg-gray-600"
+              className="bg-[#1e2128] border border-gray-700 px-6 py-2.5 rounded-xl font-semibold text-sm text-gray-300 hover:bg-gray-800 transition-colors"
               onClick={() =>
                 setViewMode(viewMode === "calendar" ? "table" : "calendar")
               }
