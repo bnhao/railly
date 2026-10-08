@@ -1,9 +1,9 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, firestore } from "@/app/_utils/firebase";
+import { auth, firestore } from "@/utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import { CustomUser } from "../types/user";
+import { CustomUser } from "@/types/user";
  
 type AuthContextType = {
     user: CustomUser | null;

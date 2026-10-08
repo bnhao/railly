@@ -3,11 +3,10 @@ import React, { useEffect, useState } from "react";
 import FeedbackTable from "@/components/feedback/FeedbackTable";
 import FeedbackForm from "@/components/feedback/FeedbackForm";
 import { PlusCircle } from "lucide-react";
-import Nav from "@/components/navbar";
-import { FeedbackData } from "@/app/types/feedback";
+import { FeedbackData } from "@/types/feedback";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-export default function FeedbackPage() {
+export default function AdminFeedbackClient() {
   const [feedbackList, setFeedbackList] = useState<FeedbackData[]>([]);
   const [selectedFeedback, setSelectedFeedback] = useState<FeedbackData | null>(
     null

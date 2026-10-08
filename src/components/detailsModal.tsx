@@ -28,7 +28,7 @@ export default function TaskDetailsModal({ isOpen, onClose, task, onDelete }: Ta
     onDelete(task.id); // Call the onDelete function from props
     try {
       alert("Task deleted successfully");
-      onClose(); // Close the modal
+      onClose(); // Close the Modal
     } catch (error) {
       console.error("Error deleting task:", error);
     }

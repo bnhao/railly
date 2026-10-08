@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
-import { auth } from "@/app/_utils/firebase";
+import { auth } from "@/utils/firebase";
 import { FcEnteringHeavenAlive } from "react-icons/fc";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { RiDashboardFill, RiLogoutCircleRLine } from "react-icons/ri";
@@ -32,7 +32,7 @@ export default function Nav() {
       title: "Track Overview",
       id: 2,
       icon: <LuTrainTrack />,
-      path: "/trackOverview",
+      path: "/track-overview",
     },
     {
       title: "Weather",
@@ -75,7 +75,7 @@ export default function Nav() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      router.push("/logIn");
+      router.push("/login");
       toast.success("Logged out successfully", {
         position: "top-center",
         autoClose: 3000,
@@ -99,7 +99,7 @@ export default function Nav() {
     }
   };
 
-  if (pathName === "/logIn" || pathName === "/signIn") {
+  if (pathName === "/login" || pathName === "/register") {
     return null;
   }
 

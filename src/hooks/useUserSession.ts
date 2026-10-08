@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth, firestore } from "@/app/_utils/firebase";
+import { auth, firestore } from "@/utils/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
@@ -36,11 +36,11 @@ export const useUserSession = () => {
         } else {
           setUser(null);
           toast.error("Please verify your email");
-          router.push("/logIn");
+          router.push("/login");
         }
       } else {
         setUser(null);
-        router.push("/logIn");
+        router.push("/login");
       }
       setLoading(false);
     });

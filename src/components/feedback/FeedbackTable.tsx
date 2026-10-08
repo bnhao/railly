@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { FeedbackData } from "@/app/types/feedback";
+import { FeedbackData } from "@/types/feedback";
 
 interface FeedbackTableProps {
   feedbackList: FeedbackData[];

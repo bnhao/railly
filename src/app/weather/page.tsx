@@ -2,8 +2,7 @@
 
 import React, { JSX } from "react";
 import SelectLocation from "../../components/weather/SelectLocation";
-import useForecast from "../hooks/useForecast";
-import Nav from "@/components/navbar";
+import useForecast from "@/hooks/useForecast";
 import AIchatbot from "@/components/AIchatbot";
 
 const App = (): JSX.Element => {

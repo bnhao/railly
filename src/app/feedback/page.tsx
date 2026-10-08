@@ -1,23 +1,27 @@
 "use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
- 
-export default function FeedbackRedirect() {
+import AdminFeedbackClient from "@/components/feedback/AdminFeedbackClient";
+import UserFeedbackClient from "@/components/feedback/UserFeedbackClient";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
+export default function FeedbackPage() {
   const { role, isLoading } = useAuth();
-  const router = useRouter();
- 
-  useEffect(() => {
-    if (!isLoading) {
-      if (role === "admin") {
-        router.replace("/feedback/admin");
-      } else if (role === "user") {
-        router.replace("/feedback/user");
-      } else {
-        router.replace("/unauthorized");
-      }
-    }
-  }, [role, isLoading, router]);
- 
-  return <p>Redirecting to your feedback page...</p>;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (role === "admin") {
+    return <AdminFeedbackClient />;
+  }
+
+  if (role === "user") {
+    return <UserFeedbackClient />;
+  }
+
+  return null;
 }

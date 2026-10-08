@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FeedbackData } from "@/app/types/feedback";
+import { FeedbackData } from "@/types/feedback";
 
 interface FeedbackFormProps {
   initialData?: FeedbackData | null;

@@ -1,5 +1,5 @@
 import { ChangeEvent, JSX, useEffect, useState } from "react";
-import { forecastType } from "@/app/types";
+import { forecastType } from "@/types";
 import { Chart as ChartJs, defaults, CategoryScale } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
 import { Task } from "@/app/schedule/user/page";

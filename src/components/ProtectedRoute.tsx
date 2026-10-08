@@ -26,7 +26,7 @@ const ProtectedRoute = ({
 
         if (!user) {
             toast.error("You are not logged in. Redirecting to login page...");
-            router.push("/logIn");
+            router.push("/login");
             return;
         }
 

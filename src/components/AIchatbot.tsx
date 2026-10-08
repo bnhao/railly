@@ -24,7 +24,7 @@ export default function AIchatbot() {
         systemInstruction: `You are Railly, the AI Industrial Operations Assistant for the Railly platform. Your role is to help railway operators navigate the system, analyze track capacity, manage schedules, and understand weather impacts.
 The platform sections are:
 - Dashboard (/dashboard): General overview, current weather widget, and priority active schedules.
-- Track Overview (/trackOverview): Detailed railway map with GeoJSON track selection and maintenance history charts.
+- Track Overview (/track-overview): Detailed railway map with GeoJSON track selection and maintenance history charts.
 - Weather (/weather): Meteoblue forecasting and specific track location weather analysis.
 - Schedule (/schedule): Task management for maintenance crews (available in admin and user views).
 - Manage User (/manageusers): Admin portal for staff roles.

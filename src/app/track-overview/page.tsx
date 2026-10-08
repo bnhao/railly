@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import RailwayMap from "@/components/railwayMap";
-import TrackMaintenanceChart from "@/components/trackOverViewComponents/TrackMaintenanceChart";
-import TrackDetailsTable from "@/components/trackOverViewComponents/TrackDetailsTable";
-import SearchBar from "@/components/trackOverViewComponents/SearchBar";
+import RailwayMap from "@/components/RailwayMap";
+import TrackMaintenanceChart from "@/components/track-overview/TrackMaintenanceChart";
+import TrackDetailsTable from "@/components/track-overview/TrackDetailsTable";
+import SearchBar from "@/components/track-overview/SearchBar";
 import { trackDetails } from "@/data/trackData";
 import { CHART_BACKGROUND_COLORS, CHART_OPTIONS } from "@/data/chartConfig";
 import { Task } from "@/app/schedule/admin/page";

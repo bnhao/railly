@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "@/app/context/AuthContext";
-import Nav from "@/components/navbar";
+import Nav from "@/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

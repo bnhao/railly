@@ -1,12 +1,12 @@
 "use client";
 
-// import { useUserAuth } from "@/app/_utils/auth-context";
+// import { useUserAuth } from "@/utils/auth-context";
 import { useState, FormEvent } from "react";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { auth } from "@/app/_utils/firebase";
+import { auth } from "@/utils/firebase";
 import Link from "next/link";
 import { FirebaseError } from "firebase/app";
 import Image from "next/image";
@@ -236,7 +236,7 @@ export default function SignInPage() {
           </button>
           <div className="flex justify-center mt-6">
             <p className="mr-1 text-gray-400">Already have an account?</p>
-            <Link href="/logIn" className="hover:underline text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+            <Link href="/login" className="hover:underline text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
               Log In here!
             </Link>
           </div>

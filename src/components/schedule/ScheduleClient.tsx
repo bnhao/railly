@@ -1,8 +1,12 @@
 "use client";
-import { MapPin } from "lucide-react";
-
-import { useState, useEffect, useMemo } from "react";
 import { useNextCalendarApp, ScheduleXCalendar } from "@schedule-x/react";
+import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { MapPin, Edit2, Trash2 } from "lucide-react";
+import ReportModal from "@/components/ReportModal";
+import { startOfWeek, endOfWeek, isWithinInterval, parseISO } from "date-fns";
+import { useState, useEffect, useMemo } from "react";
 import {
   createViewDay,
   createViewMonthAgenda,
@@ -11,8 +15,8 @@ import {
 } from "@schedule-x/calendar";
 import { createEventsServicePlugin } from "@schedule-x/events-service";
 import "@schedule-x/theme-default/dist/index.css";
-import Modal from "@/components/modal";
-import TaskDetailsModal from "@/components/detailsModal";
+import Modal from "@/components/Modal";
+import TaskDetailsModal from "@/components/DetailsModal";
 import "@/app/schedule/schedule.css";
 // Task Type Definition
 export type Task = {
@@ -32,12 +36,14 @@ export type Task = {
   coordinates: [number, number][];
 };
 
-export default function Schedule() {
+export default function ScheduleClient() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { role } = useAuth();
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isReportOpen, setIsReportOpen] = useState(false);
   const [trackCoordinates, setTrackCoordinates] = useState<{
     [key: string]: [number, number][];
   }>({});
@@ -54,6 +60,15 @@ export default function Schedule() {
 
     fetchTasks();
   }, []);
+
+  const currentWeekTasks = useMemo(() => {
+    const start = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const end = endOfWeek(new Date(), { weekStartsOn: 1 });
+    return tasks.filter((task) => {
+      const date = parseISO(task.start_date);
+      return isWithinInterval(date, { start, end });
+    });
+  }, [tasks]);
 
   // Fetch all tasks
   const getTasks = async (): Promise<Task[]> => {
@@ -137,9 +152,11 @@ export default function Schedule() {
 
   const calculateMidpoint = (coordinates: [number, number][]) => {
     console.log("Calculating midpoint for coordinates:", coordinates);
-    if (!coordinates || coordinates.length === 0) return null;
-    console.error("No valid coordinates provided");
-
+    if (!coordinates || coordinates.length === 0) {
+      console.error("No valid coordinates provided", coordinates);
+      return null;
+    }
+    
     if (coordinates.length === 1) {
       console.log("Only one coordinate, returning:", coordinates[0]);
       return coordinates[0];
@@ -329,34 +346,58 @@ export default function Schedule() {
     );
   } else {
     return (
-      <div className="flex flex-col h-screen bg-black text-white">
-        {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 bg-gray-800">
-          <button
-            className="bg-[#1e2128] border border-gray-700 px-6 py-2.5 rounded-xl font-semibold text-sm text-gray-300 hover:bg-gray-800 transition-colors"
-            onClick={() =>
-              setViewMode(viewMode === "calendar" ? "table" : "calendar")
-            }
-          >
-            {viewMode === "calendar"
-              ? "Switch to Table View"
-              : "Switch to Calendar View"}
-          </button>
-        </div>
+      <ProtectedRoute allowedRoles={["admin", "user"]}>
+        <div className="flex">
+        {/* Modal for adding a task */}
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAddTask={handleAddTask}
+        />
+        <div className="bg-black text-white w-full min-h-screen px-6 mt-4">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex gap-4">
+              {role === "admin" && (<button
+                className="bg-cyan-600 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-cyan-500 transition-colors shadow-lg shadow-cyan-500/20"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Schedule
+              </button>)}
+              {role === "admin" && (<button
+                className="bg-cyan-600/10 border border-cyan-500/30 px-6 py-2.5 rounded-xl font-semibold text-sm text-cyan-400 hover:bg-cyan-500/20 transition-colors"
+                onClick={() => setIsReportOpen(true)}
+              >
+                Generate Report
+              </button>)}
+            </div>
+            <button
+              className="bg-[#1e2128] border border-gray-700 px-6 py-2.5 rounded-xl font-semibold text-sm text-gray-300 hover:bg-gray-800 transition-colors"
+              onClick={() =>
+                setViewMode(viewMode === "calendar" ? "table" : "calendar")
+              }
+            >
+              {viewMode === "calendar"
+                ? "Switch to Table View"
+                : "Switch to Calendar View"}
+            </button>
+          </div>
 
-        {/* Main Content */}
-        <div className="flex-grow flex flex-col">
+          {role === "admin" && <ReportModal
+            isOpen={isReportOpen}
+            onClose={() => setIsReportOpen(false)}
+            tasks={currentWeekTasks}
+          />}
+          {/* Conditional Rendering for Calendar or Table View */}
           {/* {viewMode === "calendar" ? (
-            <div className="sx-react-calendar-wrapper w-full h-full flex-grow">
-              <ScheduleXCalendar calendarApp={calendar} />
+            <div className="sx-react-calendar-wrapper w-full h-full flex-grow mt-4">
             </div>
           ) : ( */}
-            <div className="w-full h-full flex-grow overflow-hidden">
-              <h1 className="text-2xl font-bold mb-4 text-white px-6">
+            <div className="mt-8 w-full h-full flex-grow">
+              <h1 className="text-2xl font-bold mb-4 text-white">
                 Scheduled Tasks
               </h1>
-              <div className="overflow-auto h-full px-6">
-                <table className="w-full text-left text-sm text-gray-400">
+              <table className="w-full text-left text-sm text-gray-400">
                   <thead className="bg-[#181a20] text-xs uppercase text-gray-500 sticky top-0">
                     <tr>
                       <th className="px-6 py-4 font-medium border-b border-gray-800">Task ID</th>
@@ -366,6 +407,7 @@ export default function Schedule() {
                       <th className="px-6 py-4 font-medium border-b border-gray-800">Schedule</th>
                       <th className="px-6 py-4 font-medium border-b border-gray-800">Status</th>
                       <th className="px-6 py-4 font-medium border-b border-gray-800 text-center">Map</th>
+                      {role === "admin" && <th className="px-6 py-4 font-medium border-b border-gray-800 text-right">Actions</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-800/50">
@@ -393,18 +435,38 @@ export default function Schedule() {
                         </td>
                         <td className="px-6 py-4 text-center">
                           {task.coordinates ? (
-                            <a href={`/trackOverview?track=${task.track_id}`} className="inline-flex items-center justify-center p-1.5 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors" title="View on Map">
+                            <a href={`/track-overview?track=${task.track_id}`} className="inline-flex items-center justify-center p-1.5 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors" title="View on Map">
                               <MapPin size={18} />
                             </a>
                           ) : (
                             <span className="text-gray-600">-</span>
                           )}
                         </td>
+                                                {role === "admin" && (
+                          <td className="px-6 py-4 flex justify-end gap-3 h-full items-center">
+                            <Link
+                              href={`/task/${task.id}`}
+                              className="p-1.5 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors"
+                              title="Edit Task"
+                            >
+                              <Edit2 size={18} />
+                            </Link>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteTask(task.id);
+                              }}
+                              className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-colors"
+                              title="Delete Task"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
             </div>
           {/* )} */}
         </div>
@@ -426,6 +488,7 @@ export default function Schedule() {
           />
         )}
       </div>
+      </ProtectedRoute>
     );
   }
 }

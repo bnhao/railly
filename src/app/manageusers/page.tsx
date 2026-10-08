@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import React, { useState, FormEvent } from "react";
 import { useEffect } from "react";
-import Nav from "@/components/navbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AIchatbot from "@/components/AIchatbot";
 

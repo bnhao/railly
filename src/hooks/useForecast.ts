@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { locationType, forecastType } from '../types';
+import { locationType, forecastType } from '@/types';
 
 
 const useForecast = () => {

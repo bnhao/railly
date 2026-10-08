@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Nav from "@/components/navbar";
-import { FeedbackData } from "@/app/types/feedback";
+import { FeedbackData } from "@/types/feedback";
 import { useAuth } from "@/app/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import FeedbackForm from "@/components/feedback/FeedbackForm";
@@ -9,7 +8,7 @@ import { PlusCircle } from "lucide-react";
 
 type LocalFeedback = FeedbackData & { likes: number; comments: string[] };
 
-export default function UserFeedbackPage() {
+export default function UserFeedbackClient() {
   const { user, isLoading } = useAuth();
   const [feedbackList, setFeedbackList] = useState<LocalFeedback[]>([]);
   const [commentBoxOpen, setCommentBoxOpen] = useState<number | null>(null);
@@ -217,7 +216,7 @@ export default function UserFeedbackPage() {
         </div>
       </div>
 
-      {/* Global Feedback Form modal */}
+      {/* Global Feedback Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
           <FeedbackForm

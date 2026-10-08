@@ -2,7 +2,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, firestore } from "@/app/_utils/firebase";
+import { auth, firestore } from "@/utils/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Link from "next/link";
 import Image from "next/image";
@@ -96,7 +96,7 @@ export default function LogInPage() {
           <button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-sm px-5 py-3.5 transition-colors duration-200 shadow-lg shadow-cyan-500/20 mt-4">Log In</button>
         </form>
         <div className="flex justify-center mt-6">
-          <p className="text-gray-400">Don&apos;t have an account? <Link href="/signIn" className="hover:underline text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Sign Up here!</Link></p>
+          <p className="text-gray-400">Don&apos;t have an account? <Link href="/register" className="hover:underline text-cyan-400 hover:text-cyan-300 font-medium transition-colors">Sign Up here!</Link></p>
         </div>
       </div>
     </div>

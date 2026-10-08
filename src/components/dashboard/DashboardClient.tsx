@@ -1,20 +1,20 @@
 "use client";
+import { toast } from "react-toastify";
+
 import React, { useEffect, useRef, useState, Suspense } from "react";
-import "chart.js/auto";
 import Link from "next/link";
 import { Trash2, Edit2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { CHART_OPTIONS } from "@/data/chartConfig";
 import { trackCapacityData } from "@/data/trackData";
 import WeatherWidget from "@/components/weather/WeatherWidget";
-import { toast, Toaster } from "react-hot-toast";
 import { useAuth } from "@/app/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Task } from "@/types/task";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 // Lazy load heavy components
-const RailwayMap = dynamic(() => import("@/components/railwayMap"), {
+const RailwayMap = dynamic(() => import("@/components/RailwayMap"), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center h-full bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl rounded-md">
@@ -29,7 +29,7 @@ const AIchatbot = dynamic(() => import("@/components/AIchatbot"), {
 });
 
 const TrackCapacityChart = dynamic(
-  () => import("@/components/trackOverViewComponents/TrackCapacityChart"),
+  () => import("@/components/track-overview/TrackCapacityChart"),
   {
     ssr: false,
     loading: () => (
@@ -40,7 +40,7 @@ const TrackCapacityChart = dynamic(
   }
 );
 
-export default function AdminDashboardClient() {
+export default function DashboardClient() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [hoveredContainer, setHoveredContainer] = useState<string | null>(null);
@@ -122,23 +122,11 @@ export default function AdminDashboardClient() {
   useEffect(() => {
     if (!role || hasShownToast.current) return;
     hasShownToast.current = true;
-    toast.success(
-      <span>
-        You are logged in as <strong>{role}</strong>
-      </span>,
-      {
-        duration: 4000,
-        position: "top-center",
-        style: {
-          background: "#333",
-          color: "#fff",
-        },
-      }
-    );
+    toast.success(`You are logged in as ${role}`, { autoClose: 4000, position: "top-center" });
   }, [role]);
 
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
+    <ProtectedRoute allowedRoles={["admin", "user"]}>
       
       <div className="flex">
         <div className="px-6 py-6 bg-[#121418] text-gray-200 w-full h-screen overflow-hidden flex flex-col">
