@@ -1,12 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import RailwayMap from "@/components/RailwayMap";
+import dynamic from "next/dynamic";
+const RailwayMap = dynamic(() => import("@/components/RailwayMap"), { ssr: false });
 import TrackMaintenanceChart from "@/components/track-overview/TrackMaintenanceChart";
 import TrackDetailsTable from "@/components/track-overview/TrackDetailsTable";
 import SearchBar from "@/components/track-overview/SearchBar";
 import { trackDetails } from "@/data/trackData";
 import { CHART_BACKGROUND_COLORS, CHART_OPTIONS } from "@/data/chartConfig";
-import { Task } from "@/app/schedule/admin/page";
+import { Task } from "@/types/task";
 import AIchatbot from "@/components/AIchatbot";
 
 export default function TrackOverview() {

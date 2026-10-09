@@ -1,9 +1,10 @@
+"use client";
+import L from "leaflet";
 /**
  * Sources used: chatGPT-o4
  * Prompted used: How do I integrate Leaflet with Next.js and get track details on the map.
  */
  
-"use client";
  
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo, memo } from "react";
@@ -126,7 +127,7 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
   
   // Custom pointToLayer to prevent [object Object] bug from default leaflet markers
   const pointToLayer = (feature: any, latlng: any) => {
-    const L = require('leaflet');
+    // L is imported at top
     const customIcon = new L.Icon({
       iconUrl: '/leaflet/marker-icon.png',
       iconRetinaUrl: '/leaflet/marker-icon-2x.png',
