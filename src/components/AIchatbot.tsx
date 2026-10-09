@@ -83,6 +83,7 @@ Always provide concise, structured answers with bullet points. If users need to 
             </div>
             <button 
               onClick={() => setIsOpen(false)}
+              aria-label="Close AI Assistant"
               className="text-gray-400 hover:text-white hover:bg-gray-800 p-2 rounded-xl transition-colors"
             >
               <X className="w-5 h-5" />
@@ -158,6 +159,7 @@ Always provide concise, structured answers with bullet points. If users need to 
               <button
                 onClick={handleGenerate}
                 disabled={isTyping || !input.trim()}
+                aria-label="Send Message"
                 className="absolute right-2 p-2 bg-cyan-600/20 text-cyan-400 rounded-lg hover:bg-cyan-600 hover:text-white transition-colors disabled:opacity-50 disabled:hover:bg-cyan-600/20 disabled:hover:text-cyan-400"
               >
                 <Send className="w-4 h-4" />
@@ -167,6 +169,7 @@ Always provide concise, structured answers with bullet points. If users need to 
         </div>
       ) : (
         <button
+          aria-label="Open AI Assistant"
           className="flex items-center justify-center w-14 h-14 bg-[#1e2128] border border-gray-700 rounded-full shadow-2xl shadow-cyan-900/30 hover:border-cyan-500/50 hover:scale-105 transition-all duration-200 group"
           onClick={() => setIsOpen(true)}
         >

@@ -25,7 +25,7 @@ export default function TrackCapacityChart({
   return (
     <div className="flex flex-col h-full w-full">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-semibold text-gray-100">Track Capacity</h3>
+        <h2 className="text-lg font-semibold text-gray-100">Track Capacity</h2>
       </div>
       <div className="relative flex-1 w-full min-h-0">
         <Line data={data} options={options} />

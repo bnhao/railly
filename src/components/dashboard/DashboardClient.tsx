@@ -130,6 +130,7 @@ export default function DashboardClient() {
       
       <div className="flex">
         <div className="px-6 py-6 bg-[#121418] text-gray-200 w-full h-screen overflow-hidden flex flex-col">
+          <h1 className="sr-only">Railway Operations Dashboard</h1>
           <div className="grid grid-cols-2 grid-rows-2 gap-6 flex-1 min-h-0">
             <div
               className="flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
@@ -163,7 +164,7 @@ export default function DashboardClient() {
               onMouseEnter={() => setHoveredContainer("schedules")}
               onMouseLeave={() => setHoveredContainer(null)}
               >
-              <div className="flex items-center justify-between mb-2"><h3 className="text-lg font-semibold text-gray-100">Active Schedules</h3></div>{" "}
+              <div className="flex items-center justify-between mb-2"><h2 className="text-lg font-semibold text-gray-100">Active Schedules</h2></div>{" "}
               <div className="w-full overflow-y-auto rounded-lg border border-gray-800/50 flex-1 min-h-0 relative">
                 <table className="w-full text-left text-sm text-gray-400">
                   <thead className="bg-[#181a20] text-xs uppercase text-gray-500 sticky top-0 z-10">
@@ -205,6 +206,7 @@ export default function DashboardClient() {
                             href={`/task/${task.id}`}
                             className="p-1.5 text-gray-500 hover:text-cyan-400 hover:bg-cyan-400/10 rounded transition-colors"
                             title="Edit Task"
+                            aria-label={`Edit task ${task.id}`}
                           >
                             <Edit2 size={16} />
                           </Link>
@@ -215,6 +217,7 @@ export default function DashboardClient() {
                             }}
                             className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-colors"
                             title="Delete Task"
+                            aria-label={`Delete task ${task.id}`}
                           >
                             <Trash2 size={16} />
                           </button>

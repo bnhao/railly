@@ -120,43 +120,53 @@ export default function Nav() {
             RAILLY
           </h1>
         </div>
-                <ul className="flex-1 space-y-2 relative">
+                <div className="flex-1 relative">
           {activeTop !== null && (
             <div
-              className="absolute left-0 w-full rounded-lg bg-gray-800/60 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              className="absolute left-0 w-full rounded-lg bg-gray-800/60 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] pointer-events-none"
               style={{ top: `${activeTop}px`, height: `${activeHeight}px` }}
             ></div>
           )}
           {activeTop !== null && (
             <div
-              className="absolute left-0 w-1 h-8 bg-cyan-500 rounded-r-md shadow-[0_0_8px_rgba(6,182,212,0.6)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              className="absolute left-0 w-1 h-8 bg-cyan-500 rounded-r-md shadow-[0_0_8px_rgba(6,182,212,0.6)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] pointer-events-none"
               style={{ top: `${activeTop + (activeHeight / 2) - 16}px` }}
             ></div>
           )}
-          {Menus.map((menu, index) => {
-            // Updated active logic to handle sub-paths
-            const isActive = pathName.startsWith(menu.path);
-            return (
-              <li
-                key={menu.id}
-                ref={(el) => { itemRefs.current[index] = el; }}
-                className={`relative z-10 text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 rounded-lg transition-colors duration-200 group ${isActive ? "text-cyan-400" : "hover:bg-gray-800/40 hover:text-gray-200"
-                  }`}
-                onClick={() => router.push(menu.path)}
-              >
-                <span className={`text-2xl transition-colors duration-200 ${isActive ? "text-cyan-400" : "text-gray-400 group-hover:text-cyan-300"}`}>{menu.icon}</span>
-                <span
-                  className={`text-base font-medium whitespace-nowrap duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
+          <ul className="space-y-2 relative">
+            {Menus.map((menu, index) => {
+              // Updated active logic to handle sub-paths
+              const isActive = pathName.startsWith(menu.path);
+              return (
+                <li
+                  key={menu.id}
+                  ref={(el) => { itemRefs.current[index] = el; }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={menu.title}
+                  onKeyDown={(e) => e.key === "Enter" && router.push(menu.path)}
+                  className={`relative z-10 text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 rounded-lg transition-colors duration-200 group ${isActive ? "text-cyan-400" : "hover:bg-gray-800/40 hover:text-gray-200"
                     }`}
+                  onClick={() => router.push(menu.path)}
                 >
-                  {menu.title}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+                  <span className={`text-2xl transition-colors duration-200 ${isActive ? "text-cyan-400" : "text-gray-400 group-hover:text-cyan-300"}`}>{menu.icon}</span>
+                  <span
+                    className={`text-base font-medium whitespace-nowrap duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
+                      }`}
+                  >
+                    {menu.title}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="Sign Out"
+          onKeyDown={(e) => e.key === "Enter" && handleSignOut()}
           className={`text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 hover:bg-gray-800/40 hover:text-red-400 rounded-lg transition-colors duration-200 group mt-auto`}
           onClick={handleSignOut}
         >

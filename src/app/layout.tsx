@@ -10,16 +10,18 @@ import Nav from "@/components/Navbar";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "raily.io",
-  description: "Track Management System",
+  title: "Railly - Railway Operations & Track Management System",
+  description: "Industrial railway monitoring system for track capacity analysis, live weather forecasting, crew task scheduling, and operations dispatching.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
