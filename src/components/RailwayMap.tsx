@@ -1,16 +1,8 @@
 "use client";
 import L from "leaflet";
-/**
- * Sources used: chatGPT-o4
- * Prompted used: How do I integrate Leaflet with Next.js and get track details on the map.
- */
- 
- 
 import dynamic from "next/dynamic";
-import { useEffect, useState, useMemo, memo } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback, memo } from "react";
 import "leaflet/dist/leaflet.css";
-import { useRouter } from "next/navigation";
- 
 
 // Dynamic imports for Leaflet components
 const MapContainer = dynamic(
@@ -29,11 +21,9 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
 
- 
-// Ensure Leaflet is only loaded on the client side
-// const isClient = typeof window !== "undefined";
- 
- 
+// Cache GeoJSON data in memory across component remounts
+let cachedRailwayData: any = null;
+
 // Default map center (Alberta)
 const DEFAULT_POSITION: [number, number] = [51.0447, -114.0719];
 
@@ -42,109 +32,135 @@ interface RailwayMapProps {
 }
 
 const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
-  const [railwayData, setRailwayData] = useState<any>(null);
+  const [railwayData, setRailwayData] = useState<any>(cachedRailwayData);
   const [selectedFeature, setSelectedFeature] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(!cachedRailwayData);
   const [error, setError] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const router = useRouter();
- 
-  useEffect(() => {
-    console.log("RailwayMap mounted.");
+  const selectedLayerRef = useRef<any>(null);
+
+  // Dedicated hardware-accelerated Canvas renderer for 60fps smooth zooming
+  const canvasRenderer = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    return L.canvas({ padding: 0.5, tolerance: 10 });
   }, []);
- 
-  // Fetch the GeoJSON data
+
+  // Fetch the GeoJSON data once and cache it in memory
   useEffect(() => {
+    if (cachedRailwayData) {
+      setRailwayData(cachedRailwayData);
+      setIsLoading(false);
+      return;
+    }
+
     fetch("/Alberta.geojson")
       .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
         return response.json();
       })
       .then((data) => {
+        cachedRailwayData = data;
         setRailwayData(data);
         setIsLoading(false);
         setError(null);
       })
-      .catch((error) => {
-        console.error("Error fetching GeoJSON data:", error);
+      .catch((err) => {
+        console.error("Error fetching GeoJSON data:", err);
         setIsLoading(false);
         setError("Failed to load railway data. Please try again later.");
       });
   }, []);
- 
- 
+
   // Function to get the midpoint of a geometry
   const getMidpoint = (geometry: any): [number, number] => {
     if (!geometry || !geometry.coordinates) return DEFAULT_POSITION;
- 
+
     if (geometry.type === "LineString") {
       const coords = geometry.coordinates;
       if (coords.length === 0) return DEFAULT_POSITION;
       const midIndex = Math.floor(coords.length / 2);
       return [coords[midIndex][1], coords[midIndex][0]];
     }
- 
+
     if (geometry.type === "MultiLineString") {
       const firstLine = geometry.coordinates[0];
       if (!firstLine || firstLine.length === 0) return DEFAULT_POSITION;
       const midIndex = Math.floor(firstLine.length / 2);
       return [firstLine[midIndex][1], firstLine[midIndex][0]];
     }
- 
+
     if (geometry.type === "Point") {
       return [geometry.coordinates[1], geometry.coordinates[0]];
     }
- 
-    console.warn("Unknown geometry type:", geometry.type);
+
     return DEFAULT_POSITION;
   };
- 
-  // Function to style the railway lines
-  const railwayStyle = (feature: any) => {
-    return {
-      color:
-        selectedFeature &&
-          selectedFeature.properties["@id"] === feature.properties["@id"]
-          ? "#ed9e1f"
-          : "#2b35f0",
-      weight: 3,
+
+  // Base styling for railway lines with canvas renderer
+  const railwayStyle = useMemo(() => {
+    return () => ({
+      color: "#2b35f0",
+      weight: 2.5,
       opacity: 0.8,
-    };
-  };
- 
-  // Function to handle feature click
-  const onEachFeature = (feature: any, layer: any) => {
-    layer.on({
-      click: () => {
-        setSelectedFeature(feature);
-        onFeatureSelect(feature);
-      },
+      renderer: canvasRenderer || undefined,
     });
-  };
- 
-  
-  // Custom pointToLayer to prevent [object Object] bug from default leaflet markers
-  const pointToLayer = (feature: any, latlng: any) => {
-    // L is imported at top
+  }, [canvasRenderer]);
+
+  // Handle feature click directly on the layer to avoid re-rendering 12,000 features
+  const onEachFeature = useCallback(
+    (feature: any, layer: any) => {
+      layer.on({
+        click: () => {
+          // Reset previous selected layer style without unmounting GeoJSON
+          if (selectedLayerRef.current && selectedLayerRef.current !== layer) {
+            try {
+              selectedLayerRef.current.setStyle({
+                color: "#2b35f0",
+                weight: 2.5,
+                opacity: 0.8,
+              });
+            } catch {
+              // Ignore if already unmounted
+            }
+          }
+
+          // Highlight the clicked layer
+          try {
+            layer.setStyle({
+              color: "#ed9e1f",
+              weight: 4.5,
+              opacity: 1,
+            });
+          } catch {
+            // Ignore
+          }
+
+          selectedLayerRef.current = layer;
+          setSelectedFeature(feature);
+          onFeatureSelect(feature);
+        },
+      });
+    },
+    [onFeatureSelect]
+  );
+
+  // Custom pointToLayer
+  const pointToLayer = useCallback((feature: any, latlng: any) => {
     const customIcon = new L.Icon({
-      iconUrl: '/leaflet/marker-icon.png',
-      iconRetinaUrl: '/leaflet/marker-icon-2x.png',
-      shadowUrl: '/leaflet/marker-shadow.png',
+      iconUrl: "/leaflet/marker-icon.png",
+      iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+      shadowUrl: "/leaflet/marker-shadow.png",
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
-      shadowSize: [41, 41]
+      shadowSize: [41, 41],
     });
     return L.marker(latlng, { icon: customIcon });
-  };
+  }, []);
 
-  // Memoized GeoJSON layer
+  // Memoized GeoJSON layer - does NOT depend on selectedFeature, preventing massive re-renders
   const geoJsonLayer = useMemo(() => {
-    if (
-      !railwayData ||
-      !railwayData.features ||
-      railwayData.features.length === 0
-    ) {
+    if (!railwayData || !railwayData.features || railwayData.features.length === 0) {
       return null;
     }
     return (
@@ -155,23 +171,29 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
         pointToLayer={pointToLayer}
       />
     );
-  }, [railwayData, selectedFeature]);
- 
+  }, [railwayData, railwayStyle, onEachFeature, pointToLayer]);
+
   // Render the map and popups
   return (
     <div
       className="relative flex flex-col h-full min-h-0 bg-[#1e2128] shadow-lg shadow-black/20 rounded-xl flex-grow hover:cursor-pointer overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      >
-      {isLoading && <div className="loading-spinner">Loading...</div>}
-      {error && <div className="error-message">{error}</div>}
+    >
+      {isLoading && (
+        <div className="flex items-center justify-center h-full text-cyan-400 font-mono text-sm animate-pulse">
+          Loading Railway Telemetry...
+        </div>
+      )}
+      {error && <div className="p-4 text-rose-400 text-sm">{error}</div>}
       {!isLoading && !error && (
         <MapContainer
           center={DEFAULT_POSITION}
           zoom={10}
           zoomControl={false}
           preferCanvas={true}
+          wheelDebounceTime={100}
+          wheelPxPerZoomLevel={120}
           attributionControl={false}
           style={{
             height: "100%",
@@ -189,18 +211,32 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
           {selectedFeature && selectedFeature.geometry && (
             <Popup
               position={getMidpoint(selectedFeature.geometry)}
-              eventHandlers={{ remove: () => setSelectedFeature(null) }}
+              eventHandlers={{
+                remove: () => {
+                  if (selectedLayerRef.current) {
+                    try {
+                      selectedLayerRef.current.setStyle({
+                        color: "#2b35f0",
+                        weight: 2.5,
+                        opacity: 0.8,
+                      });
+                    } catch {
+                      // Ignore
+                    }
+                    selectedLayerRef.current = null;
+                  }
+                  setSelectedFeature(null);
+                },
+              }}
             >
               <div>
-                <h3>Railway Details</h3>
-                <ul>
-                  {Object.entries(selectedFeature.properties).map(
-                    ([key, value]) => (
-                      <li key={key}>
-                        <strong>{key}:</strong> {String(value)}
-                      </li>
-                    )
-                  )}
+                <h3 className="font-bold text-gray-900">Railway Details</h3>
+                <ul className="text-xs space-y-1 mt-1 text-gray-700">
+                  {Object.entries(selectedFeature.properties).map(([key, value]) => (
+                    <li key={key}>
+                      <strong>{key}:</strong> {String(value)}
+                    </li>
+                  ))}
                 </ul>
               </div>
             </Popup>
@@ -215,6 +251,5 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
     </div>
   );
 };
- 
+
 export default memo(RailwayMap);
- 
