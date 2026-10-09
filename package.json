@@ -34,7 +34,7 @@
     "legacy": "^0.0.3",
     "lucide-react": "^0.476.0",
     "moment": "^2.30.1",
-    "next": "^15.1.6",
+    "next": "15.1.11",
     "path": "^0.12.7",
     "pgshims": "github:neondatabase/serverless",
     "preact": "^10.26.4",
