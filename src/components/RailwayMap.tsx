@@ -28,9 +28,7 @@ const GeoJSON = dynamic(
 const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
-const MarkerClusterGroup = dynamic(() => import("react-leaflet-cluster"), {
-  ssr: false,
-});
+
  
 // Ensure Leaflet is only loaded on the client side
 // const isClient = typeof window !== "undefined";
@@ -150,14 +148,12 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
       return null;
     }
     return (
-      <MarkerClusterGroup chunkedLoading>
-        <GeoJSON
-          data={railwayData}
-          style={railwayStyle}
-          onEachFeature={onEachFeature}
-          pointToLayer={pointToLayer}
-        />
-      </MarkerClusterGroup>
+      <GeoJSON
+        data={railwayData}
+        style={railwayStyle}
+        onEachFeature={onEachFeature}
+        pointToLayer={pointToLayer}
+      />
     );
   }, [railwayData, selectedFeature]);
  
