@@ -19,6 +19,7 @@
     "@schedule-x/react": "^2.18.0",
     "@schedule-x/theme-default": "^2.21.0",
     "@types/google.maps": "^3.58.1",
+    "@vercel/analytics": "^2.0.1",
     "chart.js": "^4.4.7",
     "csv-parser": "^3.2.0",
     "date-fns": "^4.1.0",
