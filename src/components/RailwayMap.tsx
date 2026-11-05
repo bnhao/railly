@@ -3,6 +3,7 @@ import L from "leaflet";
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo, useRef, useCallback, memo } from "react";
 import "leaflet/dist/leaflet.css";
+import { getRailwayGeoJSON, getCachedRailwayGeoJSON } from "@/utils/railwayDataCache";
 
 // Dynamic imports for Leaflet components
 const MapContainer = dynamic(
@@ -21,9 +22,6 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
   ssr: false,
 });
 
-// Cache GeoJSON data in memory across component remounts
-let cachedRailwayData: any = null;
-
 // Default map center (Alberta)
 const DEFAULT_POSITION: [number, number] = [51.0447, -114.0719];
 
@@ -32,9 +30,9 @@ interface RailwayMapProps {
 }
 
 const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
-  const [railwayData, setRailwayData] = useState<any>(cachedRailwayData);
+  const [railwayData, setRailwayData] = useState<any>(() => getCachedRailwayGeoJSON());
   const [selectedFeature, setSelectedFeature] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(!cachedRailwayData);
+  const [isLoading, setIsLoading] = useState<boolean>(() => !getCachedRailwayGeoJSON());
   const [error, setError] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const selectedLayerRef = useRef<any>(null);
@@ -45,21 +43,17 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
     return L.canvas({ padding: 0.5, tolerance: 10 });
   }, []);
 
-  // Fetch the GeoJSON data once and cache it in memory
+  // Fetch the GeoJSON data once using shared memory cache
   useEffect(() => {
-    if (cachedRailwayData) {
-      setRailwayData(cachedRailwayData);
+    const existing = getCachedRailwayGeoJSON();
+    if (existing) {
+      setRailwayData(existing);
       setIsLoading(false);
       return;
     }
 
-    fetch("/Alberta.geojson")
-      .then((response) => {
-        if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
-        return response.json();
-      })
+    getRailwayGeoJSON()
       .then((data) => {
-        cachedRailwayData = data;
         setRailwayData(data);
         setIsLoading(false);
         setError(null);
@@ -106,31 +100,68 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
     });
   }, [canvasRenderer]);
 
-  // Handle feature click directly on the layer to avoid re-rendering 12,000 features
+  // Helper to reset styling of previous selected layer
+  const resetLayerStyle = useCallback((layer: any) => {
+    if (!layer) return;
+    try {
+      const feature = layer.feature;
+      if (feature?.geometry?.type === "Point") {
+        const isStation = feature.properties?.railway === "station";
+        layer.setStyle({
+          radius: isStation ? 7 : 5,
+          fillColor: isStation ? "#f59e0b" : "#06b6d4",
+          color: "#ffffff",
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.95,
+        });
+      } else {
+        layer.setStyle({
+          color: "#2b35f0",
+          weight: 2.5,
+          opacity: 0.8,
+        });
+      }
+    } catch {
+      // Ignore if unmounted
+    }
+  }, []);
+
+  // Handle feature click directly on the layer to avoid re-rendering
   const onEachFeature = useCallback(
     (feature: any, layer: any) => {
+      // Add hover tooltip for stations/stops
+      if (feature.geometry?.type === "Point" && feature.properties?.name) {
+        layer.bindTooltip(
+          `<div class="font-semibold text-xs text-gray-900">${feature.properties.name}</div><div class="text-[10px] text-gray-500">${feature.properties.railway === "station" ? "Station" : "Stop"}</div>`,
+          { direction: "top", offset: [0, -6], opacity: 0.95 }
+        );
+      }
+
       layer.on({
         click: () => {
           // Reset previous selected layer style without unmounting GeoJSON
           if (selectedLayerRef.current && selectedLayerRef.current !== layer) {
-            try {
-              selectedLayerRef.current.setStyle({
-                color: "#2b35f0",
-                weight: 2.5,
-                opacity: 0.8,
-              });
-            } catch {
-              // Ignore if already unmounted
-            }
+            resetLayerStyle(selectedLayerRef.current);
           }
 
           // Highlight the clicked layer
           try {
-            layer.setStyle({
-              color: "#ed9e1f",
-              weight: 4.5,
-              opacity: 1,
-            });
+            if (feature.geometry?.type === "Point") {
+              layer.setStyle({
+                radius: 9,
+                fillColor: "#ef4444",
+                color: "#ffffff",
+                weight: 3,
+                fillOpacity: 1,
+              });
+            } else {
+              layer.setStyle({
+                color: "#ed9e1f",
+                weight: 4.5,
+                opacity: 1,
+              });
+            }
           } catch {
             // Ignore
           }
@@ -141,21 +172,40 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
         },
       });
     },
-    [onFeatureSelect]
+    [onFeatureSelect, resetLayerStyle]
   );
 
-  // Custom pointToLayer
-  const pointToLayer = useCallback((feature: any, latlng: any) => {
-    const customIcon = new L.Icon({
-      iconUrl: "/leaflet/marker-icon.png",
-      iconRetinaUrl: "/leaflet/marker-icon-2x.png",
-      shadowUrl: "/leaflet/marker-shadow.png",
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
-    return L.marker(latlng, { icon: customIcon });
+  // Render stations/stops as high-performance Canvas circle markers
+  const pointToLayer = useCallback(
+    (feature: any, latlng: any) => {
+      const isStation = feature.properties?.railway === "station";
+      return L.circleMarker(latlng, {
+        renderer: canvasRenderer || undefined,
+        radius: isStation ? 7 : 5,
+        fillColor: isStation ? "#f59e0b" : "#06b6d4", // amber for stations, cyan for stops
+        color: "#ffffff",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.95,
+      });
+    },
+    [canvasRenderer]
+  );
+
+  // Client-side filter to only render railway lines and meaningful stations/stops
+  const filterFeature = useCallback((feature: any) => {
+    if (!feature || !feature.geometry) return false;
+    const type = feature.geometry.type;
+    if (type === "LineString" || type === "MultiLineString") return true;
+    if (type === "Point") {
+      const p = feature.properties || {};
+      return (
+        p.railway === "station" ||
+        p.railway === "stop" ||
+        (p.name && p.railway !== "switch" && p.railway !== "level_crossing" && p.railway !== "signal")
+      );
+    }
+    return false;
   }, []);
 
   // Memoized GeoJSON layer - does NOT depend on selectedFeature, preventing massive re-renders
@@ -169,9 +219,10 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
         style={railwayStyle}
         onEachFeature={onEachFeature}
         pointToLayer={pointToLayer}
+        filter={filterFeature}
       />
     );
-  }, [railwayData, railwayStyle, onEachFeature, pointToLayer]);
+  }, [railwayData, railwayStyle, onEachFeature, pointToLayer, filterFeature]);
 
   // Render the map and popups
   return (
@@ -214,15 +265,7 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
               eventHandlers={{
                 remove: () => {
                   if (selectedLayerRef.current) {
-                    try {
-                      selectedLayerRef.current.setStyle({
-                        color: "#2b35f0",
-                        weight: 2.5,
-                        opacity: 0.8,
-                      });
-                    } catch {
-                      // Ignore
-                    }
+                    resetLayerStyle(selectedLayerRef.current);
                     selectedLayerRef.current = null;
                   }
                   setSelectedFeature(null);
@@ -230,7 +273,11 @@ const RailwayMap = ({ onFeatureSelect }: RailwayMapProps) => {
               }}
             >
               <div>
-                <h3 className="font-bold text-gray-900">Railway Details</h3>
+                <h3 className="font-bold text-gray-900">
+                  {selectedFeature.geometry.type === "Point"
+                    ? selectedFeature.properties?.name || "Station Details"
+                    : "Railway Details"}
+                </h3>
                 <ul className="text-xs space-y-1 mt-1 text-gray-700">
                   {Object.entries(selectedFeature.properties).map(([key, value]) => (
                     <li key={key}>

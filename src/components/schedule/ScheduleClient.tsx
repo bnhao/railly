@@ -18,6 +18,7 @@ import "@schedule-x/theme-default/dist/index.css";
 import Modal from "@/components/Modal";
 import TaskDetailsModal from "@/components/DetailsModal";
 import "@/app/schedule/schedule.css";
+import { getRailwayGeoJSON } from "@/utils/railwayDataCache";
 // Task Type Definition
 export type Task = {
   id: number;
@@ -99,13 +100,10 @@ export default function ScheduleClient() {
     }
   };
   useEffect(() => {
-    const fetchGeoJSON = async () => {
-      try {
-        const response = await fetch("/Alberta.geojson");
-        if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
-
-        const albertaGeoJSON = await response.json();
-
+    let isMounted = true;
+    getRailwayGeoJSON()
+      .then((albertaGeoJSON) => {
+        if (!isMounted || !albertaGeoJSON?.features) return;
         const coordinatesMap = albertaGeoJSON.features.reduce(
           (acc: any, feature: any) => {
             const trackId = feature.properties["@id"];
@@ -114,40 +112,15 @@ export default function ScheduleClient() {
           },
           {}
         );
-
         setTrackCoordinates(coordinatesMap);
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Error fetching GeoJSON:", error);
-      }
+      });
+
+    return () => {
+      isMounted = false;
     };
-
-    fetchGeoJSON();
-  }, []);
-
-  useEffect(() => {
-    const fetchGeoJSON = async () => {
-      try {
-        const response = await fetch("/Alberta.geojson");
-        if (!response.ok) throw new Error("Failed to fetch GeoJSON data");
-
-        const albertaGeoJSON = await response.json();
-
-        const coordinatesMap = albertaGeoJSON.features.reduce(
-          (acc: any, feature: any) => {
-            const trackId = feature.properties["@id"];
-            acc[trackId] = feature.geometry.coordinates;
-            return acc;
-          },
-          {}
-        );
-
-        setTrackCoordinates(coordinatesMap);
-      } catch (error) {
-        console.error("Error fetching GeoJSON:", error);
-      }
-    };
-
-    fetchGeoJSON();
   }, []);
 
   const calculateMidpoint = (coordinates: [number, number][]) => {
