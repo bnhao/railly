@@ -1,76 +1,96 @@
 "use client";
-import React, { useState } from "react";
+import React, { memo } from "react";
+import { Star, Plus } from "lucide-react";
 
 interface TrackDetailsTableProps {
-  details: any;
+  details: Record<string, unknown>;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  canDispatch?: boolean;
+  onDispatch?: () => void;
 }
+
+const SPEC_ROWS: { key: string; label: string }[] = [
+  { key: "@id", label: "Track ID" },
+  { key: "name", label: "Subdivision / Name" },
+  { key: "operator", label: "Operator" },
+  { key: "service", label: "Track Service" },
+  { key: "usage", label: "Corridor Usage" },
+  { key: "gauge", label: "Gauge (mm)" },
+  { key: "maxspeed", label: "Max Speed" },
+  { key: "electrified", label: "Electrified" },
+];
 
 const TrackDetailsTable: React.FC<TrackDetailsTableProps> = ({
   details,
   isFavorite,
   onToggleFavorite,
+  canDispatch = false,
+  onDispatch,
 }) => {
-  const [railwayData, setRailwayData] = useState(null);
-  const [selectedFeature, setSelectedFeature] = useState(null);
-
   return (
-    <div className="rounded-xl p-6 bg-[#1e2128] shadow-lg shadow-black/20 flex-grow hover:cursor-pointer border border-gray-800/50">
-      <h3 className="text-lg font-semibold text-gray-100 mb-6 text-center">Selected Track Details</h3>
-      <div className="overflow-hidden rounded-lg border border-gray-800/50">
-        <table className="w-full text-sm">
-          <tbody>
-            <tr className="bg-[#181a20] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Track ID</td>
-              <td className="p-3 font-mono text-cyan-400">{details["@id"]}</td>
-            </tr>
-            <tr className="bg-[#1e2128] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Name</td>
-              <td className="p-3 font-mono text-cyan-400">{details.name}</td>
-            </tr>
-            <tr className="bg-[#1e2128] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Operator</td>
-              <td className="p-3 font-mono text-cyan-400">{details.operator}</td>
-            </tr>
-            <tr className="bg-[#1e2128] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Electrified</td>
-              <td className="p-3 font-mono text-cyan-400">{details.electrified}</td>
-            </tr>
-            <tr className="bg-[#181a20] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Gauge</td>
-              <td className="p-3 font-mono text-cyan-400">{details.gauge}</td>
-            </tr>
-            <tr className="bg-[#1e2128] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Max Speed</td>
-              <td className="p-3 font-mono text-cyan-400">{details.maxspeed}</td>
-            </tr>
-            <tr className="bg-[#1e2128] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Work Rules </td>
-              <td className="p-3 font-mono text-cyan-400">{details.workrules}</td>
-            </tr>
-            <tr className="bg-[#181a20] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">Service</td>
-              <td className="p-3 font-mono text-cyan-400">{details.service}</td>
-            </tr>
-            <tr className="bg-[#181a20] text-gray-200 border-b border-gray-800/50">
-              <td className="p-3 font-medium text-gray-400">usage</td>
-              <td className="p-3 font-mono text-cyan-400">{details.usage}</td>
-            </tr>
+    <div className="rounded-xl p-5 bg-[#151921] border border-[#242a36] widget-contain space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold text-gray-100">
+          Selected Track Telemetry
+        </h2>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onToggleFavorite}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+              isFavorite
+                ? "bg-amber-500/15 text-amber-300 border-amber-500/40"
+                : "bg-[#0d1015] text-gray-300 border-[#242a36] hover:bg-[#1b202b]"
+            }`}
+          >
+            <Star
+              className={`w-3.5 h-3.5 ${isFavorite ? "fill-amber-400" : ""}`}
+            />
+            {isFavorite ? "Bookmarked" : "Bookmark"}
+          </button>
+
+          {canDispatch && onDispatch && (
+            <button
+              type="button"
+              onClick={onDispatch}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Dispatch Order
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-lg border border-[#242a36]">
+        <table className="w-full text-xs">
+          <tbody className="divide-y divide-[#242a36]/70">
+            {SPEC_ROWS.map((row) => {
+              const rawVal = details[row.key];
+              const display =
+                rawVal !== undefined && rawVal !== null && String(rawVal) !== ""
+                  ? String(rawVal)
+                  : "—";
+              return (
+                <tr key={row.key} className="bg-[#0d1015]">
+                  <th
+                    scope="row"
+                    className="px-3.5 py-2.5 text-left font-medium text-gray-400 w-40"
+                  >
+                    {row.label}
+                  </th>
+                  <td className="px-3.5 py-2.5 font-mono text-cyan-300">
+                    {display}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-        <div className="mt-4 text-center">
-          <button
-            className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors duration-200 shadow-lg ${isFavorite ? "bg-red-500/10 text-red-400 hover:bg-red-500/20 shadow-red-500/10 border border-red-500/20" : "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 shadow-emerald-500/10 border border-emerald-500/20"}`}
-            onClick={onToggleFavorite}
-          >
-            {isFavorite ? "Remove from Favorite" : "Add to Favorite"}
-          </button>
-        </div>
       </div>
     </div>
   );
 };
 
-export default TrackDetailsTable;
-
+export default memo(TrackDetailsTable);

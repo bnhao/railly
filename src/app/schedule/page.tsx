@@ -6,7 +6,7 @@ export default function SchedulePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center w-full h-screen">
+        <div className="flex items-center justify-center w-full h-screen bg-[#121418]">
           <LoadingSpinner />
         </div>
       }

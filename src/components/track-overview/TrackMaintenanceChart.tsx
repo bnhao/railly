@@ -1,32 +1,34 @@
 "use client";
-import React from "react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
+import React, { memo } from "react";
+import { BarBreakdownChart, BarSeriesItem } from "@/components/ui/MiniCharts";
 
-// Register required Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+interface TrackMaintenanceChartProps {
+  items: BarSeriesItem[];
+  trackLabel?: string;
+}
 
-export default function TrackMaintenanceChart({
-  data,
-  options,
-}: {
-  data: any;
-  options: any;
-}) {
+function TrackMaintenanceChart({
+  items,
+  trackLabel,
+}: TrackMaintenanceChartProps) {
   return (
-    <div className="h-80 rounded-xl p-6 flex flex-col bg-[#1e2128] shadow-lg shadow-black/20 border border-gray-800/50">
-      <div className="flex items-center justify-between mb-4"><h3 className="text-lg font-semibold text-gray-100">Track Maintenance History</h3></div>
-      <div className="relative flex-1 w-full min-h-0">
-      <Bar data={data} options={options} />
+    <div className="rounded-xl p-5 flex flex-col bg-[#151921] border border-[#242a36] widget-contain space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold text-gray-100">
+          Maintenance History{trackLabel ? ` · ${trackLabel}` : ""}
+        </h2>
+        <span className="text-[11px] font-mono text-gray-500">
+          Work orders by month
+        </span>
       </div>
+      <BarBreakdownChart
+        items={items}
+        primaryLabel="Maintenance Orders"
+        primaryColor="bg-cyan-500"
+        emptyText="Select a track or subdivision to inspect its maintenance history."
+      />
     </div>
   );
 }
+
+export default memo(TrackMaintenanceChart);

@@ -1,64 +1,105 @@
-import { neon } from "@neondatabase/serverless";
 import { NextResponse } from "next/server";
+import { getSql } from "@/utils/db";
 
 // Get a single feedback by ID
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string | number } }
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
-  const databaseUrl = process.env.DATABASE_URL || "";
-  const sql = neon(databaseUrl);
-  const id = Number(params.id);
+  try {
+    const { id } = await context.params;
+    const feedbackId = Number(id);
+    if (!Number.isInteger(feedbackId) || feedbackId <= 0) {
+      return NextResponse.json({ error: "Invalid feedback ID." }, { status: 400 });
+    }
 
-  const response = await sql`SELECT * FROM feedback WHERE feedback_id = ${id};`;
-  const feedback = response[0] as any;
+    const sql = getSql();
+    const response = await sql`
+      SELECT * FROM feedback WHERE feedback_id = ${feedbackId};
+    `;
+    const feedback = response[0];
 
-  if (!feedback) {
-    return new Response(null, { status: 404 });
+    if (!feedback) {
+      return NextResponse.json({ error: "Not found." }, { status: 404 });
+    }
+
+    return NextResponse.json(feedback, { status: 200 });
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch feedback." },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(feedback, { status: 200 });
 }
 
 // Update a specific feedback entry
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string | number } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const databaseUrl = process.env.DATABASE_URL || "";
-  const sql = neon(databaseUrl);
-  const id = Number(params.id);
-  const data = await request.json();
+  try {
+    const { id } = await context.params;
+    const feedbackId = Number(id);
+    if (!Number.isInteger(feedbackId) || feedbackId <= 0) {
+      return NextResponse.json({ error: "Invalid feedback ID." }, { status: 400 });
+    }
 
-  const response = await sql`
-    UPDATE feedback
-    SET 
-      created_by = ${data.created_by},
-      description = ${data.description},
-      suggestion = ${data.suggestion},
-      updated_at = CURRENT_TIMESTAMP
-    WHERE feedback_id = ${id}
-    RETURNING *;
-  `;
+    const sql = getSql();
+    const data = await request.json();
 
-  const updatedFeedback = response[0] as any;
+    const response = await sql`
+      UPDATE feedback
+      SET
+        created_by = COALESCE(${data.created_by ?? null}, created_by),
+        description = ${data.description},
+        suggestion = ${data.suggestion},
+        updated_at = CURRENT_TIMESTAMP
+      WHERE feedback_id = ${feedbackId}
+      RETURNING *;
+    `;
 
-  if (!updatedFeedback) {
-    return new Response(null, { status: 404 });
+    const updatedFeedback = response[0];
+    if (!updatedFeedback) {
+      return NextResponse.json({ error: "Not found." }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedFeedback, { status: 200 });
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to update feedback." },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(updatedFeedback, { status: 200 });
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string | number } }
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
-  const databaseUrl = process.env.DATABASE_URL || "";
-  const sql = neon(databaseUrl);
-  const id = Number(params.id);
+  try {
+    const { id } = await context.params;
+    const feedbackId = Number(id);
+    if (!Number.isInteger(feedbackId) || feedbackId <= 0) {
+      return NextResponse.json({ error: "Invalid feedback ID." }, { status: 400 });
+    }
 
-  await sql`DELETE FROM feedback WHERE feedback_id = ${id};`;
+    const sql = getSql();
+    const deleted = await sql`
+      DELETE FROM feedback WHERE feedback_id = ${feedbackId} RETURNING feedback_id;
+    `;
 
-  return new Response(null, { status: 200 });
+    if (!deleted.length) {
+      return NextResponse.json({ error: "Not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete feedback." },
+      { status: 500 }
+    );
+  }
 }

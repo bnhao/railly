@@ -1,313 +1,443 @@
-import { ChangeEvent, JSX, useEffect, useState } from "react";
-import { forecastType } from "@/types";
-import { Chart as ChartJs, defaults, CategoryScale } from "chart.js/auto";
-import { Line } from "react-chartjs-2";
+"use client";
+import React, { memo, useEffect, useMemo, useState } from "react";
+import {
+  Wind,
+  Thermometer,
+  Compass,
+  Droplets,
+  AlertTriangle,
+  Plus,
+  CloudSun,
+  Map as MapIcon,
+} from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
+import { SparkAreaChart } from "@/components/ui/MiniCharts";
+import WorkOrderDialog, {
+  WorkOrderPrefill,
+} from "@/components/WorkOrderDialog";
+import {
+  fetchCorridorWeatherCached,
+  fetchPointWeatherCached,
+  fetchTasksCached,
+  getCachedCorridorWeather,
+  getCachedTasks,
+  invalidateHistoryCache,
+} from "@/utils/apiCache";
+import { getCompassDirection, parseCoordinates } from "@/utils/coordinates";
+import { CorridorWeatherSnapshot } from "@/utils/riskEngine";
 import { Task } from "@/types/task";
 
-ChartJs.register(CategoryScale);
-
-const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY; // Replace with your actual key
-
-type Props = {
-  track: string;
-  forecastData: { [key: string]: forecastType | null };
-  handleTrackChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  predictWeatherData: { [key: string]: any };
-};
-
-const getWindDirection = (degree: number): string => {
-  const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-  const index = Math.round(degree / 45) % 8;
-  return directions[index];
-};
+interface SelectLocationProps {
+  selectedId: string;
+  onSelectCorridor: (id: string) => void;
+}
 
 const SelectLocation = ({
-  handleTrackChange,
-  track,
-  predictWeatherData,
-}: Props): JSX.Element => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [forecastData, setForecastData] = useState<{
-    [key: string]: forecastType | null;
-  }>({});
-  const [mapUrl, setMapUrl] = useState<string>("");
+  selectedId,
+  onSelectCorridor,
+}: SelectLocationProps) => {
+  const { user, role } = useAuth();
+  const isAdmin = role === "admin";
 
-  // Fetch tasks
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const tasks = await fetch("/api/tasks").then((res) => res.json());
-      setTasks(tasks);
-    };
-    fetchTasks();
-  }, []);
+  const [corridors, setCorridors] = useState<CorridorWeatherSnapshot[]>(
+    () => getCachedCorridorWeather() ?? []
+  );
+  const [tasks, setTasks] = useState<Task[]>(() => getCachedTasks<Task>() ?? []);
+  const [taskWeather, setTaskWeather] =
+    useState<CorridorWeatherSnapshot | null>(null);
+  const [loading, setLoading] = useState<boolean>(
+    () => !getCachedCorridorWeather()
+  );
+  const [showRadar, setShowRadar] = useState(false);
 
-  // Parse coordinates from task
-  const parseCoordinates = (coordinates: string): [number, number] | null => {
-    try {
-      const cleaned = coordinates
-        .replace(/{{|}}/g, "")
-        .replace(/\\/g, "")
-        .replace(/"/g, "");
-      const [lon, lat] = cleaned.split(",");
-      return [parseFloat(lat.trim()), parseFloat(lon.trim())];
-    } catch (error) {
-      console.error("Error parsing coordinates:", error);
-      return null;
-    }
-  };
-
-  // Fetch weather data
-  const fetchWeather = async (lat: number, lon: number) => {
-    try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
-      );
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-      return null;
-    }
-  };
+  const [isDispatchOpen, setIsDispatchOpen] = useState(false);
+  const [dispatchPrefill, setDispatchPrefill] =
+    useState<WorkOrderPrefill | null>(null);
 
   useEffect(() => {
-    const fetchAllForecasts = async () => {
-      if (tasks.length > 0) {
-        const updatedForecastData: { [key: string]: any | null } = {};
-
-        for (const task of tasks) {
-          if (task.coordinates) {
-            const coordinates = parseCoordinates(task.coordinates as unknown as string);
-            if (coordinates) {
-              const [lat, lon] = coordinates;
-              const data = await fetchWeather(lat, lon);
-              updatedForecastData[task.track_id] = data;
-            }
-          }
+    let mounted = true;
+    Promise.all([fetchCorridorWeatherCached(), fetchTasksCached<Task>()]).then(
+      ([wxList, taskList]) => {
+        if (!mounted) return;
+        setCorridors(wxList);
+        setTasks(taskList);
+        setLoading(false);
+        if (!selectedId && wxList.length > 0) {
+          onSelectCorridor(wxList[0].id);
         }
-        setForecastData(updatedForecastData);
       }
+    );
+    return () => {
+      mounted = false;
     };
-    fetchAllForecasts();
-  }, [tasks]);
+  }, [selectedId, onSelectCorridor]);
 
-  // Update mapUrl when track changes
+  // If user selects a custom task track from dropdown, fetch its live forecast too
+  const activeCorridor = useMemo(() => {
+    const found = corridors.find(
+      (c) => c.id === selectedId || c.trackId === selectedId
+    );
+    if (found) return found;
+    if (taskWeather && taskWeather.trackId === selectedId) return taskWeather;
+    return corridors[0] || null;
+  }, [corridors, selectedId, taskWeather]);
+
   useEffect(() => {
-    const selectedTask = tasks.find((t) => String(t.track_id) === String(track));
-    if (selectedTask?.coordinates) {
-      const coordinates = parseCoordinates(selectedTask.coordinates as unknown as string);
-      if (coordinates) {
-        const [lat, lon] = coordinates;
-        setMapUrl(
-          `https://www.meteoblue.com/en/weather/maps/widget?lat=${lat}&lon=${lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
-        );
-      }
-    } else {
-      setMapUrl("");
-    }
-  }, [track, tasks]);
+    setShowRadar(false);
+  }, [activeCorridor?.id, activeCorridor?.trackId]);
 
-  const selectedForecast = forecastData[track];
+  const handleTaskTrackDropdown = async (trackId: string) => {
+    if (!trackId) return;
+    onSelectCorridor(trackId);
+    const existing = corridors.find(
+      (c) => c.id === trackId || c.trackId === trackId
+    );
+    if (existing) return;
+
+    const task = tasks.find((t) => String(t.track_id) === trackId);
+    const coords = parseCoordinates(task?.coordinates);
+    if (!coords) return;
+
+    const pointSnap = await fetchPointWeatherCached(
+      coords[0],
+      coords[1],
+      trackId,
+      task?.title ? `${trackId} — ${task.title}` : trackId
+    );
+    if (pointSnap) {
+      setTaskWeather(pointSnap);
+    }
+  };
+
+  const windSeries = useMemo(() => {
+    if (!activeCorridor?.series) return [];
+    return activeCorridor.series.map((p) => ({
+      label: p.time,
+      value: p.windKmh,
+      secondaryValue: p.gustKmh,
+    }));
+  }, [activeCorridor]);
+
+  const tempSeries = useMemo(() => {
+    if (!activeCorridor?.series) return [];
+    return activeCorridor.series.map((p) => ({
+      label: p.time,
+      value: p.tempC,
+    }));
+  }, [activeCorridor]);
+
+  const radarUrl = activeCorridor
+    ? `https://www.meteoblue.com/en/weather/maps/widget?lat=${activeCorridor.lat}&lon=${activeCorridor.lon}&zoom=8&tempunit=C&windunit=km/h&lengthunit=metric`
+    : "";
+
+  const openDispatch = (snap: CorridorWeatherSnapshot) => {
+    const firstRisk = snap.risks[0]?.suggestedTask;
+    setDispatchPrefill(
+      firstRisk ?? {
+        title: `Weather Corridor Inspection — ${snap.name}`,
+        description: `Corridor condition check on ${snap.name} (${snap.trackId}): ${snap.tempC}°C, wind ${snap.windKmh} km/h (gusts ${snap.gustKmh} km/h).`,
+        priority: snap.riskLevel === "critical" || snap.riskLevel === "high" ? "High" : "Medium",
+        trackId: snap.trackId,
+        trackLabel: snap.name,
+        lat: snap.lat,
+        lon: snap.lon,
+      }
+    );
+    setIsDispatchOpen(true);
+  };
 
   return (
-    <div className="bg-[#121418] text-gray-200 min-h-screen p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Current forecast per track */}
-        <div className="col-span-4 space-y-4">
-          <div className="bg-[#1e2128] p-5 rounded-xl shadow-lg shadow-black/20 mb-4 border border-gray-800/50">
-            <h2 className="text-lg font-semibold text-gray-100">
-              Current Forecast Per Track
-            </h2>
-          </div>
-
-          {tasks.map((task, i) => {
-            const forecast = forecastData[task.track_id];
-            return (
-              <div
-                key={i}
-                className="bg-[#1e2128] p-5 rounded-xl border border-gray-800/50 cursor-pointer hover:bg-gray-800/60 transition-colors"
-                onClick={() => {
-                  const event = new Event("change", {
-                    bubbles: true,
-                  }) as unknown as ChangeEvent<HTMLSelectElement>;
-                  Object.defineProperty(event, "target", {
-                    writable: false,
-                    value: { value: task.track_id } as EventTarget &
-                      HTMLSelectElement,
-                  });
-                  handleTrackChange(event);
-                }}
-              >
-                <h3 className="font-bold text-cyan-400 mb-2">
-                  {`Track ${i + 1} - ${task.track_id} (${
-                    (forecast as any)?.list?.[0]?.weather?.[0]?.main ?? "-"
-                  })`}
-                </h3>
-                <p>
-                  Wind Speed: {forecast?.list?.[0]?.wind?.speed ?? "-"} km/h
-                </p>
-                <p>Temperature: {forecast?.list?.[0]?.main?.temp ?? "-"}°C</p>
-                <p>
-                  Feels Like: {forecast?.list?.[0]?.main?.feels_like ?? "-"}°C
-                </p>
-                <p>Humidity: {forecast?.list?.[0]?.main?.humidity ?? "-"}%</p>
-              </div>
-            );
-          })}
+    <div className="space-y-5">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-100 tracking-tight">
+            Railway Weather & Hazard Telemetry
+          </h1>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Live 48-hour corridor telemetry evaluated against rail thermal &
+            crosswind limits.
+          </p>
         </div>
 
-        {/* Detailed Information for Selected Track */}
-        <div className="col-span-8 space-y-4">
-          <div className="flex justify-between items-center bg-[#1e2128] p-5 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
-            <h2 className="text-lg font-semibold text-gray-100">Select a Track</h2>
-            <select
-              name="track"
-              id="track"
-              className="bg-[#181a20] text-gray-200 border border-gray-700 p-2 rounded-lg cursor-pointer hover:border-cyan-500/50 transition outline-none focus:border-cyan-500"
-              value={track}
-              onChange={handleTrackChange}
-            >
-              <option value="">Select a Track</option>
-              {tasks.map((task, index) => (
-                <option key={`${task.track_id}-${index}`} value={task.track_id}>
-                  {`Track ${task.track_id}`}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Wind Direction for Selected Track */}
-            <div className="col-span-6">
-              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
-                Wind Direction for Selected Track
-              </h2>
-              <div className="font-bold text-6xl h-32 bg-[#1e2128] rounded-xl mt-4 flex items-center justify-center text-cyan-400 border border-gray-800/50 shadow-lg shadow-black/20">
-                {selectedForecast?.list?.[0]?.wind?.deg !== undefined
-                  ? `${getWindDirection(
-                      Math.round(selectedForecast.list[0].wind.deg)
-                    )}`
-                  : "No data"}
-              </div>
-              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50 mt-6">
-                Wind Speed for Selected Track
-              </h2>
-              <div className="relative h-[240px] w-full bg-[#1e2128] rounded-xl p-4 mt-4 flex items-center justify-center border border-gray-800/50 shadow-lg shadow-black/20">
-                {selectedForecast && Array.isArray(selectedForecast.list) ? (
-                  <Line
-                    data={{
-                      labels: selectedForecast.list.map((entry) =>
-                        new Date(entry.dt * 1000).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      ),
-                      datasets: [
-                        {
-                          label: "Wind Speed",
-                          data: selectedForecast.list.map(
-                            (entry) => entry.wind?.speed ?? 0
-                          ),
-                          backgroundColor: "rgba(6, 182, 212, 0.1)",
-                          borderWidth: 2,
-                          pointBackgroundColor: "#06b6d4", pointRadius: 0,
-                          pointBorderColor: "transparent",
-                          pointHoverRadius: 7,
-                          fill: true,
-                        },
-                      ],
-                    }}
-                    options={{
-                      maintainAspectRatio: false,
-                      scales: {
-                        x: { grid: { display: false, drawTicks: false }, ticks: { color: "#6b7280" } },
-                        y: { grid: { color: "rgba(255, 255, 255, 0.05)", drawTicks: false }, ticks: { color: "#6b7280" }, beginAtZero: true }
-                      },
-                      plugins: { legend: { display: false } }
-                    }}
-                  />
-                ) : (
-                  <p className="text-gray-500">
-                    No wind speed data available for the selected track.
+        <select
+          aria-label="Inspect weather for a specific corridor or active task track"
+          value={selectedId}
+          onChange={(e) => void handleTaskTrackDropdown(e.target.value)}
+          className="rounded-lg bg-[#151921] border border-[#242a36] px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyan-500"
+        >
+          <option value="">Select Corridor or Track...</option>
+          {corridors.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name} ({c.windKmh} km/h · {c.tempC}°C)
+            </option>
+          ))}
+          {tasks.map((t) => (
+            <option key={`task-${t.id}`} value={String(t.track_id)}>
+              Order #{t.id} · {t.track_id} ({t.title})
+            </option>
+          ))}
+        </select>
+      </header>
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5">
+        {/* Left 4 columns: Corridor Weather Cards */}
+        <div className="xl:col-span-4 space-y-2.5">
+          {loading
+            ? Array.from({ length: 6 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-24 rounded-xl bg-[#151921] border border-[#242a36] animate-pulse"
+                />
+              ))
+            : corridors.map((c, idx) => {
+                const isSelected = activeCorridor?.id === c.id;
+                return (
+                  <div
+                    key={c.id}
+                    className={`rounded-xl p-4 bg-[#151921] border transition-colors cursor-pointer ${
+                      isSelected
+                        ? "border-cyan-500 bg-[#18202c]"
+                        : "border-[#242a36] hover:bg-[#1b202b]"
+                    } ${idx >= 5 ? "deferred-card" : ""}`}
+                    onClick={() => onSelectCorridor(c.id)}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h2 className="text-sm font-semibold text-gray-100">
+                          {c.name}
+                        </h2>
+                        <p className="text-[11px] text-gray-400">
+                          {c.operator} · {c.region}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase font-bold border ${
+                          c.riskLevel === "critical"
+                            ? "bg-rose-500/15 text-rose-300 border-rose-500/40"
+                            : c.riskLevel === "high"
+                              ? "bg-amber-500/15 text-amber-300 border-amber-500/40"
+                              : c.riskLevel === "advisory"
+                                ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40"
+                                : "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                        }`}
+                      >
+                        {c.riskLevel}
+                      </span>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap items-center gap-4 text-xs font-mono tabular-nums text-gray-200">
+                      <span className="inline-flex items-center gap-1">
+                        <Thermometer className="w-3.5 h-3.5 text-cyan-400" />
+                        {c.degraded ? "-" : `${c.tempC}°C`}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Wind className="w-3.5 h-3.5 text-amber-400" />
+                        {c.degraded
+                          ? "-"
+                          : `${c.windKmh} km/h (${getCompassDirection(c.windDeg)})`}
+                      </span>
+                      <span className="text-gray-400">{c.condition}</span>
+                    </div>
+                  </div>
+                );
+              })}
+        </div>
+
+        {/* Right 8 columns: Active Corridor Telemetry & Charts */}
+        <div className="xl:col-span-8 space-y-4">
+          {activeCorridor && (
+            <>
+              <div className="rounded-xl bg-[#151921] border border-[#242a36] p-4 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-gray-100">
+                    {activeCorridor.name}
+                  </h2>
+                  <p className="text-xs font-mono text-cyan-400">
+                    {activeCorridor.trackId} · {activeCorridor.operator} ·{" "}
+                    {activeCorridor.description}
                   </p>
+                </div>
+
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => openDispatch(activeCorridor)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Dispatch Corridor Check
+                  </button>
                 )}
               </div>
-            </div>
-            {/* Meteoblue Weather Map */}
-            <div className="col-span-6">
-              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
-                Meteoblue Weather Map for Selected Track
-              </h2>
-              <div className="mt-4">
-                {mapUrl ? (
+
+              {/* Active Weather Hazard Banner */}
+              {activeCorridor.risks.length > 0 && (
+                <div className="rounded-xl bg-amber-950/25 border border-amber-500/40 p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-amber-300 uppercase tracking-wider">
+                    <AlertTriangle className="w-4 h-4" />
+                    Evaluated Rail Safety Advisories
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-gray-200">
+                    {activeCorridor.risks.map((r) => (
+                      <li key={r.id}>
+                        <strong className="text-amber-200">{r.title}:</strong>{" "}
+                        {r.detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* 4 KPI Telemetry Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-xl bg-[#151921] border border-[#242a36] p-3.5 widget-contain">
+                  <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                    <Thermometer className="w-3.5 h-3.5 text-cyan-400" /> Temp
+                  </span>
+                  <p className="mt-1.5 text-xl font-bold font-mono tabular-nums text-gray-100">
+                    {activeCorridor.tempC}°C
+                  </p>
+                  <p className="text-[11px] text-gray-500 font-mono">
+                    Feels {activeCorridor.feelsLikeC}°C
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-[#151921] border border-[#242a36] p-3.5 widget-contain">
+                  <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                    <Wind className="w-3.5 h-3.5 text-amber-400" /> Wind / Gust
+                  </span>
+                  <p className="mt-1.5 text-xl font-bold font-mono tabular-nums text-gray-100">
+                    {activeCorridor.windKmh} km/h
+                  </p>
+                  <p className="text-[11px] text-amber-400 font-mono">
+                    Gusts {activeCorridor.gustKmh} km/h
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-[#151921] border border-[#242a36] p-3.5 widget-contain">
+                  <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                    <Compass className="w-3.5 h-3.5 text-cyan-400" /> Bearing
+                  </span>
+                  <p className="mt-1.5 text-xl font-bold font-mono text-gray-100">
+                    {getCompassDirection(activeCorridor.windDeg)}
+                  </p>
+                  <p className="text-[11px] text-gray-500 font-mono tabular-nums">
+                    {activeCorridor.windDeg}°
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-[#151921] border border-[#242a36] p-3.5 widget-contain">
+                  <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                    <Droplets className="w-3.5 h-3.5 text-cyan-400" /> Humidity
+                  </span>
+                  <p className="mt-1.5 text-xl font-bold font-mono tabular-nums text-gray-100">
+                    {activeCorridor.humidity}%
+                  </p>
+                  <p className="text-[11px] text-gray-500 font-mono">
+                    Precip {activeCorridor.precipMm} mm
+                  </p>
+                </div>
+              </div>
+
+              {/* 48h Native SVG Telemetry Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="rounded-xl bg-[#151921] border border-[#242a36] p-4 widget-contain space-y-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    48h Wind & Gust Forecast (km/h)
+                  </h3>
+                  <SparkAreaChart
+                    data={windSeries}
+                    unit=" km/h"
+                    primaryLabel="Wind"
+                    secondaryLabel="Gust"
+                    accentColor="#06b6d4"
+                    thresholdValue={45}
+                    thresholdLabel="45 km/h Patrol Limit"
+                  />
+                </div>
+
+                <div className="rounded-xl bg-[#151921] border border-[#242a36] p-4 widget-contain space-y-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    48h Thermal Forecast (°C)
+                  </h3>
+                  <SparkAreaChart
+                    data={tempSeries}
+                    unit="°C"
+                    primaryLabel="Temp"
+                    accentColor="#38bdf8"
+                    thresholdValue={-20}
+                    thresholdLabel="-20°C Cold Stress"
+                  />
+                </div>
+              </div>
+
+              {/* Click-to-Load Meteoblue Radar (Zero automatic third-party slowdown) */}
+              <div className="rounded-xl bg-[#151921] border border-[#242a36] p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                    <CloudSun className="w-4 h-4 text-cyan-400" />
+                    Regional Meteoblue Radar Map
+                  </h3>
+                  {!showRadar ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowRadar(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1e2430] hover:bg-[#272f3f] text-cyan-300 border border-[#2d3546] transition-colors"
+                    >
+                      <MapIcon className="w-3.5 h-3.5" />
+                      Load Interactive Radar
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowRadar(false)}
+                      className="text-xs text-gray-400 hover:text-white"
+                    >
+                      Unload Radar
+                    </button>
+                  )}
+                </div>
+
+                {showRadar ? (
                   <iframe
-                    src={mapUrl}
+                    src={radarUrl}
                     frameBorder="0"
                     scrolling="no"
+                    loading="lazy"
                     sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
                     style={{
                       width: "100%",
-                      height: "420px",
+                      height: "360px",
                       borderRadius: "10px",
                     }}
-                    title="Meteoblue Weather Map"
-                  ></iframe>
+                    title={`Meteoblue Weather Radar for ${activeCorridor.name}`}
+                  />
                 ) : (
-                  <p className="text-gray-500 text-center">
-                    No map available for the selected track.
+                  <p className="text-xs text-gray-500">
+                    Third-party satellite radar loads on demand to keep field
+                    devices fast and conserve bandwidth.
                   </p>
                 )}
               </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-12 gap-6">
-            {/* Temperature Chart */}
-            <div className="col-span-12">
-              <h2 className="text-lg font-semibold bg-[#1e2128] px-5 py-4 rounded-xl shadow-lg shadow-black/20 border border-gray-800/50">
-                Temperature for Selected Track
-              </h2>
-              <div className="relative h-[300px] w-full bg-[#1e2128] rounded-xl mt-4 p-4 border border-gray-800/50 shadow-lg shadow-black/20">
-                <Line
-                  data={{
-                    labels:
-                      selectedForecast?.list?.map((entry) =>
-                        new Date(entry.dt * 1000).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      ) || [],
-                    datasets: [
-                      {
-                        label: "Temperature",
-                        data:
-                          selectedForecast?.list?.map(
-                            (entry) => entry.main?.temp ?? 0
-                          ) || [],
-                        backgroundColor: "rgba(6, 182, 212, 0.1)",
-                        borderWidth: 2,
-                        pointBackgroundColor: "#06b6d4", pointRadius: 0,
-                        pointBorderColor: "transparent",
-                        pointHoverRadius: 7,
-                        fill: true,
-                      },
-                    ],
-                  }}
-                  options={{
-                      maintainAspectRatio: false,
-                      scales: {
-                        x: { grid: { display: false, drawTicks: false }, ticks: { color: "#6b7280" } },
-                        y: { grid: { color: "rgba(255, 255, 255, 0.05)", drawTicks: false }, ticks: { color: "#6b7280" }, beginAtZero: true }
-                      },
-                      plugins: { legend: { display: false } }
-                    }}
-                />
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
+
+      <WorkOrderDialog
+        isOpen={isDispatchOpen}
+        onClose={() => {
+          setIsDispatchOpen(false);
+          setDispatchPrefill(null);
+        }}
+        prefill={dispatchPrefill}
+        createdByLabel={user?.email || "Supervisor"}
+        onSaved={() => {
+          invalidateHistoryCache();
+        }}
+      />
     </div>
   );
 };
 
-export default SelectLocation;
+export default memo(SelectLocation);

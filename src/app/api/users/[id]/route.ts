@@ -1,77 +1,113 @@
-import { neon } from "@neondatabase/serverless";
 import { NextResponse } from "next/server";
+import { getSql } from "@/utils/db";
 
 // Fetch a user by id
-export async function GET({ params }: { params: { id: string | number } }) {
-    const databaseUrl = process.env.DATABASE_URL || "";
-    const sql = neon(databaseUrl);
-    const id = Number(params.id);
-    const response = await sql`SELECT * FROM users WHERE id = ${id};`;
-    const user = response[0] as any;
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const userId = Number(id);
+    if (!Number.isInteger(userId) || userId <= 0) {
+      return NextResponse.json({ error: "Invalid user ID." }, { status: 400 });
+    }
+
+    const sql = getSql();
+    const response = await sql`SELECT * FROM users WHERE id = ${userId};`;
+    const user = response[0] as Record<string, unknown> | undefined;
 
     if (!user) {
-        return new Response(null, { status: 404 });
+      return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
-    // If user has a "role" field, convert it into a "roles" array.
-    let modifiedUser;
-    if (user.role) {
-        modifiedUser = { ...user, roles: [user.role] };
-        delete modifiedUser.role;
-    } else {
-        modifiedUser = user;
-    }
-
-    return NextResponse.json(modifiedUser, { status: 200 });
+    return NextResponse.json(
+      {
+        ...user,
+        roles: user.role ? [String(user.role)] : [],
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch user." },
+      { status: 500 }
+    );
+  }
 }
 
-// Update all the information of a user
+// Update a user
 export async function PUT(
-    request: Request,
-    { params }: { params: { id: string | number } }
+  request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
-    const databaseUrl = process.env.DATABASE_URL || "";
-    const sql = neon(databaseUrl);
-    const id = Number(params.id);
+  try {
+    const { id } = await context.params;
+    const userId = Number(id);
+    if (!Number.isInteger(userId) || userId <= 0) {
+      return NextResponse.json({ error: "Invalid user ID." }, { status: 400 });
+    }
+
+    const sql = getSql();
     const requestData = await request.json();
 
-    // Update the user and return the updated row
     const response = await sql`
-    UPDATE users 
-    SET email = ${requestData.email}, name = ${requestData.name}, role = ${requestData.role} 
-    WHERE id = ${id}
-    RETURNING *;
-  `;
-    const updatedUser = response[0] as any;
+      UPDATE users
+      SET
+        email = ${requestData.email},
+        name = ${requestData.name},
+        role = ${requestData.role || "user"}
+      WHERE id = ${userId}
+      RETURNING *;
+    `;
 
+    const updatedUser = response[0] as Record<string, unknown> | undefined;
     if (!updatedUser) {
-        return new Response(null, { status: 404 });
+      return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
-    let modifiedUser;
-    if (updatedUser.role) {
-        modifiedUser = { ...updatedUser, roles: [updatedUser.role] };
-        delete modifiedUser.role;
-    } else {
-        modifiedUser = updatedUser;
-    }
-
-    return NextResponse.json(modifiedUser, { status: 200 });
+    return NextResponse.json(
+      {
+        ...updatedUser,
+        roles: updatedUser.role ? [String(updatedUser.role)] : [],
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to update user." },
+      { status: 500 }
+    );
+  }
 }
 
 // Delete a user by id
 export async function DELETE(
-    request: Request,
-    { params }: { params: { id: string | number } }
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
-    const databaseUrl = process.env.DATABASE_URL || "";
-    const sql = neon(databaseUrl);
-    const id = Number(params.id);
-    const response = await sql`DELETE FROM users WHERE id = ${id};`;
-
-    if (!response) {
-        return new Response(null, { status: 404 });
+  try {
+    const { id } = await context.params;
+    const userId = Number(id);
+    if (!Number.isInteger(userId) || userId <= 0) {
+      return NextResponse.json({ error: "Invalid user ID." }, { status: 400 });
     }
 
-    return new Response(null, { status: 200 });
+    const sql = getSql();
+    const response = await sql`DELETE FROM users WHERE id = ${userId} RETURNING id;`;
+
+    if (!response.length) {
+      return NextResponse.json({ error: "User not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, id: userId }, { status: 200 });
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete user." },
+      { status: 500 }
+    );
+  }
 }

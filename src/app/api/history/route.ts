@@ -1,82 +1,145 @@
-import { neon } from "@neondatabase/serverless";
 import { NextResponse } from "next/server";
+import { getSql } from "@/utils/db";
 
-/**
- * 
- * Sources used: 
- * https://webdev2-git-dv-dereksaits-projects.vercel.app/week-12/api-implementation#api-implementation-with-nextjs 
- * https://github.com/warsylewicz/webdev2/blob/main/pages/week-12/api-implementation.mdx 
- */
-
-//Fetch All history - Mark
-export async function GET() {
-  const databaseUrl = process.env.DATABASE_URL || ""; // Set a default value if DATABASE_URL is not defined
-  const sql = neon(databaseUrl);
-  //PostgresQL
-  const response = await sql`SELECT * FROM history;`;
-  return new Response(JSON.stringify(response), { status: 200 });
-}
-
-// Add task - Daniel
-export async function POST(request: Request) {
+// Fetch history (filtered server-side by track_id when provided)
+export async function GET(request: Request) {
   try {
-    const requestData = await request.json();
-    const databaseUrl = process.env.DATABASE_URL || "";
-    const sql = neon(databaseUrl);
+    const sql = getSql();
+    const { searchParams } = new URL(request.url);
+    const trackId = searchParams.get("track_id");
 
-    // Validate request data
-    if (!requestData.title || !requestData.description || !requestData.status || !requestData.assigned_to || !requestData.created_by || !requestData.start_date || !requestData.start_time || !requestData.end_date || !requestData.end_time || !requestData.priority || !requestData.track_id || !requestData.coordinates) {
-      return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
-    }
+    const response = trackId
+      ? await sql`SELECT * FROM history WHERE track_id = ${trackId} ORDER BY id DESC;`
+      : await sql`SELECT * FROM history ORDER BY id DESC;`;
 
-    // Debug log for track_id
-    console.log('Received track_id:', requestData.track_id);
-
-    // Insert the task into the database
-    const response = await sql`
-      INSERT INTO history (title, description, status, assigned_to, created_by, start_date, start_time, end_date, end_time, priority, track_id, coordinates)
-      VALUES (${requestData.title}, ${requestData.description}, ${requestData.status}, ${requestData.assigned_to}, ${requestData.created_by}, ${requestData.start_date}, ${requestData.start_time}, ${requestData.end_date}, ${requestData.end_time}, ${requestData.priority}, ${requestData.track_id}, ${requestData.coordinates})
-      RETURNING *;
-    `;
-
-    // Log the response for debugging
-    console.log("Insert response:", response);
-
-    // Return the newly created task
-    return NextResponse.json(response[0], { status: 200 });
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        "Cache-Control": "private, max-age=15, stale-while-revalidate=60",
+      },
+    });
   } catch (error) {
     console.error("Database Error:", error);
-    return NextResponse.json({ error: "Failed to create task." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch history." },
+      { status: 500 }
+    );
   }
 }
 
-// Modify task - Mark
-export async function PUT(request: Request) {
-  const databaseUrl = process.env.DATABASE_URL || ""; // Set a default value if DATABASE_URL is not defined
-  const sql = neon(databaseUrl);
-  //PostgresQL
-  const requestData = await request.json();
-  const response = await sql`
+// Add history entry
+export async function POST(request: Request) {
+  try {
+    const requestData = await request.json();
+    const sql = getSql();
 
-        UPDATE history SET
-            description = ${requestData.description}, 
-            status = ${requestData.status},
-            assigned_to = ${requestData.assigned_to},
-            created_by = ${requestData.created_by},
-            due_date = ${requestData.due_date},
-            priotity = ${requestData.priotity},
-            WHERE id = ${requestData.id};`;
+    if (
+      !requestData.title ||
+      !requestData.description ||
+      !requestData.status ||
+      !requestData.created_by ||
+      !requestData.start_date ||
+      !requestData.start_time ||
+      !requestData.end_date ||
+      !requestData.end_time ||
+      !requestData.priority ||
+      !requestData.track_id
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields." },
+        { status: 400 }
+      );
+    }
 
-  return new Response(JSON.stringify(response), { status: 200 });
+    const assignedTo =
+      requestData.assigned_to !== undefined && requestData.assigned_to !== null
+        ? String(requestData.assigned_to)
+        : "Unassigned";
+
+    const coords =
+      requestData.coordinates === undefined || requestData.coordinates === null
+        ? null
+        : typeof requestData.coordinates === "string"
+          ? requestData.coordinates
+          : JSON.stringify(requestData.coordinates);
+
+    const response = await sql`
+      INSERT INTO history (
+        title,
+        description,
+        status,
+        assigned_to,
+        created_by,
+        start_date,
+        start_time,
+        end_date,
+        end_time,
+        priority,
+        track_id,
+        coordinates
+      )
+      VALUES (
+        ${requestData.title},
+        ${requestData.description},
+        ${requestData.status},
+        ${assignedTo},
+        ${requestData.created_by},
+        ${requestData.start_date},
+        ${requestData.start_time},
+        ${requestData.end_date},
+        ${requestData.end_time},
+        ${requestData.priority},
+        ${requestData.track_id},
+        ${coords}
+      )
+      RETURNING *;
+    `;
+
+    return NextResponse.json(response[0], { status: 200 });
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to create history entry." },
+      { status: 500 }
+    );
+  }
 }
 
-//Delete all history - Nathan Delete all tasks from table. Keep table.
+// Modify history entry using actual schema columns
+export async function PUT(request: Request) {
+  try {
+    const sql = getSql();
+    const requestData = await request.json();
+    const id = Number(requestData.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return NextResponse.json({ error: "Invalid history ID." }, { status: 400 });
+    }
+
+    const response = await sql`
+      UPDATE history SET
+        description = COALESCE(${requestData.description ?? null}, description),
+        status = COALESCE(${requestData.status ?? null}, status),
+        assigned_to = COALESCE(${requestData.assigned_to !== undefined ? String(requestData.assigned_to) : null}, assigned_to),
+        created_by = COALESCE(${requestData.created_by ?? null}, created_by),
+        end_date = COALESCE(${requestData.end_date ?? null}, end_date),
+        priority = COALESCE(${requestData.priority ?? null}, priority)
+      WHERE id = ${id}
+      RETURNING *;
+    `;
+
+    return NextResponse.json(response[0] ?? null, { status: 200 });
+  } catch (error) {
+    console.error("Database Error:", error);
+    return NextResponse.json(
+      { error: "Failed to update history entry." },
+      { status: 500 }
+    );
+  }
+}
 
 export async function DELETE() {
-  const databaseUrl = process.env.DATABASE_URL || ""; // Set a default value if DATABASE_URL is not defined
-  const sql = neon(databaseUrl);
-
-  const response = await sql`DELETE FROM schedules;`;
-
-  return new Response(null, { status: 200 });
+  return NextResponse.json(
+    { error: "Bulk delete is disabled." },
+    { status: 405 }
+  );
 }

@@ -1,28 +1,10 @@
-// 📁 Updated components/ReportModal.tsx with bar chart instead of heat map
-
 "use client";
-
-import { useEffect, useRef, useState } from "react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
-
-interface Task {
-  id: number;
-  title: string;
-  status: string;
-  start_date: string;
-  end_date: string;
-}
+import React, { useMemo } from "react";
+import { Download, Printer } from "lucide-react";
+import { AppDialog } from "@/components/ui/AppDialog";
+import { BarBreakdownChart } from "@/components/ui/MiniCharts";
+import { Task } from "@/types/task";
+import { formatDateOnly } from "@/utils/coordinates";
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -32,107 +14,238 @@ interface ReportModalProps {
 
 const getWeekDates = () => {
   const now = new Date();
+  const day = now.getDay();
   const start = new Date(now);
-  start.setDate(now.getDate() - now.getDay() + 1); // Monday
+  start.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
   const week: string[] = [];
   for (let i = 0; i < 7; i++) {
-    const date = new Date(start);
-    date.setDate(start.getDate() + i);
-    week.push(date.toISOString().split("T")[0]);
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    week.push(`${y}-${m}-${dd}`);
   }
   return week;
 };
 
-export default function ReportModal({ isOpen, onClose }: ReportModalProps) {
-  const containerRef = useRef(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [weekDates, setWeekDates] = useState<string[]>([]);
+export default function ReportModal({
+  isOpen,
+  onClose,
+  tasks,
+}: ReportModalProps) {
+  const weekDates = useMemo(() => getWeekDates(), []);
 
-  useEffect(() => {
-    setWeekDates(getWeekDates());
-  }, []);
+  const summary = useMemo(() => {
+    let pending = 0;
+    let inProgress = 0;
+    let completed = 0;
+    const crewMap = new Map<
+      string,
+      { pending: number; inProgress: number; completed: number }
+    >();
 
-  useEffect(() => {
-    if (!isOpen) return;
+    for (const t of tasks) {
+      const s = t.status?.toLowerCase();
+      const crew =
+        t.assigned_to_name ||
+        (t.assigned_to ? `Crew #${t.assigned_to}` : "Unassigned");
+      const entry = crewMap.get(crew) || {
+        pending: 0,
+        inProgress: 0,
+        completed: 0,
+      };
 
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch("/api/tasks");
-        if (!response.ok) throw new Error("Failed to fetch tasks");
-        const data = await response.json();
-
-        const formatted = data.map((task: Task) => ({
-          ...task,
-          start_date: task.start_date.includes("T")
-            ? task.start_date.split("T")[0]
-            : task.start_date,
-        }));
-
-        setTasks(formatted);
-      } catch (err) {
-        console.error("Error fetching tasks:", err);
+      if (s === "completed") {
+        completed++;
+        entry.completed++;
+      } else if (s === "in progress") {
+        inProgress++;
+        entry.inProgress++;
+      } else {
+        pending++;
+        entry.pending++;
       }
+      crewMap.set(crew, entry);
+    }
+
+    return {
+      total: tasks.length,
+      pending,
+      inProgress,
+      completed,
+      crewBreakdown: Array.from(crewMap.entries()).map(([name, counts]) => ({
+        name,
+        ...counts,
+      })),
     };
+  }, [tasks]);
 
-    fetchTasks();
-  }, [isOpen]);
+  const weeklyBarItems = useMemo(() => {
+    const byDate = new Map<
+      string,
+      { inProgress: number; pending: number; completed: number }
+    >();
+    for (const t of tasks) {
+      const d = formatDateOnly(t.start_date);
+      if (!d) continue;
+      const bucket = byDate.get(d) || {
+        inProgress: 0,
+        pending: 0,
+        completed: 0,
+      };
+      const s = t.status?.toLowerCase();
+      if (s === "completed") bucket.completed++;
+      else if (s === "in progress") bucket.inProgress++;
+      else bucket.pending++;
+      byDate.set(d, bucket);
+    }
 
-  const chartData = weekDates.map((date) => {
-    const pending = tasks.filter(
-      (t) => t.status === "Pending" && t.start_date === date
-    ).length;
-    const inProgress = tasks.filter(
-      (t) => t.status === "In Progress" && t.start_date === date
-    ).length;
-    return { date, Pending: pending, "In Progress": inProgress };
-  });
+    return weekDates.map((iso) => {
+      const b = byDate.get(iso);
+      return {
+        label: iso.slice(5),
+        primary: b?.inProgress ?? 0,
+        secondary: b?.pending ?? 0,
+        tertiary: b?.completed ?? 0,
+      };
+    });
+  }, [tasks, weekDates]);
 
-  const downloadPDF = async () => {
-    if (!containerRef.current) return;
-    const canvas = await html2canvas(containerRef.current);
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF();
-    pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
-    pdf.save("weekly-task-bar-report.pdf");
+  const handleDownloadCsv = () => {
+    const headers = [
+      "Order ID",
+      "Title",
+      "Track ID",
+      "Priority",
+      "Status",
+      "Assigned Crew",
+      "Start Date",
+      "End Date",
+    ];
+    const rows = tasks.map((t) => [
+      t.id,
+      `"${String(t.title || "").replace(/"/g, '""')}"`,
+      `"${String(t.track_id || "").replace(/"/g, '""')}"`,
+      t.priority,
+      t.status,
+      `"${String(t.assigned_to_name || t.assigned_to || "Unassigned").replace(/"/g, '""')}"`,
+      formatDateOnly(t.start_date),
+      formatDateOnly(t.end_date),
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `railly-shift-report-${weekDates[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#1e2128] border border-gray-800/50 p-8 rounded-2xl w-[95%] max-w-5xl shadow-2xl shadow-black/50">
-        <h2 className="font-bold text-2xl text-cyan-400 tracking-wide drop-shadow-[0_0_8px_rgba(6,182,212,0.4)] mb-8">Weekly Task Bar Chart</h2>
-        <div ref={containerRef} className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
-              <XAxis dataKey="date" stroke="#9ca3af" tick={{fill: "#9ca3af"}} tickLine={false} axisLine={false} />
-              <YAxis allowDecimals={false} stroke="#9ca3af" tick={{fill: "#9ca3af"}} tickLine={false} axisLine={false} />
-              <Tooltip cursor={{fill: "rgba(255,255,255,0.05)"}} contentStyle={{backgroundColor: "#181a20", borderColor: "#374151", borderRadius: "8px", color: "#f3f4f6"}} />
-              <Legend />
-              <Bar dataKey="Pending" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="In Progress" fill="#06b6d4" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+    <AppDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Operations Shift & Workload Report"
+      subtitle={`Current week (${weekDates[0]} to ${weekDates[6]}) · Vector printable & CSV exportable`}
+      maxWidthClass="max-w-3xl"
+    >
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="rounded-lg bg-[#0d1015] border border-[#242a36] p-3">
+            <p className="text-[11px] text-gray-400">Total Orders</p>
+            <p className="text-xl font-bold font-mono tabular-nums text-gray-100 mt-1">
+              {summary.total}
+            </p>
+          </div>
+          <div className="rounded-lg bg-[#0d1015] border border-[#242a36] p-3">
+            <p className="text-[11px] text-gray-400">In Progress</p>
+            <p className="text-xl font-bold font-mono tabular-nums text-cyan-400 mt-1">
+              {summary.inProgress}
+            </p>
+          </div>
+          <div className="rounded-lg bg-[#0d1015] border border-[#242a36] p-3">
+            <p className="text-[11px] text-gray-400">Pending</p>
+            <p className="text-xl font-bold font-mono tabular-nums text-amber-400 mt-1">
+              {summary.pending}
+            </p>
+          </div>
+          <div className="rounded-lg bg-[#0d1015] border border-[#242a36] p-3">
+            <p className="text-[11px] text-gray-400">Completed</p>
+            <p className="text-xl font-bold font-mono tabular-nums text-emerald-400 mt-1">
+              {summary.completed}
+            </p>
+          </div>
         </div>
-        <div className="flex justify-end gap-4 mt-6">
+
+        <div className="rounded-xl bg-[#0d1015] border border-[#242a36] p-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+            Weekly Work Order Distribution
+          </h3>
+          <BarBreakdownChart
+            items={weeklyBarItems}
+            primaryLabel="In Progress"
+            secondaryLabel="Pending"
+            tertiaryLabel="Completed"
+          />
+        </div>
+
+        <div className="rounded-xl bg-[#0d1015] border border-[#242a36] p-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+            Crew Workload Breakdown
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-gray-300">
+              <thead>
+                <tr className="border-b border-[#242a36] text-gray-400">
+                  <th className="py-2 pr-3">Crew Member</th>
+                  <th className="py-2 px-3 font-mono text-right">Pending</th>
+                  <th className="py-2 px-3 font-mono text-right">In Progress</th>
+                  <th className="py-2 pl-3 font-mono text-right">Completed</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#242a36]/50">
+                {summary.crewBreakdown.map((row) => (
+                  <tr key={row.name}>
+                    <td className="py-2 pr-3 font-medium text-gray-100">
+                      {row.name}
+                    </td>
+                    <td className="py-2 px-3 font-mono tabular-nums text-right text-amber-400">
+                      {row.pending}
+                    </td>
+                    <td className="py-2 px-3 font-mono tabular-nums text-right text-cyan-400">
+                      {row.inProgress}
+                    </td>
+                    <td className="py-2 pl-3 font-mono tabular-nums text-right text-emerald-400">
+                      {row.completed}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap justify-end gap-3 pt-2 no-print">
           <button
-            onClick={onClose}
-            className="rounded-xl bg-gray-800 px-6 py-2.5 text-sm font-semibold text-gray-300 hover:bg-gray-700 hover:text-gray-100 transition-colors"
+            type="button"
+            onClick={handleDownloadCsv}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-[#1e2430] text-gray-200 hover:bg-[#272f3f] border border-[#2d3546] transition-colors"
           >
-            Close
+            <Download className="w-4 h-4" />
+            Export CSV
           </button>
           <button
-            onClick={downloadPDF}
-            className="rounded-xl bg-cyan-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-cyan-500 transition-colors shadow-lg shadow-cyan-500/20"
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-cyan-600 text-white hover:bg-cyan-500 transition-colors"
           >
-            Download PDF
+            <Printer className="w-4 h-4" />
+            Print / Save PDF
           </button>
         </div>
       </div>
-    </div>
+    </AppDialog>
   );
 }

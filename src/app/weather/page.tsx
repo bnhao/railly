@@ -1,32 +1,32 @@
 "use client";
+import React, { useCallback, useState } from "react";
+import dynamic from "next/dynamic";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import SelectLocation from "@/components/weather/SelectLocation";
 
-import React, { JSX } from "react";
-import SelectLocation from "../../components/weather/SelectLocation";
-import useForecast from "@/hooks/useForecast";
-import AIchatbot from "@/components/AIchatbot";
+const AIchatbot = dynamic(() => import("@/components/AIchatbot"), {
+  ssr: false,
+  loading: () => null,
+});
 
-const App = (): JSX.Element => {
-  const {
-    selectedTrack,
-    handleTrackChange,
-    forecastData,
-    predictWeatherData,
-  } = useForecast();
+const ALLOWED_ROLES = ["admin", "user"];
+
+export default function WeatherPage() {
+  const [selectedId, setSelectedId] = useState("");
+
+  const handleSelectId = useCallback((id: string) => {
+    setSelectedId(String(id).trim());
+  }, []);
 
   return (
-    <div className="flex">
-      <div className="bg-black text-white w-full min-h-screen px-5">
+    <ProtectedRoute allowedRoles={ALLOWED_ROLES}>
+      <div className="min-h-screen bg-[#0d1015] text-gray-200 px-4 py-4 lg:px-6 lg:py-5">
         <SelectLocation
-          track={selectedTrack}
-          forecastData={forecastData}
-          handleTrackChange={handleTrackChange}
-          predictWeatherData={predictWeatherData}
-
+          selectedId={selectedId}
+          onSelectCorridor={handleSelectId}
         />
       </div>
       <AIchatbot />
-    </div>
+    </ProtectedRoute>
   );
-};
-
-export default App;
+}

@@ -1,186 +1,267 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { memo, useCallback, useMemo } from "react";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/utils/firebase";
-import { FcEnteringHeavenAlive } from "react-icons/fc";
-import { AiOutlineSchedule } from "react-icons/ai";
-import { RiDashboardFill, RiLogoutCircleRLine } from "react-icons/ri";
-import { LuTrainTrack } from "react-icons/lu";
-import { TiWeatherPartlySunny } from "react-icons/ti";
-import { MdOutlineManageAccounts, MdOutlineFeedback } from "react-icons/md";
-import { usePathname } from "next/navigation";
-import { toast } from "react-toastify";
+import {
+  LayoutDashboard,
+  Route,
+  CloudSunRain,
+  CalendarClock,
+  Users,
+  MessageSquareText,
+  LogOut,
+  TrainFront,
+} from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
+import { preloadRailwayGeoJSON } from "@/utils/railwayDataCache";
 
-export default function Nav() {
+const ALL_MENUS = [
+  {
+    title: "Dashboard",
+    shortTitle: "Home",
+    id: 1,
+    Icon: LayoutDashboard,
+    path: "/dashboard",
+    preloadMap: true,
+    adminOnly: false,
+  },
+  {
+    title: "Track Overview",
+    shortTitle: "Tracks",
+    id: 2,
+    Icon: Route,
+    path: "/track-overview",
+    preloadMap: true,
+    adminOnly: false,
+  },
+  {
+    title: "Weather Risks",
+    shortTitle: "Weather",
+    id: 3,
+    Icon: CloudSunRain,
+    path: "/weather",
+    preloadMap: false,
+    adminOnly: false,
+  },
+  {
+    title: "Work Schedule",
+    shortTitle: "Schedule",
+    id: 4,
+    Icon: CalendarClock,
+    path: "/schedule",
+    preloadMap: false,
+    adminOnly: false,
+  },
+  {
+    title: "Manage Crew",
+    shortTitle: "Crew",
+    id: 5,
+    Icon: Users,
+    path: "/manageusers",
+    preloadMap: false,
+    adminOnly: true,
+  },
+  {
+    title: "Field Reports",
+    shortTitle: "Reports",
+    id: 6,
+    Icon: MessageSquareText,
+    path: "/feedback",
+    preloadMap: false,
+    adminOnly: false,
+  },
+] as const;
+
+// 44px height + 8px vertical gap = 52px row pitch for GPU translateY indicator
+const ITEM_HEIGHT_PX = 44;
+const ITEM_STEP_PX = 52;
+
+function Nav() {
   const router = useRouter();
   const pathName = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { role, user } = useAuth();
 
-  const [activeTop, setActiveTop] = useState<number | null>(null);
-  const [activeHeight, setActiveHeight] = useState<number>(0);
-  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const visibleMenus = useMemo(() => {
+    const isAdmin = role === "admin";
+    return ALL_MENUS.filter((m) => !m.adminOnly || isAdmin);
+  }, [role]);
 
-  const Menus = [
-    {
-      title: "Dashboard",
-      id: 1,
-      icon: <RiDashboardFill />,
-      path: "/dashboard",
-    },
-    {
-      title: "Track Overview",
-      id: 2,
-      icon: <LuTrainTrack />,
-      path: "/track-overview",
-    },
-    {
-      title: "Weather",
-      id: 3,
-      icon: <TiWeatherPartlySunny />,
-      path: "/weather",
-    },
-    {
-      title: "Schedule",
-      id: 4,
-      icon: <AiOutlineSchedule />,
-      path: "/schedule",
-    },
-    {
-      title: "Manage User",
-      id: 5,
-      icon: <MdOutlineManageAccounts />,
-      path: "/manageusers",
-    },
-    {
-      title: "Feedback",
-      id: 6,
-      icon: <MdOutlineFeedback />,
-      path: "/feedback",
-    },
-  ];
+  const activeIndex = visibleMenus.findIndex((menu) =>
+    pathName.startsWith(menu.path)
+  );
 
-  const activeIndex = Menus.findIndex((menu) => pathName.startsWith(menu.path));
-
-  useEffect(() => {
-    if (activeIndex !== -1 && itemRefs.current[activeIndex]) {
-      setActiveTop(itemRefs.current[activeIndex]?.offsetTop || 0);
-      setActiveHeight(itemRefs.current[activeIndex]?.offsetHeight || 0);
-    } else {
-      setActiveTop(null);
-    }
-  }, [activeIndex, pathName]);
-
-
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       await signOut(auth);
       router.push("/login");
-      toast.success("Logged out successfully", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
     } catch (error) {
-      toast.error("Log out failed!", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-      });
-      console.error("Log out failed: ", error);
+      console.error("Log out failed:", error);
     }
-  };
+  }, [router]);
 
   if (pathName === "/login" || pathName === "/register") {
     return null;
   }
 
   return (
-    <div
-      className={`bg-[#1a1c23] border-r border-gray-800 flex-shrink-0 h-screen py-6 px-4 ${isMenuOpen ? "w-64" : "w-20"
-        } duration-300 sticky top-0 transition-all z-50`}
-      onMouseEnter={() => setIsMenuOpen(true)}
-      onMouseLeave={() => setIsMenuOpen(false)}
-    >
-      <div className="flex flex-col justify-between h-full">
-        <div className="flex items-center pl-2 mb-8" onClick={() => router.push("/dashboard")}>
-          <FcEnteringHeavenAlive className="text-4xl cursor-pointer flex-shrink-0 mr-3" />
-          <h1
-            className={`text-gray-100 font-bold tracking-widest text-xl duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
-              } cursor-pointer`}
-          >
-            RAILLY
-          </h1>
-        </div>
-                <div className="flex-1 relative">
-          {activeTop !== null && (
-            <div
-              className="absolute left-0 w-full rounded-lg bg-gray-800/60 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] pointer-events-none"
-              style={{ top: `${activeTop}px`, height: `${activeHeight}px` }}
-            ></div>
-          )}
-          {activeTop !== null && (
-            <div
-              className="absolute left-0 w-1 h-8 bg-cyan-500 rounded-r-md shadow-[0_0_8px_rgba(6,182,212,0.6)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] pointer-events-none"
-              style={{ top: `${activeTop + (activeHeight / 2) - 16}px` }}
-            ></div>
-          )}
-          <ul className="space-y-2 relative">
-            {Menus.map((menu, index) => {
-              // Updated active logic to handle sub-paths
-              const isActive = pathName.startsWith(menu.path);
-              return (
-                <li
-                  key={menu.id}
-                  ref={(el) => { itemRefs.current[index] = el; }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={menu.title}
-                  onKeyDown={(e) => e.key === "Enter" && router.push(menu.path)}
-                  className={`relative z-10 text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 rounded-lg transition-colors duration-200 group ${isActive ? "text-cyan-400" : "hover:bg-gray-800/40 hover:text-gray-200"
-                    }`}
-                  onClick={() => router.push(menu.path)}
-                >
-                  <span className={`text-2xl transition-colors duration-200 ${isActive ? "text-cyan-400" : "text-gray-400 group-hover:text-cyan-300"}`}>{menu.icon}</span>
-                  <span
-                    className={`text-base font-medium whitespace-nowrap duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
-                      }`}
-                  >
-                    {menu.title}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label="Sign Out"
-          onKeyDown={(e) => e.key === "Enter" && handleSignOut()}
-          className={`text-gray-400 text-sm flex items-center gap-x-4 cursor-pointer p-3 hover:bg-gray-800/40 hover:text-red-400 rounded-lg transition-colors duration-200 group mt-auto`}
-          onClick={handleSignOut}
+    <>
+      {/* Desktop / Tablet fixed non-reflowing sidebar rail */}
+      <aside className="hidden md:block md:w-16 lg:w-56 flex-shrink-0 no-print">
+        <nav
+          aria-label="Main Navigation"
+          className="fixed left-0 top-0 h-screen md:w-16 lg:w-56 bg-[#10141c] border-r border-[#242a36] py-5 px-2.5 lg:px-3.5 z-40 flex flex-col justify-between"
         >
-          <span className="text-2xl group-hover:text-red-400 transition-colors">
-            <RiLogoutCircleRLine />
+          <div>
+            <Link
+              href="/dashboard"
+              prefetch={true}
+              onMouseEnter={preloadRailwayGeoJSON}
+              className="flex items-center justify-center lg:justify-start gap-2.5 px-2 mb-6"
+            >
+              <span className="p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex-shrink-0">
+                <TrainFront className="w-5 h-5" />
+              </span>
+              <span className="hidden lg:block min-w-0">
+                <span className="block text-sm font-bold tracking-widest text-gray-100">
+                  RAILLY
+                </span>
+                <span className="block text-[10px] font-mono uppercase tracking-wider text-cyan-400">
+                  {role === "admin" ? "Supervisor" : "Field Crew"}
+                </span>
+              </span>
+            </Link>
+
+            <div className="relative">
+              {activeIndex !== -1 && (
+                <>
+                  <div
+                    className="absolute left-0 top-0 w-full rounded-lg bg-[#1b202b] border border-[#2a3140] transition-transform duration-200 ease-out pointer-events-none"
+                    style={{
+                      height: `${ITEM_HEIGHT_PX}px`,
+                      transform: `translateY(${activeIndex * ITEM_STEP_PX}px)`,
+                    }}
+                  />
+                  <div
+                    className="absolute left-0 top-0 w-1 h-7 bg-cyan-400 rounded-r-md transition-transform duration-200 ease-out pointer-events-none"
+                    style={{
+                      transform: `translateY(${activeIndex * ITEM_STEP_PX + 8}px)`,
+                    }}
+                  />
+                </>
+              )}
+
+              <ul className="space-y-2 relative">
+                {visibleMenus.map((menu) => {
+                  const isActive = pathName.startsWith(menu.path);
+                  const Icon = menu.Icon;
+                  return (
+                    <li key={menu.id} className="h-[44px]">
+                      <Link
+                        href={menu.path}
+                        prefetch={true}
+                        aria-label={menu.title}
+                        title={menu.title}
+                        onMouseEnter={
+                          menu.preloadMap ? preloadRailwayGeoJSON : undefined
+                        }
+                        onFocus={
+                          menu.preloadMap ? preloadRailwayGeoJSON : undefined
+                        }
+                        className={`relative z-10 h-full text-sm flex items-center justify-center lg:justify-start gap-x-3 px-3 rounded-lg transition-colors duration-150 ${
+                          isActive
+                            ? "text-cyan-400 font-semibold"
+                            : "text-gray-400 hover:bg-[#181d27] hover:text-gray-200"
+                        }`}
+                      >
+                        <Icon className="w-5 h-5 flex-shrink-0" />
+                        <span className="hidden lg:inline truncate">
+                          {menu.title}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+
+          <div className="space-y-2 border-t border-[#242a36] pt-3">
+            {user?.email && (
+              <div className="hidden lg:block px-2 py-1">
+                <p className="text-[11px] text-gray-500 uppercase font-mono">
+                  Signed In
+                </p>
+                <p className="text-xs text-gray-300 truncate">{user.email}</p>
+              </div>
+            )}
+            <button
+              type="button"
+              aria-label="Sign Out"
+              title="Sign Out"
+              onClick={handleSignOut}
+              className="w-full h-11 flex items-center justify-center lg:justify-start gap-x-3 px-3 rounded-lg text-sm text-gray-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors duration-150"
+            >
+              <LogOut className="w-5 h-5 flex-shrink-0" />
+              <span className="hidden lg:inline">Sign Out</span>
+            </button>
+          </div>
+        </nav>
+      </aside>
+
+      {/* Mobile compact header bar */}
+      <header className="md:hidden sticky top-0 z-40 bg-[#10141c] border-b border-[#242a36] px-4 py-2.5 flex items-center justify-between no-print">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <TrainFront className="w-5 h-5 text-cyan-400" />
+          <span className="font-bold tracking-widest text-sm text-gray-100">
+            RAILLY
           </span>
-          <span
-            className={`text-base font-medium whitespace-nowrap duration-300 transform transition-all ${isMenuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 overflow-hidden w-0"
-              }`}
-          >
-            Sign Out
+          <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+            {role === "admin" ? "Supervisor" : "Crew"}
           </span>
-        </div>
-      </div>
-    </div>
+        </Link>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          aria-label="Sign Out"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-gray-300 hover:text-rose-300 hover:bg-rose-950/40"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Sign Out</span>
+        </button>
+      </header>
+
+      {/* Mobile bottom tab navigation with 44px+ touch targets */}
+      <nav
+        aria-label="Mobile Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#10141c] border-t border-[#242a36] px-1 py-1 no-print"
+      >
+        <ul className="grid grid-flow-col auto-cols-fr gap-1">
+          {visibleMenus.map((menu) => {
+            const isActive = pathName.startsWith(menu.path);
+            const Icon = menu.Icon;
+            return (
+              <li key={menu.id}>
+                <Link
+                  href={menu.path}
+                  aria-label={menu.title}
+                  className={`min-h-[44px] flex flex-col items-center justify-center rounded-lg px-1 py-1 text-[10px] font-medium transition-colors ${
+                    isActive
+                      ? "bg-[#1b202b] text-cyan-400"
+                      : "text-gray-400 hover:text-gray-200"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 mb-0.5" />
+                  <span className="truncate max-w-full">{menu.shortTitle}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </>
   );
 }
+
+export default memo(Nav);

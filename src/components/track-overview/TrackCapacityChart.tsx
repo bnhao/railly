@@ -1,35 +1,16 @@
 "use client";
-import React from "react";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
+import React, { memo } from "react";
+import { BarBreakdownChart, BarSeriesItem } from "@/components/ui/MiniCharts";
 
-// Register required Chart.js components
-ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
-
-export default function TrackCapacityChart({
-  data,
-  options,
-}: {
-  data: any;
-  options: any;
-}) {
+function TrackCapacityChart({ items }: { items: BarSeriesItem[] }) {
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-semibold text-gray-100">Track Capacity</h2>
+    <div className="flex flex-col h-full w-full space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-gray-100">Track Capacity</h2>
       </div>
-      <div className="relative flex-1 w-full min-h-0">
-        <Line data={data} options={options} />
-      </div>
+      <BarBreakdownChart items={items} primaryLabel="Load" />
     </div>
   );
 }
+
+export default memo(TrackCapacityChart);

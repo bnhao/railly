@@ -1,26 +1,44 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import { Search } from "lucide-react";
+import type { SubdivisionSummary } from "@/types/task";
 
 interface SearchBarProps {
-  tracks: string[];
-  onTrackSelect: (track: string) => void;
+  subdivisions: SubdivisionSummary[];
+  onSelectSubdivision: (subdivision: SubdivisionSummary) => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ tracks, onTrackSelect, searchTerm, setSearchTerm }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+  subdivisions,
+  onSelectSubdivision,
+  searchTerm,
+  setSearchTerm,
+}) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const searchBarRef = useRef<HTMLDivElement>(null);
 
-  // Filter tracks based on search term
-  const filteredTracks = tracks.filter((track) =>
-    track.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return subdivisions.slice(0, 12);
+    return subdivisions
+      .filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.operator.toLowerCase().includes(q) ||
+          s.trackId.toLowerCase().includes(q)
+      )
+      .slice(0, 18);
+  }, [subdivisions, searchTerm]);
 
-  // Close dropdown if clicked outside
   useEffect(() => {
+    if (!isDropdownVisible) return;
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownVisible(false);
       }
     };
@@ -28,70 +46,73 @@ const SearchBar: React.FC<SearchBarProps> = ({ tracks, onTrackSelect, searchTerm
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isDropdownVisible]);
 
-  // Handle track selection
-  const handleTrackSelect = (track: string) => {
-    onTrackSelect(track);
-    setSearchTerm(track);
-    setIsDropdownVisible(false); // Close dropdown after selecting
+  const handleSelect = (sub: SubdivisionSummary) => {
+    onSelectSubdivision(sub);
+    setSearchTerm(sub.name);
+    setIsDropdownVisible(false);
   };
 
-  // Handle Enter key press
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && filteredTracks.length > 0) {
-      handleTrackSelect(filteredTracks[0]); // Select the first filtered track
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && filtered.length > 0) {
+      event.preventDefault();
+      handleSelect(filtered[0]);
+    } else if (event.key === "Escape") {
+      setIsDropdownVisible(false);
     }
   };
 
   return (
-    <div className="relative w-64" ref={searchBarRef}>
-      {/* Search Input */}
-      <div className="flex items-center relative">
+    <div className="relative w-full sm:w-80" ref={searchBarRef}>
+      <div className="relative flex items-center">
+        <Search className="w-4 h-4 text-gray-500 absolute left-3 pointer-events-none" />
         <input
-          type="text"
-          placeholder="Search..."
-          className="p-2.5 w-full rounded-xl bg-[#1e2128] border border-gray-800/50 text-gray-200 pl-10 focus:outline-none focus:border-cyan-500 transition-colors"
+          type="search"
+          aria-label="Search Alberta railway subdivisions or track IDs"
+          placeholder="Search subdivision or way ID..."
+          className="w-full rounded-lg bg-[#0d1015] border border-[#242a36] pl-9 pr-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-cyan-500 transition-colors"
           value={searchTerm}
+          onFocus={() => setIsDropdownVisible(true)}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setIsDropdownVisible(true);
           }}
-          onKeyDown={handleKeyPress} // Handle Enter key
-        />
-        {/* Magnifying Glass Image */}
-        <img
-          src="/icons/search-icon.png"
-          alt="Search"
-          className="absolute left-3 top-3 w-5 h-5 opacity-60"
+          onKeyDown={handleKeyDown}
         />
       </div>
 
-      {/* Dropdown Options */}
-      {isDropdownVisible && searchTerm && (
+      {isDropdownVisible && filtered.length > 0 && (
         <ul
-          className="absolute z-10 mt-1 w-full bg-[#1e2128] border border-gray-800/50 rounded-xl max-h-40 overflow-y-auto text-gray-200 shadow-xl shadow-black/50"
-          style={{
-            scrollbarWidth: "thin",
-            scrollbarColor: "transparent transparent", // Transparent scrollbar
-          }}
+          role="listbox"
+          aria-label="Matching railway subdivisions"
+          className="absolute z-30 mt-1 w-full bg-[#151921] border border-[#2d3546] rounded-xl max-h-60 overflow-y-auto scrollbar-custom shadow-2xl"
         >
-          {filteredTracks.map((track) => (
-            <li
-              key={track}
-              className="px-4 py-2 hover:bg-cyan-500/20 hover:text-cyan-400 transition-colors cursor-pointer"
-              onClick={() => handleTrackSelect(track)}
-            >
-              {track}
+          {filtered.map((sub) => (
+            <li key={`${sub.trackId}-${sub.name}`}>
+              <button
+                type="button"
+                onClick={() => handleSelect(sub)}
+                className="w-full text-left px-3 py-2 hover:bg-[#1e2430] border-b border-[#242a36]/50 last:border-b-0 flex items-center justify-between gap-2 text-xs"
+              >
+                <span className="min-w-0">
+                  <span className="font-medium text-gray-100 block truncate">
+                    {sub.name}
+                  </span>
+                  <span className="text-[11px] text-gray-400 block truncate">
+                    {sub.operator || "Alberta Rail"} · {sub.count} segments
+                  </span>
+                </span>
+                <span className="font-mono text-[11px] text-cyan-400 flex-shrink-0">
+                  {sub.trackId}
+                </span>
+              </button>
             </li>
           ))}
-          {filteredTracks.length === 0 && (
-            <li className="px-4 py-2 text-gray-400">No tracks found</li>
-          )}
         </ul>
       )}
     </div>
   );
 };
 
-export default SearchBar;
+export default memo(SearchBar);

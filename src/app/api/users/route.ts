@@ -1,43 +1,75 @@
-import { neon } from "@neondatabase/serverless";
-
-/**
- * Sources used: 
- * https://webdev2-git-dv-dereksaits-projects.vercel.app/week-12/api-implementation#api-implementation-with-nextjs 
- * https://github.com/warsylewicz/webdev2/blob/main/pages/week-12/api-implementation.mdx 
- */
+import { NextResponse } from "next/server";
+import { getSql } from "@/utils/db";
 
 // Fetch all users
 export async function GET() {
-    const databaseUrl = process.env.DATABASE_URL || "";
-    const sql = neon(databaseUrl);
-    const response = await sql`SELECT * FROM users;`;
+  try {
+    const sql = getSql();
+    const response = await sql`SELECT * FROM users ORDER BY id ASC;`;
 
-    // Convert each user's singular "role" field into a "roles" array
-    const modifiedUsers = response.map((user: any) => {
-        const { role, ...rest } = user;
-        return { ...rest, roles: role ? [role] : [] };
+    // Preserve both `role` string and `roles` array for full client compatibility
+    const modifiedUsers = response.map((user: Record<string, unknown>) => ({
+      ...user,
+      roles: user.role ? [String(user.role)] : [],
+    }));
+
+    return NextResponse.json(modifiedUsers, {
+      status: 200,
+      headers: {
+        "Cache-Control": "private, max-age=15, stale-while-revalidate=60",
+      },
     });
-
-    console.log("API Response:", JSON.stringify(response, null, 2));
-
-
-    return new Response(JSON.stringify(modifiedUsers), { status: 200 });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch users." },
+      { status: 500 }
+    );
+  }
 }
 
 // Add a user
 export async function POST(request: Request) {
+  try {
     const requestData = await request.json();
-    const databaseUrl = process.env.DATABASE_URL || "";
-    const sql = neon(databaseUrl);
-    // Insert the user with the singular "role" field (your frontend will convert it)
-    const response = await sql`INSERT INTO users (name, email, role) VALUES (${requestData.name}, ${requestData.email}, ${requestData.role});`;
-    return new Response(JSON.stringify(response), { status: 200 });
+    const name = String(requestData.name || "").trim();
+    const email = String(requestData.email || "").trim();
+    const role = String(requestData.role || "user").trim();
+
+    if (!name || !email) {
+      return NextResponse.json(
+        { error: "Name and email are required." },
+        { status: 400 }
+      );
+    }
+
+    const sql = getSql();
+    const response = await sql`
+      INSERT INTO users (name, email, role)
+      VALUES (${name}, ${email}, ${role})
+      RETURNING *;
+    `;
+
+    const created = response[0] as Record<string, unknown>;
+    return NextResponse.json(
+      {
+        ...created,
+        roles: created?.role ? [String(created.role)] : [role],
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return NextResponse.json(
+      { error: "Failed to create user." },
+      { status: 500 }
+    );
+  }
 }
 
-// Delete all users
 export async function DELETE() {
-    const databaseUrl = process.env.DATABASE_URL || "";
-    const sql = neon(databaseUrl);
-    const response = await sql`DELETE FROM users;`;
-    return new Response(null, { status: 200 });
+  return NextResponse.json(
+    { error: "Bulk delete is disabled." },
+    { status: 405 }
+  );
 }

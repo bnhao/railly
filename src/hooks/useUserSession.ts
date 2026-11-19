@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, firestore } from "@/utils/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { toast } from "react-toastify";
 
 export const useUserSession = () => {
   const [loading, setLoading] = useState(true);
@@ -12,42 +11,59 @@ export const useUserSession = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        if (user.emailVerified) {
-          const userDoc = await getDoc(doc(firestore, "users", user.uid));
-          if (!userDoc.exists()) {
-            const registrationData = localStorage.getItem("registrationData");
-            const { firstName = "", lastName = "" } = registrationData ? JSON.parse(registrationData) : {};
-            await setDoc(doc(firestore, "users", user.uid), {
-              firstName,
-              lastName,
-              email: user.email,
-              role: "user",
-            });
-            localStorage.removeItem("registrationData");
-          }
+    let active = true;
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!active) return;
 
-          const roleData = userDoc.exists() ? userDoc.data().role : "user";
-          setUser(user);
-          setRole(roleData);
-          toast.success("Redirecting to dashboard...");
-          router.push("/dashboard");
+      if (currentUser) {
+        if (currentUser.emailVerified) {
+          try {
+            const userDoc = await getDoc(
+              doc(firestore, "users", currentUser.uid)
+            );
+            if (!active) return;
+
+            if (!userDoc.exists()) {
+              const registrationData = localStorage.getItem("registrationData");
+              const { firstName = "", lastName = "" } = registrationData
+                ? JSON.parse(registrationData)
+                : {};
+              await setDoc(doc(firestore, "users", currentUser.uid), {
+                firstName,
+                lastName,
+                email: currentUser.email,
+                role: "user",
+              });
+              localStorage.removeItem("registrationData");
+            }
+
+            const roleData = userDoc.exists() ? userDoc.data().role : "user";
+            setUser(currentUser);
+            setRole(roleData);
+            router.replace("/dashboard");
+          } catch (error) {
+            console.error("Error resolving user session:", error);
+            router.replace("/login");
+          }
         } else {
           setUser(null);
-          toast.error("Please verify your email");
-          router.push("/login");
+          router.replace("/login");
         }
       } else {
         setUser(null);
-        router.push("/login");
+        router.replace("/login");
       }
-      setLoading(false);
+
+      if (active) {
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, [router]);
 
   return { user, role, loading };
 };
-

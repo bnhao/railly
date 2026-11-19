@@ -3,161 +3,177 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #0d1015;
+  --surface: #151921;
+  --surface-elevated: #1b202b;
+  --border-subtle: #242a36;
+  --foreground: #e5e7eb;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-/* Customize calendar styles */
-/* Apply a dark theme to the calendar */
-.rbc-calendar {
-  background: #1a1a1a; /* Dark background */
-  color: #ffffff; /* White text */
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
 }
 
-/* Style the header (month, week, day view) */
-.rbc-header {
-  background: #2d2d2d; /* Dark gray header */
-  color: #ffffff; /* White text */
-  padding: 10px;
-  border-bottom: 1px solid #444; /* Slightly lighter border */
-}
-
-/* Style the event blocks */
-.rbc-event {
-  background-color: #fa8a97 !important; /* Blue for events */
+/* Native top-layer modal dialog scroll containment (prevents page scroll behind modal) */
+dialog:modal {
+  overscroll-behavior: contain;
+  margin: auto;
   border: none;
-  border-radius: 4px;
-  padding: 2px 5px;
-  color: white;
-  font-size: 12px;
+  padding: 0;
+  background: transparent;
+  color: inherit;
 }
 
-/* Style the time slots */
-.rbc-time-view {
-  background: #1a1a1a; /* Dark background for time slots */
+dialog.drawer-dialog:modal {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  margin-left: auto;
+  height: 100dvh;
+  max-height: 100dvh;
 }
 
-.rbc-time-content {
-  background: #1a1a1a; /* Dark background for time content */
+dialog::backdrop {
+  background: rgba(7, 9, 13, 0.78);
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
-.rbc-time-header {
-  background: #2d2d2d; /* Dark gray for time header */
-  color: #ffffff; /* White text */
+/* Isolate heavy dashboard widgets to prevent internal mutations triggering page-wide reflows */
+.widget-contain {
+  contain: layout style paint;
 }
 
-/* Style the current time indicator */
-.rbc-current-time-indicator {
-  background-color: #ff6b6b; /* Red for current time indicator */
+.widget-contain-layout {
+  contain: layout style;
 }
 
-/* Style the day cells */
-.rbc-day-bg + .rbc-day-bg {
-  border-left: 1px solid #444; /* Slightly lighter border between days */
+/* Defer layout/paint strictly for off-screen cards below the fold */
+.deferred-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 9rem;
 }
 
-.rbc-off-range-bg {
-  background: #3d3d3d !important; /* Dark gray for off-range days */
+@supports not (content-visibility: auto) {
+  .deferred-card {
+    contain: layout style paint;
+  }
 }
 
-.rbc-today {
-  background: #3c533e !important; /* Slightly lighter gray for today's cell */
+/* Container-responsive data tables for tablets and low-width panels */
+.table-wrapper {
+  overflow: auto;
+  max-inline-size: 100%;
+  container-type: inline-size;
 }
 
-/* Style the toolbar (month, week, day buttons) */
-.rbc-toolbar {
-  background: #2d2d2d; /* Dark gray for toolbar */
-  color: #ffffff; /* White text */
-  padding: 10px;
-  border-bottom: 1px solid #444; /* Slightly lighter border */
-  
+.responsive-data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.rbc-toolbar button {
-  color: #ffffff; /* White text for buttons */
-  background: #4a90e2; /* Blue for buttons */
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
-  margin: 0 5px;
+.responsive-data-table thead {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
 }
 
-.rbc-toolbar button:hover {
-  background: #357abd; /* Darker blue on hover */
+@container (width < 640px) {
+  .responsive-data-table,
+  .responsive-data-table tbody,
+  .responsive-data-table tr,
+  .responsive-data-table td {
+    display: block;
+  }
+
+  .responsive-data-table thead {
+    display: none;
+  }
+
+  .responsive-data-table tbody tr {
+    margin-block-end: 0.75rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    padding: 0.5rem 0.75rem;
+  }
+
+  .responsive-data-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.35rem 0.25rem !important;
+    border-bottom: 1px solid rgba(36, 42, 54, 0.5);
+    text-align: right;
+  }
+
+  .responsive-data-table td:last-child {
+    border-bottom: none;
+    justify-content: flex-end;
+    padding-top: 0.5rem !important;
+  }
+
+  .responsive-data-table td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9ca3af;
+    text-align: left;
+    flex-shrink: 0;
+  }
 }
 
-/* Style the time gutter (left side with hours) */
-.rbc-time-gutter {
-  color: #ffffff; /* White text for hours */
-  background: #2d2d2d; /* Dark gray for gutter */
+/* Respect user/OS reduced motion & save battery on low-end field tablets */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-/* Style the agenda view */
-.rbc-agenda-view table.rbc-agenda-table {
-  background: #1a1a1a; /* Dark background for agenda */
-  color: #ffffff; /* White text */
-}
+/* Print styles for Shift Reports (native browser print-to-PDF without html2canvas/jspdf) */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
 
-.rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
-  border-bottom: 1px solid #444; /* Slightly lighter border */
-}
+  nav,
+  .no-print {
+    display: none !important;
+  }
 
-.rbc-agenda-time-cell {
-  color: #ffffff; /* White text for agenda time */
+  dialog::backdrop {
+    display: none !important;
+  }
 }
-
-.rbc-agenda-event-cell {
-  color: #ffffff; /* White text for agenda events */
-}
-
-/* Removed conflicting Tailwind utility overrides */
 
 /* Custom Scrollbar */
 .scrollbar-custom {
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+  scrollbar-color: #2f3747 transparent;
 }
 
 .scrollbar-custom::-webkit-scrollbar {
-  width: 8px;
-  background-color: transparent;
+  width: 6px;
+  height: 6px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background-color: #888;
+  background-color: #2f3747;
   border-radius: 4px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+  background-color: #4b5563;
 }
-
-.scrollbar-custom::-webkit-scrollbar-button {
-  display: none; /* Remove arrows */
-}
-
-/* .leaflet-popup-content h3 {
-  margin: 0 0 10px;
-  font-size: 16px;
-}
-
-.leaflet-popup-content p {
-  margin: 5px 0;
-}
-
-.leaflet-container {
-} */
